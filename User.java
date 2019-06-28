@@ -8,7 +8,7 @@ public class User {
 		this.PasswordOne = passwordone;
 		this.PasswordTwo = passwordtwo;
 		this.PasswordThree = passwordthree;
-		this.loginattempt = 1;
+		this.loginattempt = loginattempt;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -7,6 +8,7 @@ import java.awt.event.MouseListener;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -36,10 +38,15 @@ public class UserRegistrationPanel extends JPanel {
 	private JButton secondButton;
 	private JButton thirdButton;
 	private JButton fourthButton;
+	private JTextField input;
+	private JComboBox selection;
+	private String[] choices;
+	private int loginattempt;
+	private int userid;
 	
-	public UserRegistrationPanel(User u, MainWindow w) {
+	public UserRegistrationPanel(MainWindow w) {
 		fnt = new FileNames();
-		this.user = u;
+//		this.user = new User();
 		window = w;
 		this.setLayout(new BorderLayout());
 		this.imagesPanel = new JPanel(new CardLayout());
@@ -68,6 +75,7 @@ public class UserRegistrationPanel extends JPanel {
 //		imageSetOne.add(one);
 		imageSetTwo.add(two);
 		imageSetThree.add(three);
+		setUpTopPanel();
 		three.addActionListener(new Listener());
 		UserRegistrationImagePanel p = new UserRegistrationImagePanel(this);
 		UserRegistrationImagePanel j = new UserRegistrationImagePanel(this);
@@ -101,14 +109,34 @@ public class UserRegistrationPanel extends JPanel {
 		this.selectedImages.add(selectedImageThree);
 
 		this.next = new JButton("Next");
-		this.next.setVisible(false);
+		this.next.setEnabled(false);
 		this.next.addActionListener(new Listener());
 		selectedImages.add(this.next);
 
 		this.cl = (CardLayout) (this.imagesPanel.getLayout());
 	}
 
+	private void setUpTopPanel() {
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new GridLayout(1,2));
+		input = new JTextField(10);
+		choices = new String[3];
+		setChoices();
+		selection = new JComboBox(choices);
+		topPanel.add(input);
+		topPanel.add(selection);
+		this.add(topPanel, BorderLayout.NORTH);
+	}
+
+	private void setChoices() {
+		choices[0] = "Select Registration Type";
+		choices[1] = "1";
+		choices[2] = "2";
+	}
+
 	class Listener implements MouseListener, ActionListener {
+
+		
 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
@@ -149,9 +177,15 @@ public class UserRegistrationPanel extends JPanel {
 				window.showMainPage();
 			} else if (arg0.getSource() == next) {
 				db = new DBConnect();
-				user.setPasswordOne(selectedImageOne.getIcon().toString());
-				user.setPasswordTwo(selectedImageTwo.getIcon().toString());
-				user.setPasswordThree(selectedImageThree.getIcon().toString());
+//				user.setUserid(userid);
+//				user.setLoginattempt(loginattempt);
+//				user.setPasswordOne(selectedImageOne.getIcon().toString());
+//				user.setPasswordTwo(selectedImageTwo.getIcon().toString());
+//				user.setPasswordThree(selectedImageThree.getIcon().toString());
+				setUserID();
+//				setLogInAttempt();
+				System.out.println(loginattempt);
+				user = new User(userid, loginattempt, selectedImageOne.getIcon().toString(), selectedImageTwo.getIcon().toString(), selectedImageThree.getIcon().toString() );
 				LocalDateTime endTime = LocalDateTime.now();
 				System.out.println(startTime);
 				System.out.println(endTime);
@@ -159,15 +193,25 @@ public class UserRegistrationPanel extends JPanel {
 				Duration betweenStartandEnd = Duration.between(startTime, endTime);
 				long milliseconds = betweenStartandEnd.toMillis();
 				System.out.println(milliseconds);
-				window.showMainPage();
+				/* window.showMainPage(); */
+				window.showCompletePage();
+				refresh();
 			}
 
 		}
+
+		private void refresh() {
+			
+			
+		}
 	}
+	
+	
 
 	public void adduserRegistrationButtonListener(ActionListener aListener) {
 		this.scrollL.addActionListener(aListener);
 		this.scrollR.addActionListener(aListener);
+		this.selection.addActionListener(aListener);
 //		this.firstButton.addActionListener(aListener);
 	}
 
@@ -179,9 +223,16 @@ public class UserRegistrationPanel extends JPanel {
 			selectedImageTwo.setIcon(icon);
 		} else if (counter == 3) {
 			selectedImageThree.setIcon(icon);
-			next.setVisible(true);
+			next.setEnabled(true);
 		}
 		counter++;
+	}
+	
+	public void setUserID() {
+		String id = input.getText();
+		System.out.println(id);
+		userid = Integer.parseInt(id);
+		System.out.println(userid);
 	}
 
 	public String getUserEntry() {
@@ -247,5 +298,16 @@ public class UserRegistrationPanel extends JPanel {
 	public JButton returnFirst() {
 		// TODO Auto-generated method stub
 		return firstButton;
+	}
+
+	public JComboBox getSelection() {
+		return selection;
+	}
+
+	public void setLogInAttempt() {
+		int login = selection.getSelectedIndex();
+//		System.out.println(selection.getSelectedItem());
+		this.loginattempt = Integer.parseInt(choices[login]);
+		System.out.println(loginattempt);
 	}
 };

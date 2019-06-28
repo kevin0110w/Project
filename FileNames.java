@@ -23,7 +23,7 @@ public class FileNames {
 		int counter = 0;
 		Random random = new Random();
 		Set decidedNumbers = new HashSet<Integer>();
-		while (counter < 30) {
+		while (counter < 20) {
 //			int index = random.nextInt(files.length);
 //			this.imageSet.add(files[index]);
 //			counter++;

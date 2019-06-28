@@ -8,6 +8,7 @@ public class MainWindow extends JFrame implements ActionListener{
 	private static final String REGISTRATION = "registration";
 	private static final String LOGIN = "log-in";
 	private static final String REGISTRATIONINSTRUCTIONS = "registration instructions";
+	private static final String COMPLETE = "complete";
 	private JFrame frame;
 	private JLabel label, label2;
 	private JButton loginButton, registerButton, userRegistrationButton;
@@ -59,15 +60,18 @@ public class MainWindow extends JFrame implements ActionListener{
 		loginPanel = getLogin();
 		cardsPanel = new JPanel(new CardLayout());
 		cardsPanel.add(mainPanel, MAIN);
-		addUserToDB();
-		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(user, this);
-		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
+//		addUserToDB();
+//		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(user, this);
+//		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
 		UserInstructionPanel userInstructionPanel = new UserInstructionPanel();
 		UserInstructionController userInstructionController = new UserInstructionController(userInstructionPanel, this);
-		cardsPanel.add(userRegistrationPanel, REGISTRATION);
+		UserRegistrationCompletePanel urcp = new UserRegistrationCompletePanel();
+		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(urcp, this);
+		
 		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
 //		cardsPanel.add(registrationPanel, REGISTRATION);
 		cardsPanel.add(loginPanel, LOGIN);
+		cardsPanel.add(urcp, COMPLETE);
 //		cardsPanel.setVisible(false); // only show the next screen once a button is pressed
 		
 		container.add(x, BorderLayout.PAGE_START);
@@ -129,7 +133,7 @@ public class MainWindow extends JFrame implements ActionListener{
 
 	private static void createAndShowGUI() {
 		JFrame frame = new JFrame();
-		frame.setPreferredSize(new Dimension(1500, 1500));
+		frame.setPreferredSize(new Dimension(850, 1050));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		MainWindow view = new MainWindow();
 		view.setUp(frame.getContentPane());
@@ -204,8 +208,14 @@ public class MainWindow extends JFrame implements ActionListener{
 	}
 
 	public void showRegistrationPage() {
+		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(this);
+		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
+		cardsPanel.add(userRegistrationPanel, REGISTRATION);
 		cl.show(cardsPanel, REGISTRATION);
-		
+	}
+	
+	public void showCompletePage() {
+		cl.show(cardsPanel, COMPLETE);
 	}
 	public void addUserToDB() {
 	db = new DBConnect();

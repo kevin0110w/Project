@@ -24,8 +24,11 @@ public class UserRegistrationController {
 				System.out.println("Goodbye");
 			} else if (e.getSource() == panel.returnFirst()){
 				System.out.println(panel.returnFirst().getIcon().toString());
+			} else if (e.getSource() == panel.getSelection()) {
+				panel.setLogInAttempt();
 			}
-			System.out.println(e.getActionCommand());
+//			System.out.println(e.getActionCommand());
+			
 //			db = new DBConnect();
 //			String password = panel.getUserEntry();
 //			int nextUserID = db.returnLatestAddedUserID();

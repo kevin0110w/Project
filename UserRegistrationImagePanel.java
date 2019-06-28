@@ -26,7 +26,7 @@ public class UserRegistrationImagePanel extends JPanel {
 	
 	private void setUp() {
 		this.imagePanel = new JPanel();
-		this.imagePanel.setLayout(new GridLayout(5,6));
+		this.imagePanel.setLayout(new GridLayout(4,5));
 		Iterator<Map<String, String>> it = fnt.getImageSet().iterator();
 		List<String> filePaths = new ArrayList<String>();
 		while (it.hasNext()) {
@@ -36,7 +36,7 @@ public class UserRegistrationImagePanel extends JPanel {
 		}
 //		System.out.println(filePaths.get(0));
 		x = new ArrayList<JButton>();
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 20; i++) {
 			x.add(new JButton());
 			x.get(i).setIcon(new ImageIcon(filePaths.get(i)));
 			x.get(i).setActionCommand("" + i);
@@ -57,7 +57,6 @@ public class UserRegistrationImagePanel extends JPanel {
 	public void addListener(ActionListener alistener) {
 		for (int i = 0; i < x.size(); i++) {
 			x.get(i).addActionListener(alistener);
-			
 		}
 	}
 	
@@ -72,20 +71,16 @@ public class UserRegistrationImagePanel extends JPanel {
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		UserRegistrationImagePanel user = new UserRegistrationImagePanel();
-		frame.add(user);
-		ArrayList<JButton> x = new ArrayList<JButton>();
+//		JFrame frame = new JFrame();
+//		UserRegistrationImagePanel user = new UserRegistrationImagePanel();
+//		frame.add(user);
+//		ArrayList<JButton> x = new ArrayList<JButton>();
 //		JButton firstButton = new JButton("FIRST");
 //		x.add(firstButton);
 //		frame.add(x.get(0));
-		ImagePanelController i = new ImagePanelController(user);
-		frame.pack();
-		frame.setVisible(true);
-		
-	}
-
-	
-	
-	}
+//		ImagePanelController i = new ImagePanelController(user);
+//		frame.pack();
+//		frame.setVisible(true);
+	}	
+}
 

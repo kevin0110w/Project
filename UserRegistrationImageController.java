@@ -16,6 +16,7 @@ public class UserRegistrationImageController {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			switch (e.getActionCommand()) {
+			case "" + 0:
 			case "" + 1:
 			case "" + 2:
 			case "" + 3:
@@ -32,6 +33,9 @@ public class UserRegistrationImageController {
 			case "" + 15:
 			case "" + 16:
 			case "" + 17:
+			case "" + 18:
+			case "" + 19:
+			case "" + 20:
 				panel.addString(e.getSource());
 				panel.setImage(e.getSource());
 				break;
