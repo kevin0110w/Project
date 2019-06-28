@@ -2,13 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
-public class View_2 extends JFrame implements ActionListener {
+public class MainWindow extends JFrame implements ActionListener{
 	private static final String MAIN = "main";
 	private static final String REGISTRATION = "registration";
 	private static final String LOGIN = "log-in";
+	private static final String REGISTRATIONINSTRUCTIONS = "registration instructions";
 	private JFrame frame;
 	private JLabel label, label2;
 	private JButton loginButton, registerButton, userRegistrationButton;
@@ -19,19 +18,12 @@ public class View_2 extends JFrame implements ActionListener {
 	private DBConnect db;
 	private JTextField userLoginInputField;
 	private JButton userLoginButton;
-
-	public View_2() {
+	private CardLayout cl;
+	User user;
+	public MainWindow() {
 		ul = new UserList();
 	}
 
-//	public void swapView(String key) {
-//		cardlayout.show(cardsPanel,  key);
-//	}
-	/*
-	 * @Override public void run() {
-	 * 
-	 * }
-	 */
 	public void setUp(Container container) {
 		JPanel x = new JPanel();
 		 label2 = new JLabel("Main Menu");
@@ -63,24 +55,31 @@ public class View_2 extends JFrame implements ActionListener {
 		thirdPanel.add(registerButton);
 		secondPanel.add(thirdPanel, BorderLayout.CENTER);
 		mainPanel.add(secondPanel, BorderLayout.CENTER);
-
 		registrationPanel = getRegistration();
 		loginPanel = getLogin();
-
 		cardsPanel = new JPanel(new CardLayout());
 		cardsPanel.add(mainPanel, MAIN);
-		
-		cardsPanel.add(registrationPanel, REGISTRATION);
+		addUserToDB();
+		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(user, this);
+		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
+		UserInstructionPanel userInstructionPanel = new UserInstructionPanel();
+		UserInstructionController userInstructionController = new UserInstructionController(userInstructionPanel, this);
+		cardsPanel.add(userRegistrationPanel, REGISTRATION);
+		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
+//		cardsPanel.add(registrationPanel, REGISTRATION);
 		cardsPanel.add(loginPanel, LOGIN);
 //		cardsPanel.setVisible(false); // only show the next screen once a button is pressed
-
+		
 		container.add(x, BorderLayout.PAGE_START);
 		container.add(cardsPanel);
+		this.cl = (CardLayout) (cardsPanel.getLayout());
+		cardsPanel.setVisible(true);
 	}
 
 	public JPanel getRegistration() {
 		JPanel r = new JPanel();
-		userRegistrationInputField = new JTextField(100);
+		r.setLayout(new GridLayout(2,0));
+		userRegistrationInputField = new JTextField(10);
 		userRegistrationButton = new JButton("Register User");
 		userRegistrationButton.addActionListener(this);
 		r.add(userRegistrationInputField);
@@ -132,7 +131,7 @@ public class View_2 extends JFrame implements ActionListener {
 		JFrame frame = new JFrame();
 		frame.setPreferredSize(new Dimension(1500, 1500));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		View_2 view = new View_2();
+		MainWindow view = new MainWindow();
 		view.setUp(frame.getContentPane());
 		frame.pack();
 		frame.setVisible(true);
@@ -152,20 +151,24 @@ public class View_2 extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		this.db = new DBConnect();
-		CardLayout cl = (CardLayout) (cardsPanel.getLayout());
-		cardsPanel.setVisible(true);
 		if (e.getSource() == registerButton) {
 			setLabelText("Registration");
 			System.out.println("Hello");
-			cl.show(cardsPanel, REGISTRATION);
+			cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
 		} else if (e.getSource() == loginButton) {
 			setLabelText("Login");
 			cl.show(cardsPanel, LOGIN);
 			ul.printUsers();
 		} else if (e.getSource() == userRegistrationButton) {
-			System.out.println("NONONO");
 			String password = userRegistrationInputField.getText();
-			User user = new User(password);
+			int nextUserID = db.returnLatestAddedUserID();
+			if (nextUserID < 1) {
+				nextUserID = 0;
+			}
+			System.out.println(nextUserID);
+			nextUserID++;
+			System.out.println(nextUserID);
+			this.user = new User(nextUserID, 1, "1", "1", "1");
 			this.ul.addUser(user);
 			db.addUserToDatabase(user);
 			userRegistrationInputField.setText("");
@@ -194,6 +197,30 @@ public class View_2 extends JFrame implements ActionListener {
 
 	private void setLabelText(String string) {
 		this.label2.setText(string);
+	}
+	
+	public void showMainPage() {
+		cl.show(cardsPanel, MAIN);
+	}
+
+	public void showRegistrationPage() {
+		cl.show(cardsPanel, REGISTRATION);
+		
+	}
+	public void addUserToDB() {
+	db = new DBConnect();
+	String password = userRegistrationInputField.getText();
+	int nextUserID = db.returnLatestAddedUserID();
+	if (nextUserID < 1) {
+		nextUserID = 0;
+	}
+	System.out.println(nextUserID);
+	nextUserID++;
+	System.out.println(nextUserID);
+	this.user = new User(nextUserID, 1, "1", "1", "1");
+	this.ul.addUser(user);
+//	db.addUserToDatabase(user);
+	userRegistrationInputField.setText("");
 	}
 }
 //}
