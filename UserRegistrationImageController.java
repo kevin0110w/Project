@@ -1,18 +1,25 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Icon;
+import javax.swing.JButton;
+
 public class UserRegistrationImageController {
 	private UserRegistrationImagePanel panel;
+	private MainWindow window;
+	private UserRegistrationModel model;
 	
-	
-	public UserRegistrationImageController(UserRegistrationImagePanel panel) {
+	public UserRegistrationImageController(UserRegistrationImagePanel panel, MainWindow window, UserRegistrationModel model) {
 		this.panel = panel;
+		this.window = window;
+		this.model = model;
 		this.panel.addListener(new UserRegistrationImageListener());
 	}
 	
 	class UserRegistrationImageListener implements ActionListener{
-		
-		
+		int n = 1;
+		String filePath;
+		Icon icon;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			switch (e.getActionCommand()) {
@@ -22,6 +29,7 @@ public class UserRegistrationImageController {
 			case "" + 3:
 			case "" + 4:
 			case "" + 5:
+			case "" + 6:
 			case "" + 7:
 			case "" + 8:
 			case "" + 9:
@@ -36,8 +44,20 @@ public class UserRegistrationImageController {
 			case "" + 18:
 			case "" + 19:
 			case "" + 20:
-				panel.addString(e.getSource());
-				panel.setImage(e.getSource());
+				icon = ((JButton) e.getSource()).getIcon();
+				filePath = icon.toString();
+				if (n == 1) {
+					model.setFirstSelectedImageFilePath(filePath);
+				} else if (n == 2) {
+					model.setSecondSelectedImageFilePath(filePath);
+				} else if (n == 3) {
+					model.setThirdSelectedImageFilePath(filePath);
+				}
+				panel.setImage(icon, n);
+				n++;
+//				panel.printString(e.getSource());
+//				panel.setImage(e.getSource());
+//				panel.addImage(e.getSource());
 				break;
 			}
 		}

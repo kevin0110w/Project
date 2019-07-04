@@ -21,19 +21,21 @@ public class MainWindow extends JFrame implements ActionListener{
 	private JButton userLoginButton;
 	private CardLayout cl;
 	User user;
+//	private UserRegistrationModel model;
+	
 	public MainWindow() {
-		ul = new UserList();
+		
 	}
 
 	public void setUp(Container container) {
-		JPanel x = new JPanel();
+		JPanel aPanel = new JPanel();
 		 label2 = new JLabel("Main Menu");
 //		 x.setBackground(Color.WHITE);
 		 label2.setBackground(Color.WHITE);
-		x.add(label2);
+		aPanel.add(label2);
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
-		label = new JLabel("This is the label", SwingConstants.CENTER);
+//		label = new JLabel("This is the label", SwingConstants.CENTER);
 		/**
 		 * left = new JButton("<<"); left.setIcon(new ImageIcon("1.jpg")); right = new
 		 * JButton(">>"); // setImages(component); JPanel bottomPanel = new JPanel();
@@ -45,7 +47,7 @@ public class MainWindow extends JFrame implements ActionListener{
 		 * panel.add(left, BorderLayout.WEST); panel.add(right, BorderLayout.EAST);
 		 * panel.add(bottomPanel, BorderLayout.SOUTH);
 		 */
-		mainPanel.add(label, BorderLayout.NORTH);
+//		mainPanel.add(label, BorderLayout.NORTH);
 		JPanel secondPanel = new JPanel(new BorderLayout());
 		JPanel thirdPanel = new JPanel();
 		loginButton = new JButton(LOGIN);
@@ -56,49 +58,32 @@ public class MainWindow extends JFrame implements ActionListener{
 		thirdPanel.add(registerButton);
 		secondPanel.add(thirdPanel, BorderLayout.CENTER);
 		mainPanel.add(secondPanel, BorderLayout.CENTER);
-		registrationPanel = getRegistration();
-		loginPanel = getLogin();
+//		registrationPanel = getRegistration();
+//		UserLoginInstructionPanel loginPanel = new UserLoginInstructionPanel();
+//		UserLoginController loginController = new UserLoginController(loginPanel, this);
+		UserLoginModel loginModel = new UserLoginModel();
+		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(this);
+		UserLoginController loginController = new UserLoginController(loginPanel, loginModel);
 		cardsPanel = new JPanel(new CardLayout());
 		cardsPanel.add(mainPanel, MAIN);
 //		addUserToDB();
 //		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(user, this);
 //		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
-		UserInstructionPanel userInstructionPanel = new UserInstructionPanel();
-		UserInstructionController userInstructionController = new UserInstructionController(userInstructionPanel, this);
-		UserRegistrationCompletePanel urcp = new UserRegistrationCompletePanel();
-		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(urcp, this);
+		UserRegistrationInstructionPanel userInstructionPanel = new UserRegistrationInstructionPanel();
+		UserRegistrationInstructionController userInstructionController = new UserRegistrationInstructionController(userInstructionPanel, this);
+		UserRegistrationCompletePanel userRegistrationCompletePanel = new UserRegistrationCompletePanel();
+		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel, this);
 		
 		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
 //		cardsPanel.add(registrationPanel, REGISTRATION);
 		cardsPanel.add(loginPanel, LOGIN);
-		cardsPanel.add(urcp, COMPLETE);
+		cardsPanel.add(userRegistrationCompletePanel, COMPLETE);
 //		cardsPanel.setVisible(false); // only show the next screen once a button is pressed
 		
-		container.add(x, BorderLayout.PAGE_START);
+		container.add(aPanel, BorderLayout.PAGE_START);
 		container.add(cardsPanel);
 		this.cl = (CardLayout) (cardsPanel.getLayout());
 		cardsPanel.setVisible(true);
-	}
-
-	public JPanel getRegistration() {
-		JPanel r = new JPanel();
-		r.setLayout(new GridLayout(2,0));
-		userRegistrationInputField = new JTextField(10);
-		userRegistrationButton = new JButton("Register User");
-		userRegistrationButton.addActionListener(this);
-		r.add(userRegistrationInputField);
-		r.add(userRegistrationButton);
-		return r;
-	}
-
-	public JPanel getLogin() {
-		JPanel l = new JPanel(new GridLayout(2,0));
-		userLoginInputField = new JTextField(100);
-		userLoginButton = new JButton("Log In");
-		userLoginButton.addActionListener(this);
-		l.add(userLoginInputField);
-		l.add(userLoginButton);
-		return l;
 	}
 
 	public JFrame getFrame() {
@@ -141,28 +126,17 @@ public class MainWindow extends JFrame implements ActionListener{
 		frame.setVisible(true);
 	}
 
-	public JPanel getRegistrationPanel() {
-		JPanel registration = new JPanel(new GridLayout(2, 0));
-		input = new JTextField("Input Name");
-		userRegistrationButton = new JButton("Register");
-		registration.add(input);
-		registration.add(userRegistrationButton);
-//		registration.setVisible(false);
-//		changePanels(this.registration);
-		return registration;
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		this.db = new DBConnect();
 		if (e.getSource() == registerButton) {
 			setLabelText("Registration");
-			System.out.println("Hello");
+//			System.out.println("Hello");
 			cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
 		} else if (e.getSource() == loginButton) {
 			setLabelText("Login");
 			cl.show(cardsPanel, LOGIN);
-			ul.printUsers();
 		} else if (e.getSource() == userRegistrationButton) {
 			String password = userRegistrationInputField.getText();
 			int nextUserID = db.returnLatestAddedUserID();
@@ -208,10 +182,18 @@ public class MainWindow extends JFrame implements ActionListener{
 	}
 
 	public void showRegistrationPage() {
+//		FileNames fnt = new FileNames();
+		UserRegistrationModel model = new UserRegistrationModel();
+//		UserRegistrationModel userRegistrationModel = new UserRegistrationModel();
 		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(this);
-		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
+		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this, model);
+		userRegistrationPanel.setUpImagePanels();
 		cardsPanel.add(userRegistrationPanel, REGISTRATION);
 		cl.show(cardsPanel, REGISTRATION);
+	}
+	
+	public void showLoginPage() {
+		
 	}
 	
 	public void showCompletePage() {
@@ -233,6 +215,41 @@ public class MainWindow extends JFrame implements ActionListener{
 	userRegistrationInputField.setText("");
 	}
 }
+
+
+//public JPanel getRegistrationPanel() {
+//	JPanel registration = new JPanel(new GridLayout(2, 0));
+//	input = new JTextField("Input Name");
+//	userRegistrationButton = new JButton("Register");
+//	registration.add(input);
+//	registration.add(userRegistrationButton);
+////	registration.setVisible(false);
+////	changePanels(this.registration);
+//	return registration;
+//}
+
+
+//public JPanel getRegistration() {
+//	JPanel r = new JPanel();
+//	r.setLayout(new GridLayout(2,0));
+//	userRegistrationInputField = new JTextField(10);
+//	 userRegistrationButton = new JButton("Register User");
+//	userRegistrationButton.addActionListener(this);
+//	r.add(userRegistrationInputField);
+//	r.add(userRegistrationButton);
+//	return r;
+//}
+
+//public JPanel getLogin() {
+//	JPanel l = new JPanel(new GridLayout(2,0));
+//	userLoginInputField = new JTextField(100);
+//	userLoginButton = new JButton("Log In");
+//	userLoginButton.addActionListener(this);
+//	l.add(userLoginInputField);
+//	l.add(userLoginButton);
+//	return l;
+//}
+
 //}
 
 //	public void changePanels(JPanel newPanel) {

@@ -1,56 +1,61 @@
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 public class User {
-	private String PasswordOne, PasswordTwo, PasswordThree;
+	private String passwordOne, passwordTwo, passwordThree;
 	private int userid, loginattempt;
+	 Set<String> decoys;
 	
 	public User(int userid, int loginattempt, String passwordone, String passwordtwo, String passwordthree) {
 		this.userid = userid;
-		this.PasswordOne = passwordone;
-		this.PasswordTwo = passwordtwo;
-		this.PasswordThree = passwordthree;
+		this.passwordOne = passwordone;
+		this.passwordTwo = passwordtwo;
+		this.passwordThree = passwordthree;
 		this.loginattempt = loginattempt;
+		this.decoys = new HashSet<String>();
 	}
 
 	/**
 	 * @return the passwordOne
 	 */
 	public String getPasswordOne() {
-		return PasswordOne;
+		return passwordOne;
 	}
 
 	/**
 	 * @param passwordOne the passwordOne to set
 	 */
 	public void setPasswordOne(String passwordOne) {
-		PasswordOne = passwordOne;
+		passwordOne = passwordOne;
 	}
 
 	/**
 	 * @return the passwordTwo
 	 */
 	public String getPasswordTwo() {
-		return PasswordTwo;
+		return passwordTwo;
 	}
 
 	/**
 	 * @param passwordTwo the passwordTwo to set
 	 */
 	public void setPasswordTwo(String passwordTwo) {
-		PasswordTwo = passwordTwo;
+		passwordTwo = passwordTwo;
 	}
 
 	/**
 	 * @return the passwordThree
 	 */
 	public String getPasswordThree() {
-		return PasswordThree;
+		return passwordThree;
 	}
 
 	/**
 	 * @param passwordThree the passwordThree to set
 	 */
 	public void setPasswordThree(String passwordThree) {
-		PasswordThree = passwordThree;
+		passwordThree = passwordThree;
 	}
 
 	/**
@@ -85,4 +90,31 @@ public class User {
 	public String toString() {
 		return "Welcome User: " + this.getUserid();
 	}
+	
+	public boolean addImageToDecoySet(String filePath) {
+		boolean success = false;
+		if (!(filePath.equals(passwordOne) || filePath.equals(passwordTwo) || filePath.equals(passwordThree))) {
+			success = getSet().add(filePath);
+//			System.out.println(filePath);
+		}
+		return success;
+	}
+
+	private Set<String> getSet() {
+		return this.decoys;
+	}
+
+	public int decoySize() {
+		// TODO Auto-generated method stub
+		return this.decoys.size();
+	}
+
+	public void printPaths() {
+		Iterator<String> it = this.decoys.iterator();
+		while (it.hasNext()) {
+			System.out.println(it.next());
+		}
+	}
+	
+	
 }
