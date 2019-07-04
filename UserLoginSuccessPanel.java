@@ -19,8 +19,6 @@ public class UserLoginSuccessPanel extends JPanel {
 		this.home.setActionCommand("HOME");
 		buttonPanel.add(this.home);
 		this.add(buttonPanel, BorderLayout.CENTER);
-		
-//		this.textArea.setText("HELLO");
 	}
 	
 	public void setTextArea(String text) {

@@ -54,6 +54,7 @@ public class UserRegistrationImageController {
 					model.setThirdSelectedImageFilePath(filePath);
 				}
 				panel.setImage(icon, n);
+				model.addTimeTaken();
 				n++;
 //				panel.printString(e.getSource());
 //				panel.setImage(e.getSource());

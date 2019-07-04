@@ -22,7 +22,8 @@ public class UserRegistrationController {
 	
 	class UserRegistrationListener implements MouseListener, ActionListener{
 		DBConnect db;
-		
+		String userIDString;
+		int userID, loginMethod;
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == panel.returnL()) {
@@ -32,17 +33,23 @@ public class UserRegistrationController {
 			} else if (e.getSource() == panel.returnFirst()){
 //				System.out.println(panel.returnFirst().getIcon().toString());
 			} else if (e.getSource() == panel.getSelection()) {
+				model.setInitialTime();
 				panel.setLogInAttempt();
 			} else if (e.getActionCommand().equals("BACK")) {
 				view.showMainPage();
 			} else if (e.getActionCommand().equals("NEXT")) {
-				String userIDString = panel.getUserEntry();
-				int userID = Integer.parseInt(userIDString);
+				try {
+				userIDString = panel.getUserEntry();
+				userID = Integer.parseInt(userIDString);
 				model.setUserID(userID);
-				int loginMethod = panel.getLoginMethod();
+				loginMethod = panel.getLoginMethod();
 				model.setLoginMethod(loginMethod);
 				model.addUser();
 				view.showCompletePage();
+				} catch (Exception exception) {
+					
+				}
+				
 //			System.out.println(e.getActionCommand());
 			
 //			db = new DBConnect();

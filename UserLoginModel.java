@@ -1,3 +1,5 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,14 +14,17 @@ public class UserLoginModel {
 	private Set<String> filePaths;
 	private List<String> passwordPaths;
 	private final int NOOFPASSWORDS = 3;
-	private int UserID, loginMethod;
+	private int UserID, loginMethod, loginAttemptNo;
 	private List<String> enteredPassword;
+	private List<Float> timeTaken;
+	private LocalDateTime initialTime;
 	
 	public UserLoginModel() {
 		this.db = new DBConnect();
 		this.filePaths = new HashSet<String>();
 		this.passwordPaths = new ArrayList<String>();
 		this.enteredPassword = new ArrayList<String>();
+		this.timeTaken = new ArrayList<Float>();
 	}
 	
 	public void setUserID(int UserID) {
@@ -125,7 +130,41 @@ public class UserLoginModel {
 		return this.enteredPassword.equals(this.passwordPaths); 
 	}
 
-	public boolean getTrue() {
-		return false;
+	public void addLoginAttempt() {
+		DBConnect db = new DBConnect();
+		db.addLoginAttemptToDB(this.getUserID(), this.getLoginMethod(), this.enteredPassword, this.timeTaken, this.correctPassword(), this.loginAttemptNo);
+		db.closeConnection();
 	}
+	
+	public void addTimeTakenPerPassword(Float time) {
+		this.timeTaken.add(time);
+	}
+
+	public void setInitialTime() {
+		initialTime = LocalDateTime.now();
+	}
+
+	public void addTime() {
+		LocalDateTime intermediateTime = LocalDateTime.now();
+		Duration timeBetween = Duration.between(initialTime, intermediateTime);
+		float milliseconds = timeBetween.toMillis();
+		this.timeTaken.add(milliseconds);
+		
+	}
+	
+	public void setLoginAttempt() {
+		DBConnect db = new DBConnect();
+		this.loginAttemptNo = db.getLoginAttemptNo(UserID, loginMethod);
+		this.loginAttemptNo = (this.loginAttemptNo == 0) ? 1 : ++this.loginAttemptNo; 
+		db.closeConnection();
+	}
+	
+	public int getLoginAttempt() {
+		return this.loginAttemptNo;
+	}
+	
+	public static void main(String[] args) {
+		
+	}
+	
 }

@@ -76,7 +76,6 @@ public class UserLoginSelectionPanel extends JPanel {
 	}
 	
 	public void addListener(ActionListener alistener) {
-		System.out.println("Adding SelectionPanel Listeners");
 //		for (JButton button : this.buttons) {
 //			button.addActionListener(alistener);
 //

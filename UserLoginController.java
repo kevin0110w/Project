@@ -1,5 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 
 public class UserLoginController {
 //	private UserLoginInstructionPanel panel;
@@ -18,6 +19,7 @@ public class UserLoginController {
 	
 	public void setLoginSelectionPanelListeners() {
 		this.mainPanel.setLoginSelectionPanel(new UserSelectionListener());
+		this.model.setInitialTime();
 	}
 	
 	public void setText() {
@@ -46,6 +48,7 @@ public class UserLoginController {
 					userIdString = mainPanel.getInput();
 					int userID = Integer.parseInt(userIdString);
 					model.setUserID(userID);
+					model.setLoginAttempt();
 					mainPanel.loginPanel();
 					mainPanel.loginSelectionPanel.getFilePaths(model.getFilePaths());
 					setLoginSelectionPanelListeners();
@@ -55,7 +58,6 @@ public class UserLoginController {
 	}
 	
 	class UserSelectionListener implements ActionListener {
-
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
@@ -84,10 +86,12 @@ public class UserLoginController {
 					System.out.println("Pressing " + arg0.getActionCommand() + " button");
 					mainPanel.setImage(arg0.getSource());
 					model.addImage(arg0.getSource());
+					model.addTime();
 					break;
 				case "LOGIN":
 					mainPanel.loginUser();
 					setText();
+					model.addLoginAttempt();
 					break;
 				case "BACK":
 					mainPanel.showInstructionPanel();

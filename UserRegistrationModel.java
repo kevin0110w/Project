@@ -1,3 +1,7 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class UserRegistrationModel {
@@ -5,9 +9,12 @@ public class UserRegistrationModel {
 	private FileNames fnt;
 	private int UserID, loginMethod;
 	private User user;
+	private LocalDateTime initialTime;
+	private List<Float> timeTaken;
 	
 	public UserRegistrationModel() {
 		fnt = new FileNames();
+		this.timeTaken = new ArrayList<Float>();
 	}
 	
 
@@ -109,6 +116,7 @@ public class UserRegistrationModel {
 		this.user = new User(this.getUserID(), this.getLoginMethod(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath());
 		this.createDecoyImageSet();
 		db.addUserToDatabase(this.user);
+		db.addRegistrationTime(this.user, this.timeTaken);
 	}
 	
 	public void createDecoyImageSet() {
@@ -131,6 +139,18 @@ public class UserRegistrationModel {
 		user.printPaths();
 //		p.setHiddenImages(decoys);
 	}
+	
+	public void setInitialTime() {
+		this.initialTime = LocalDateTime.now();
+	}
+	
+	public void addTimeTaken() {
+		LocalDateTime intermediateTime = LocalDateTime.now();
+		Duration between = Duration.between(initialTime, intermediateTime);
+		float timeMilliseconds = between.toMillis();
+		this.timeTaken.add(timeMilliseconds);
+	}
+	
 	
 	public static void main(String[] args) {
 		UserRegistrationModel model = new UserRegistrationModel();

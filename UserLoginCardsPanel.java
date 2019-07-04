@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import UserLoginController.UserLoginSuccessListener;
 
 //import UserLoginController.UserLoginListener;
 
@@ -59,13 +58,11 @@ public class UserLoginCardsPanel extends JPanel {
 	}
 
 	public void setLoginInstructionPanel(ActionListener listener) {
-		System.out.println("Adding Instruction Panel Listeners");
 		this.loginInstructionPanel.addUserLoginListener(listener);
 	}
 	
 	
 	public void setLoginSelectionPanel(ActionListener listener) {
-		System.out.println("Adding Selection Panel Listeners");
 		this.loginSelectionPanel.addListener(listener);	
 	}
 	
@@ -85,25 +82,6 @@ public class UserLoginCardsPanel extends JPanel {
 
 	public void showInstructionPanel() {
 		this.cl.show(this, "LOGININSTRUCTIONS");
-	}
-
-	public static void main(String[] args) {
-//		JFrame f = new JFrame();
-//		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//		UserLoginSelectionPanel u = new UserLoginSelectionPanel();
-//		UserLoginModel m = new UserLoginModel();
-//		UserLoginCardsPanel p = new UserLoginCardsPanel();
-//		UserLoginSelectionController c = new UserLoginSelectionController(m, u, p);
-//		UserLoginSuccessPanel uu = new UserLoginSuccessPanel();
-//		UserLoginSuccessController cc = new UserLoginSuccessController(uu, m);
-//		JPanel cardsPanel = new JPanel(new CardLayout());
-//
-//		cardsPanel.add(u, "LOGINSELECTION");
-//		cardsPanel.add(uu, "SUCCESS");
-//		UserLoginCardsPanel p = new UserLoginCardsPanel();
-//		f.add(p);
-//		f.setVisible(true);
-//		f.pack();
 	}
 
 	public void setLoginSuccessPanel(ActionListener userLoginSuccessListener) {
