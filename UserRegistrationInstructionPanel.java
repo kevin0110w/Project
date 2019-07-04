@@ -5,10 +5,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-public class UserInstructionPanel extends JPanel {
+public class UserRegistrationInstructionPanel extends JPanel {
 	private JTextArea textArea;
 	private JButton back, next;
-	public UserInstructionPanel() {
+	public UserRegistrationInstructionPanel() {
 		this.setLayout(new GridLayout(2,0));
 		textArea = new JTextArea();
 		String text = "You will be presented with 60 images on the next Screen.\n\n To register a new account, you will be required to choose 3 images as your password to log in to the program on future occasions.\n\n Click next to continue or to go back, click on back";

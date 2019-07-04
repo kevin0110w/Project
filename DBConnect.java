@@ -1,4 +1,9 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class DBConnect {
 	private Connection connection;
@@ -57,14 +62,63 @@ public class DBConnect {
 		return this.statement;
 
 	}
+	
+	public List<String> getUsersPasswordsFromDatabase(int UserID, int loginAttempt) {
+		List<String> imagePaths = new ArrayList<String>();
+		String commandTwo = "SELECT * FROM Users Where UserID = ? AND LoginMethod = ?";
+		String imagePath = "";
+		try {
+			PreparedStatement st = getConnection().prepareStatement(commandTwo);
+			st.setInt(1, UserID);
+			st.setInt(2, loginAttempt);
+			ResultSet result = st.executeQuery();
+//		ResultSet result = statement.executeQuery(commandTwo);
+			int n = 3;
+			while (result.next()) {
+			while (n <6) {
+//		System.out.println("Name: " + result.getInt("UserID") + " Password: " + result.getString("UserPassword"));
+				imagePath = result.getString(n);
+				imagePaths.add(imagePath);
+				n++;
+			}
+			}
+		} catch (SQLException e) {
+			System.out.println("Connection failed");
+			e.printStackTrace();
+		}
+		return imagePaths;
+	}
+	
+	public List<String> getUsersFilePathsFromDatabase(int UserID, int loginAttempt) {
+		List<String> imagePaths = new ArrayList<String>();
+		String commandTwo = "SELECT * FROM Users Where UserID = ? AND LoginMethod = ?";
+		String imagePath = "";
+		try {
+			PreparedStatement st = getConnection().prepareStatement(commandTwo);
+			st.setInt(1, UserID);
+			st.setInt(2, loginAttempt);
+			ResultSet result = st.executeQuery();
+//		ResultSet result = statement.executeQuery(commandTwo);
+			int n = 3;
+			while (result.next()) {
+			while (n <= result.getMetaData().getColumnCount()) {
+//		System.out.println("Name: " + result.getInt("UserID") + " Password: " + result.getString("UserPassword"));
+				imagePath = result.getString(n);
+				imagePaths.add(imagePath);
+				n++;
+			}
+			}
+		} catch (SQLException e) {
+			System.out.println("Connection failed");
+			e.printStackTrace();
+		}
+		return imagePaths;
+	}
 
 	public void addUserToDatabase(User user) {
-		System.out.println(user.getUserid());
-		System.out.println(user.getLoginattempt());
-		System.out.println(user.getPasswordOne());
-		System.out.println(user.getPasswordTwo());
-		System.out.println(user.getPasswordThree());
-		String command = "INSERT INTO USERS(UserID, LoginAttempt, PasswordOne, PasswordTwo, PasswordThree) VALUES(?, ?, ?, ?, ?)";
+		Iterator<String> it = user.decoys.iterator();
+		int n = 6;
+		String command = "INSERT INTO USERS(UserID, LoginMethod, PasswordOne, PasswordTwo, PasswordThree, DecoyImageOne, DecoyImageTwo, DecoyImageThree, DecoyImageFour, DecoyImageFive, DecoyImageSix, DecoyImageSeven, DecoyImageEight, DecoyImageNine, DecoyImageTen, DecoyImageEleven, DecoyImageTwelve, DecoyImageThirteen, DecoyImageFourteen, DecoyImageFifteen, DecoyImageSixteen, DecoyImageSeventeen) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
 			st.setInt(1, user.getUserid());
@@ -72,6 +126,10 @@ public class DBConnect {
 			st.setString(3, user.getPasswordOne());
 			st.setString(4, user.getPasswordTwo());
 			st.setString(5, user.getPasswordThree());
+			while (it.hasNext()) {
+				st.setString(n, it.next());
+				n++;
+			}
 			st.executeUpdate();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -118,7 +176,9 @@ public class DBConnect {
 		}
 		return UserID;
 	}
-
+	
+	
+	/*
 	public static void main(String[] args) {
 		DBConnect connect = new DBConnect();
 		Connection c = connect.connectToDatabase();
@@ -143,5 +203,70 @@ public class DBConnect {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}*/
+
+	public void addLoginAttemptToDB(int userID, int loginMethod, List<String> enteredPassword, List<Float> timeTaken,
+			boolean correctPassword, int loginAttemptNo) {
+		Iterator<String> passwordIterator = enteredPassword.iterator();
+		Iterator<Float> timeTakenIterator = timeTaken.iterator();
+		int correctPasswordInt = (correctPassword) ? 1 : 0;
+		String command = "INSERT INTO LOGINATTEMPTS(UserID, LoginMethod, SelectedImageOne, SelectedImageTwo, SelectedImageThree, TimeTakenToChooseOne, TimeTakenToChooseTwo, TimeTakenToChooseThree, Successful, AttemptNumber) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		try {
+			PreparedStatement st = getConnection().prepareStatement(command);
+			st.setInt(1, userID);
+			st.setInt(2, loginMethod);
+			st.setString(3, passwordIterator.next());
+			st.setString(4, passwordIterator.next());
+			st.setString(5, passwordIterator.next());
+			st.setFloat(6, timeTakenIterator.next());
+			st.setFloat(7, timeTakenIterator.next());
+			st.setFloat(8, timeTakenIterator.next());
+			st.setInt(9, correctPasswordInt);
+			st.setInt(10, loginAttemptNo);
+			st.executeUpdate();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
+
+	public int getLoginAttemptNo(int userID, int loginMethod) {
+		String command = "SELECT ATTEMPTNUMBER FROM LOGINATTEMPTS Where UserID = ? AND LoginMethod = ?";
+		int loginAttemptNo = 0;
+		try {
+			PreparedStatement st = getConnection().prepareStatement(command);
+			st.setInt(1, userID);
+			st.setInt(2, loginMethod);
+			ResultSet result = st.executeQuery();
+			while (result.next()) {
+				loginAttemptNo = result.getInt("AttemptNumber");
+			}
+		} catch (SQLException e) {
+			System.out.println("Connection failed");
+			e.printStackTrace();
+		}
+		return loginAttemptNo;
+	}
+	
+	public void addRegistrationTime(User user, List<Float> timeTaken) {
+		Iterator<Float> timeTakenIterator = timeTaken.iterator();
+		String command = "Insert into RegistrationTimes(UserID, LoginMethod, TimeTakenToChoosePasswordOne, TimeTakenToChoosePasswordTwo, TimeTakenToChoosePasswordThree) Values (?, ?, ?, ?, ?)";
+		try {
+			PreparedStatement st = getConnection().prepareStatement(command);
+			st.setInt(1, user.getUserid());
+			st.setInt(2, user.getLoginattempt());
+			st.setFloat(3, timeTakenIterator.next());
+			st.setFloat(4, timeTakenIterator.next());
+			st.setFloat(5, timeTakenIterator.next());
+			st.executeUpdate();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		DBConnect db = new DBConnect();
+		System.out.println(db.getLoginAttemptNo(10, 1));
+	}
+
+	
 }
