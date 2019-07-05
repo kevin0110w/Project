@@ -25,7 +25,6 @@ public class UserRegistrationPanel extends JPanel {
 	private Integer counter = 1;
 	private JButton userRegistrationButton, left, right, one, two, three, back, next;
 	private JPanel imagesPanel, imageSetOne, imageSetTwo, imageSetThree, selectedImages;
-	private JTextField userRegistrationInputField;
 	private CardLayout cl;
 	private final static String ONE = "one";
 	private final static String TWO = "two";
@@ -39,9 +38,9 @@ public class UserRegistrationPanel extends JPanel {
 	private LocalDateTime startTime;
 	FileNames fnt;
 	private JButton firstButton, secondButton, thirdButton, fourthButton;
-	private JTextField input;
-	private JComboBox selection;
-	private String[] choices;
+//	private JTextField input;
+//	private JComboBox selection;
+//	private String[] choices;
 	private int loginattempt;
 	private int userid;
 //	UserImagesFilePaths imageSet;
@@ -49,18 +48,18 @@ public class UserRegistrationPanel extends JPanel {
 //	private Printer p;
 //	List<String> decoys = new ArrayList<String>();
 	List<String> images = new ArrayList<String>();
-	List<Image> imageListOne, imageListTwo, imageListThree;
+	List<String> imageListOne, imageListTwo, imageListThree;
 	private UserRegistrationModel model;
 	private Object imageSet;
 	
 //	public UserRegistrationPanel(MainWindow w, FileNames fnt) {
 	public UserRegistrationPanel(MainWindow w) {
-		imageListOne = new ArrayList<Image>();
-		imageListTwo = new ArrayList<Image>();
-		imageListThree = new ArrayList<Image>();
+		imageListOne = new ArrayList<String>();
+		imageListTwo = new ArrayList<String>();
+		imageListThree = new ArrayList<String>();
 //		p = new Printer();
 //		imageSet = new UserImagesFilePaths();
-		fnt =  new FileNames();
+//		fnt =  new FileNames();
 //		this.user = new User();
 		window = w;
 		this.setLayout(new BorderLayout());
@@ -148,21 +147,17 @@ public class UserRegistrationPanel extends JPanel {
 	private void setUpTopPanel() {
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new GridLayout(1,2));
-		input = new JTextField(10);
-		input.setText("Please enter your userID here");
-		choices = new String[3];
-		setChoices();
-		selection = new JComboBox(choices);
-		topPanel.add(input);
-		topPanel.add(selection);
+//		input = new JTextField(10);
+//		input.setText("Please enter your userID here");
+//		choices = new String[3];
+//		setChoices();
+//		selection = new JComboBox(choices);
+//		topPanel.add(input);
+//		topPanel.add(selection);
 		this.add(topPanel, BorderLayout.NORTH);
 	}
 
-	private void setChoices() {
-		choices[0] = "Select Registration Type";
-		choices[1] = "1";
-		choices[2] = "2";
-	}
+
 ////	
 ////	class Listener implements ActionListener {
 ////		
@@ -247,10 +242,9 @@ public class UserRegistrationPanel extends JPanel {
 	public void adduserRegistrationButtonListener(ActionListener aListener) {
 		this.scrollL.addActionListener(aListener);
 		this.scrollR.addActionListener(aListener);
-		this.selection.addActionListener(aListener);
 		this.next.addActionListener(aListener);
 		this.back.addActionListener(aListener);
-		this.input.addMouseListener((MouseListener) aListener);
+		
 //		this.firstButton.addActionListener(aListener);
 	}
 
@@ -278,21 +272,7 @@ public class UserRegistrationPanel extends JPanel {
 		}
 	}
 	
-	public void setUserID() {
-		String id = input.getText();
-		System.out.println(id);
-		userid = Integer.parseInt(id);
-		System.out.println(userid);
-	}
-
-	public String getUserEntry() {
-		return this.input.getText();
-	}
-
-	public void setUserEntry() {
-		this.userRegistrationInputField.setText("");
-	}
-
+	
 	public JButton returnL() {
 		return this.scrollL;
 	}
@@ -349,42 +329,23 @@ public class UserRegistrationPanel extends JPanel {
 		return firstButton;
 	}
 
-	public JComboBox getSelection() {
-		return selection;
-	}
-
-	public void setLogInAttempt() {
-		int login = selection.getSelectedIndex();
-//		System.out.println(selection.getSelectedItem());
-		this.loginattempt = Integer.parseInt(choices[login]);
-		System.out.println(loginattempt);
-	}
 	
 	public void addToUserImages(String filePath) {
 		((UserRegistrationImagePanel) this.imageSet).addImage(filePath);
 	}
 
-	public int getLoginMethod() {
-		int login = selection.getSelectedIndex();
-//		System.out.println(selection.getSelectedItem());
-		this.loginattempt = Integer.parseInt(choices[login]);
-		return this.loginattempt;
-//		System.out.println(loginattempt);
-	}
+	
 
-	public void setImageSetOne(List<Image> listOne) {
+	public void setImageSetOne(List<String> listOne) {
 		this.imageListOne = listOne;
-		for (Image i : imageListOne) {
-			System.out.println(i.getImagePath());
-		}
 	}
 
-	public void setImageSetTwo(List<Image> listTwo) {
+	public void setImageSetTwo(List<String> listTwo) {
 		this.imageListTwo = listTwo;
 		
 	}
 
-	public void setImageSetThree(List<Image> listThree) {
+	public void setImageSetThree(List<String> listThree) {
 		this.imageListThree = listThree;
 		
 	}
@@ -395,9 +356,9 @@ public class UserRegistrationPanel extends JPanel {
 
 
 	public void setUpImagePanels() {
-		UserRegistrationImagePanel imagePanelOne = new UserRegistrationImagePanel(this, fnt.getListOne());
-		UserRegistrationImagePanel imagePanelTwo = new UserRegistrationImagePanel(this, fnt.getListTwo());
-		UserRegistrationImagePanel imagePanelThree = new UserRegistrationImagePanel(this, fnt.getListThree());
+		UserRegistrationImagePanel imagePanelOne = new UserRegistrationImagePanel(this, this.imageListOne);
+		UserRegistrationImagePanel imagePanelTwo = new UserRegistrationImagePanel(this, this.imageListTwo);
+		UserRegistrationImagePanel imagePanelThree = new UserRegistrationImagePanel(this, this.imageListThree);
 		this.imagesPanel.add(imagePanelOne, ONE);
 		this.imagesPanel.add(imagePanelTwo, TWO);
 		this.imagesPanel.add(imagePanelThree, THREE);
@@ -408,8 +369,5 @@ public class UserRegistrationPanel extends JPanel {
 	}
 
 
-	public void setInputText(String string) {
-		this.input.setText(string);
-		
-	}
+	
 };

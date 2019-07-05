@@ -11,7 +11,6 @@ import java.util.Set;
 public class FileNames {
 	private Set<Map<String, String>> imageSet;
 	private static final int NUMBEROFREGISTRATIONIMAGES = 60;
-	private Map<Integer, HashMap<Integer, Image>> otherImageSet;
 	private List<Image> listOne, listTwo, listThree, screenImages, hiddenImages;
 	private Set<Image> images;
 	Set<Image> otherImages;
@@ -23,42 +22,10 @@ public class FileNames {
 		this.screenImages = new ArrayList<Image>();
 		this.hiddenImages = new ArrayList<Image>();
 		this.imageSet = new HashSet<Map<String, String>>();
-		
-		this.otherImageSet = new HashMap<Integer, HashMap<Integer, Image>>();
-		HashMap x = new HashMap<Integer, Image>();
 		this.images = new HashSet<Image>();
 //		this.NUMBEROFREGISTRATIONIMAGES = 60;
 //		this.imageSetPath = new HashSet<String>();
 		createRegistrationSet();
-		
-	}
-	/**
-	 * Getting a list of key-value (filenames/filepaths) pairs for all images in memory
-	 * @return
-	 */
-//	public List<HashMap<String, String>> returnFiles() {
-	public List<Image> returnFiles() {
-//		Map<String, String> allFiles = new HashMap<String, String>();
-//		List<String> results = new ArrayList<String>();
-		List<HashMap<String, String>> results2 = new ArrayList<HashMap<String, String>>();
-		List<Image> allImages = new ArrayList<Image>();
-		
-		String p = "C:\\Users\\woohoo\\eclipse-workspace\\project\\mikons2";
-		File[] files = new File(p).listFiles();
-		
-		for (File file : files) {
-			if (file.isFile() && file.getAbsolutePath().endsWith(".gif")) {
-//				results.add(file.getName());
-				HashMap<String, String> aFile = new HashMap<String, String>();
-				aFile.put(file.getName(), file.getPath());
-				results2.add(aFile);
-				allImages.add(new Image(file.getName(), file.getPath()));
-			}
-		}
-//		return files;
-//		return results;
-//		return results2;
-		return allImages;
 	}
 	
 	private void createRegistrationSet() {
@@ -108,6 +75,36 @@ public class FileNames {
 //		System.out.println(decidedNumbers.size());
 		createOtherImageList();
 	}
+	/**
+	 * Getting a list of key-value (filenames/filepaths) pairs for all images in memory
+	 * @return
+	 */
+//	public List<HashMap<String, String>> returnFiles() {
+	public List<Image> returnFiles() {
+//		Map<String, String> allFiles = new HashMap<String, String>();
+//		List<String> results = new ArrayList<String>();
+		List<HashMap<String, String>> results2 = new ArrayList<HashMap<String, String>>();
+		List<Image> allImages = new ArrayList<Image>();
+		
+		String p = "C:\\Users\\woohoo\\eclipse-workspace\\project\\mikons2";
+		File[] files = new File(p).listFiles();
+		
+		for (File file : files) {
+			if (file.isFile() && file.getAbsolutePath().endsWith(".gif")) {
+//				results.add(file.getName());
+				HashMap<String, String> aFile = new HashMap<String, String>();
+				aFile.put(file.getName(), file.getPath());
+				results2.add(aFile);
+				allImages.add(new Image(file.getName(), file.getPath()));
+			}
+		}
+//		return files;
+//		return results;
+//		return results2;
+		return allImages;
+	}
+	
+	
 	
 	public List<Image> getAllImages() {
 		return screenImages;
@@ -166,7 +163,9 @@ public class FileNames {
 	public List<Image> getHidden() {
 		return hiddenImages;
 	}
-//	/*
+	
+	
+	/*
 	public static void main(String[] args) {
 		System.out.println(String.format("%-20s", "FILES"));
 		FileNames fnt = new FileNames();
@@ -194,6 +193,6 @@ public class FileNames {
 //			System.out.println("Image " + counter++ + ": " + filename);
 //		}
 	}
-//	*/
+	*/
 }
 

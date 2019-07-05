@@ -2,6 +2,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 public class UserLoginController {
 //	private UserLoginInstructionPanel panel;
 //	private MainWindow mainPanel;
@@ -33,25 +36,52 @@ public class UserLoginController {
 	class UserLoginListener implements ActionListener {
 		int selection = 0;
 		String userIdString;
-		
+		boolean successfulPastLogin;
+	
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
 				case "SELECTION":
-					selection = mainPanel.getSelection();
+//					try {
+						selection = mainPanel.getSelection();
+//						if (selection == 0) {
+//							throw new Exception();
+//						}
+//					} catch (Exception exception) {
+//						JOptionPane.showMessageDialog(mainPanel, "Log-in Method has not been selected",
+//							    "Log In Warning",
+//							    JOptionPane.WARNING_MESSAGE);
+//					}
 					model.setLoginMethod(selection);
 					break;
 				case "BACK":
 					mainPanel.showMainPage();
 					break;
 				case "NEXT":
+					boolean success;
+					try {
+						success = true;
 					userIdString = mainPanel.getInput();
 					int userID = Integer.parseInt(userIdString);
 					model.setUserID(userID);
 					model.setLoginAttempt();
+					if (selection == 0) {
+						success = false;
+						throw new Exception();
+					}
+					} catch (Exception exception) {
+						JOptionPane.showMessageDialog(mainPanel, "Warning - UserID is not entered and/or Log-in Method has not been selected",
+							    "Log In Warning",
+							    JOptionPane.WARNING_MESSAGE);
+						success=false;
+					} 
+					if (success) {
 					mainPanel.loginPanel();
+					successfulPastLogin = model.returnMostRecentLoginSuccess();
+					mainPanel.loginSelectionPanel.setSuccess(successfulPastLogin);
 					mainPanel.loginSelectionPanel.getFilePaths(model.getFilePaths());
 					setLoginSelectionPanelListeners();
+					}
 					break;
 			}
 		}
@@ -82,8 +112,6 @@ public class UserLoginController {
 				case "" + 18:
 				case "" + 19:
 				case "" + 20:
-//					panel.setImage(arg0.getSource());
-					System.out.println("Pressing " + arg0.getActionCommand() + " button");
 					mainPanel.setImage(arg0.getSource());
 					model.addImage(arg0.getSource());
 					model.addTime();

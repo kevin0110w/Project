@@ -1,25 +1,29 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class UserRegistrationModel {
 	private String firstSelectedImageFilePath, secondSelectedImageFilePath, thirdSelectedImageFilePath;
-	private FileNames fnt;
-	private int UserID, loginMethod;
+//	private FileNames fnt;
+	private FileNames2 fnt2;
+	private int userID, loginMethod;
 	private User user;
 	private LocalDateTime initialTime;
 	private List<Float> timeTaken;
 	
 	public UserRegistrationModel() {
-		fnt = new FileNames();
+//		fnt = new FileNames();
+		fnt2 = new FileNames2();
 		this.timeTaken = new ArrayList<Float>();
 	}
 	
 
-	public UserRegistrationModel(FileNames fnt2) {
-		this.fnt = fnt2;
+	public UserRegistrationModel(FileNames2 fnt2) {
+		this.fnt2 = fnt2;
 	}
 
 
@@ -27,14 +31,14 @@ public class UserRegistrationModel {
 	 * @return the userID
 	 */
 	public int getUserID() {
-		return UserID;
+		return userID;
 	}
 
 	/**
 	 * @param userID the userID to set
 	 */
 	public void setUserID(int userID) {
-		UserID = userID;
+		this.userID = userID;
 	}
 
 	/**
@@ -51,21 +55,34 @@ public class UserRegistrationModel {
 		this.loginMethod = loginMethod;
 	}
 
+//	/**
+//	 * @return the fnt
+//	 */
+//	public FileNames getFnt() {
+//		return fnt;
+//	}
+//
+//	/**
+//	 * @param fnt the fnt to set
+//	 */
+//	public void setFnt(FileNames fnt) {
+//		this.fnt = fnt;
+//	}
+	
 	/**
 	 * @return the fnt
 	 */
-	public FileNames getFnt() {
-		return fnt;
+	public FileNames2 getFnt() {
+		return fnt2;
 	}
 
 	/**
 	 * @param fnt the fnt to set
 	 */
-	public void setFnt(FileNames fnt) {
-		this.fnt = fnt;
+	public void setFnt(FileNames2 fnt) {
+		this.fnt2 = fnt;
 	}
 	
-
 	/**
 	 * @return the firstSelectedImageFilePath
 	 */
@@ -106,9 +123,6 @@ public class UserRegistrationModel {
 	 */
 	public void setThirdSelectedImageFilePath(String thirdSelectedImageFilePath) {
 		this.thirdSelectedImageFilePath = thirdSelectedImageFilePath;
-		System.out.println(getFirstSelectedImageFilePath());
-		System.out.println(getSecondSelectedImageFilePath());
-		System.out.println(getThirdSelectedImageFilePath());
 	}
 	
 	public void addUser() {
@@ -122,36 +136,54 @@ public class UserRegistrationModel {
 	public void createDecoyImageSet() {
 		Random random = new Random();
 		int n = 0;
+//		Set<Integer> pickedNumbers = new HashSet<Integer>();
 		while (this.user.decoySize() < 17) {
-			if (this.getLoginMethod() == 1) {
-				n = random.nextInt(60);
+			n = random.nextInt(fnt2.getUnseenImages().size());
+//			if (pickedNumbers.add(n)) {
+				if (this.getLoginMethod() == 1) {
+					if (n > fnt2.getSeenImages().size()) {
+						n = fnt2.getUnseenImages().size() - fnt2.getSeenImages().size();
+					}
 //				if (user.addImageToDecoySet(fnt.getAllImages().get(n).getImagePath())) {
 //					decoys.add(fnt.getAllImages().get(n).getImagePath());
 //				}
-				this.user.addImageToDecoySet(this.fnt.getAllImages().get(n).getImagePath());
-			} else if (this.getLoginMethod() == 2) {
-				n = random.nextInt(85);
-				user.addImageToDecoySet(this.fnt.getHidden().get(n).getImagePath());
+//				this.user.addImageToDecoySet(this.fnt.getAllImages().get(n).getImagePath());
+					this.user.addImageToDecoySet(this.fnt2.getSeenImages().get(n));
+				} else if (this.getLoginMethod() == 2) {
+					n = random.nextInt(85);
+//				this.user.addImageToDecoySet(this.fnt.getHidden().get(n).getImagePath());
+					this.user.addImageToDecoySet(this.fnt2.getUnseenImages().get(n));
 //				decoys.add(fnt.getHidden().get(n).getImagePath());
-			}
-
+				}
+//			}
 		}
-		user.printPaths();
 //		p.setHiddenImages(decoys);
 	}
 	
+	/*
+	 * Set the initial time to start when the user first sees the images
+	 */
 	public void setInitialTime() {
 		this.initialTime = LocalDateTime.now();
 	}
 	
+	/*
+	 * Finding the difference between clicks
+	 */
 	public void addTimeTaken() {
 		LocalDateTime intermediateTime = LocalDateTime.now();
 		Duration between = Duration.between(initialTime, intermediateTime);
 		float timeMilliseconds = between.toMillis();
 		this.timeTaken.add(timeMilliseconds);
+		setInitialTime();
+	}
+
+
+	public void setPictureSet(int picsSelection) {
+		this.fnt2.createRegistrationSet(picsSelection);
 	}
 	
-	
+	/*
 	public static void main(String[] args) {
 		UserRegistrationModel model = new UserRegistrationModel();
 //		model.setUserID(1);
@@ -164,4 +196,5 @@ public class UserRegistrationModel {
 			System.out.println(i.getImagePath());
 		}
 	}
+	*/
 }

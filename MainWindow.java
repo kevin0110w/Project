@@ -3,57 +3,38 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainWindow extends JFrame implements ActionListener{
+public class MainWindow extends JFrame {
 	private static final String MAIN = "main";
-	private static final String REGISTRATION = "registration";
-	private static final String LOGIN = "log-in";
+	private static final String REGISTRATION = "Register";
+	private static final String LOGIN = "Log-in";
 	private static final String REGISTRATIONINSTRUCTIONS = "registration instructions";
 	private static final String COMPLETE = "complete";
 	private JFrame frame;
-	private JLabel label, label2;
-	private JButton loginButton, registerButton, userRegistrationButton;
+	private JLabel headerLabel;
+	private JButton loginButton, registerButton;
 	private JPanel mainPanel, registrationPanel, loginPanel, cardsPanel;
-	private JTextField input;
-	private JTextField userRegistrationInputField;
-	private UserList ul;
-	private DBConnect db;
-	private JTextField userLoginInputField;
-	private JButton userLoginButton;
 	private CardLayout cl;
-	User user;
 //	private UserRegistrationModel model;
-	
+	private UserRegistrationModel model;
 	public MainWindow() {
-		
+
 	}
 
 	public void setUp(Container container) {
+		this.model = new UserRegistrationModel();
 		JPanel aPanel = new JPanel();
-		 label2 = new JLabel("Main Menu");
-//		 x.setBackground(Color.WHITE);
-		 label2.setBackground(Color.WHITE);
-		aPanel.add(label2);
+		headerLabel = new JLabel("Main Menu");
+		headerLabel.setBackground(Color.WHITE);
+		aPanel.add(headerLabel);
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
-//		label = new JLabel("This is the label", SwingConstants.CENTER);
-		/**
-		 * left = new JButton("<<"); left.setIcon(new ImageIcon("1.jpg")); right = new
-		 * JButton(">>"); // setImages(component); JPanel bottomPanel = new JPanel();
-		 * firstImage = new JButton(); secondImage = new JButton(); thirdImage = new
-		 * JButton(); bottomPanel.add(firstImage); bottomPanel.add(secondImage);
-		 * bottomPanel.add(thirdImage); left.setMargin(new Insets(0, 0, 0, 0)); // to
-		 * add a different background // button.setBackground( ... ); // to remove the
-		 * border left.setBorder(null); panel.add(label, BorderLayout.NORTH);
-		 * panel.add(left, BorderLayout.WEST); panel.add(right, BorderLayout.EAST);
-		 * panel.add(bottomPanel, BorderLayout.SOUTH);
-		 */
 //		mainPanel.add(label, BorderLayout.NORTH);
 		JPanel secondPanel = new JPanel(new BorderLayout());
 		JPanel thirdPanel = new JPanel();
 		loginButton = new JButton(LOGIN);
+		loginButton.setActionCommand("LOGIN");
 		registerButton = new JButton(REGISTRATION);
-		loginButton.addActionListener(this);
-		registerButton.addActionListener(this);
+		registerButton.setActionCommand("REGISTER");
 		thirdPanel.add(loginButton);
 		thirdPanel.add(registerButton);
 		secondPanel.add(thirdPanel, BorderLayout.CENTER);
@@ -69,17 +50,17 @@ public class MainWindow extends JFrame implements ActionListener{
 //		addUserToDB();
 //		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(user, this);
 //		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
-		UserRegistrationInstructionPanel userInstructionPanel = new UserRegistrationInstructionPanel();
-		UserRegistrationInstructionController userInstructionController = new UserRegistrationInstructionController(userInstructionPanel, this);
+		createRegistrationInstructionPage();
 		UserRegistrationCompletePanel userRegistrationCompletePanel = new UserRegistrationCompletePanel();
-		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel, this);
+		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel,
+				this);
+
 		
-		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
 //		cardsPanel.add(registrationPanel, REGISTRATION);
 		cardsPanel.add(loginPanel, LOGIN);
 		cardsPanel.add(userRegistrationCompletePanel, COMPLETE);
 //		cardsPanel.setVisible(false); // only show the next screen once a button is pressed
-		
+
 		container.add(aPanel, BorderLayout.PAGE_START);
 		container.add(cardsPanel);
 		this.cl = (CardLayout) (cardsPanel.getLayout());
@@ -90,7 +71,7 @@ public class MainWindow extends JFrame implements ActionListener{
 		return frame;
 	}
 
-	public static void main(String[] args) {
+	public void run() {
 		/* Use an appropriate Look and Feel */
 		try {
 			// UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -116,162 +97,59 @@ public class MainWindow extends JFrame implements ActionListener{
 		});
 	}
 
-	private static void createAndShowGUI() {
+	private void createAndShowGUI() {
 		JFrame frame = new JFrame();
-		frame.setPreferredSize(new Dimension(850, 1050));
+		frame.setPreferredSize(new Dimension(1050, 550));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		MainWindow view = new MainWindow();
-		view.setUp(frame.getContentPane());
+		MainWindow mainWindowView = new MainWindow();
+		mainWindowView.setUp(frame.getContentPane());
 		frame.pack();
 		frame.setVisible(true);
+		@SuppressWarnings("unused")
+		MainWindowController mainWindowController = new MainWindowController(mainWindowView);
 	}
 
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		this.db = new DBConnect();
-		if (e.getSource() == registerButton) {
-			setLabelText("Registration");
-//			System.out.println("Hello");
-			cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
-		} else if (e.getSource() == loginButton) {
-			setLabelText("Login");
-			cl.show(cardsPanel, LOGIN);
-		} else if (e.getSource() == userRegistrationButton) {
-			String password = userRegistrationInputField.getText();
-			int nextUserID = db.returnLatestAddedUserID();
-			if (nextUserID < 1) {
-				nextUserID = 0;
-			}
-			System.out.println(nextUserID);
-			nextUserID++;
-			System.out.println(nextUserID);
-			this.user = new User(nextUserID, 1, "1", "1", "1");
-			this.ul.addUser(user);
-			db.addUserToDatabase(user);
-			userRegistrationInputField.setText("");
-		} else if (e.getSource() == userLoginButton) {
-			String ID = null;
-			String password = null;
-			int UserID = 0;
-			try {
-				ID = userLoginInputField.getText();
-				UserID = Integer.parseInt(ID);
-				password = db.getPasswordFromDatabase(UserID);
-				System.out.println(password);
-				userLoginInputField.setText("");
-			} catch (Exception f) {
-
-			}
-			if (password == "") {
-				JOptionPane.showMessageDialog(frame, "Your UserID was not recognised. Please try again.", "Login error",
-						JOptionPane.ERROR_MESSAGE);
-			} else {
-				System.out.println("Welcome " + UserID + " Your're password is: " + password);
-				cl.show(cardsPanel, MAIN);
-			}
-		}
+	public void setLabelText(String string) {
+		this.headerLabel.setText(string);
 	}
 
-	private void setLabelText(String string) {
-		this.label2.setText(string);
-	}
-	
 	public void showMainPage() {
+		this.headerLabel.setText("Main Menu");
 		cl.show(cardsPanel, MAIN);
 	}
-
-	public void showRegistrationPage() {
-//		FileNames fnt = new FileNames();
-		UserRegistrationModel model = new UserRegistrationModel();
-//		UserRegistrationModel userRegistrationModel = new UserRegistrationModel();
+	
+	public void createRegistrationInstructionPage() {
+		UserRegistrationInstructionPanel userInstructionPanel = new UserRegistrationInstructionPanel();
+		UserRegistrationInstructionController userInstructionController = new UserRegistrationInstructionController(
+				userInstructionPanel, this, model);
+		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
+	}
+	public void createRegistrationImagePage() {
 		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(this);
-		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this, model);
+		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(
+				userRegistrationPanel, this, model);
 		userRegistrationPanel.setUpImagePanels();
 		cardsPanel.add(userRegistrationPanel, REGISTRATION);
+	}
+	public void showRegistrationPage() {
+		createRegistrationImagePage();
 		cl.show(cardsPanel, REGISTRATION);
 	}
-	
 	public void showLoginPage() {
-		
+		cl.show(cardsPanel, LOGIN);
 	}
-	
+
 	public void showCompletePage() {
 		cl.show(cardsPanel, COMPLETE);
 	}
-	public void addUserToDB() {
-	db = new DBConnect();
-	String password = userRegistrationInputField.getText();
-	int nextUserID = db.returnLatestAddedUserID();
-	if (nextUserID < 1) {
-		nextUserID = 0;
+
+	public void addListeners(ActionListener listener) {
+		this.registerButton.addActionListener(listener);
+		this.loginButton.addActionListener(listener);
+
 	}
-	System.out.println(nextUserID);
-	nextUserID++;
-	System.out.println(nextUserID);
-	this.user = new User(nextUserID, 1, "1", "1", "1");
-	this.ul.addUser(user);
-//	db.addUserToDatabase(user);
-	userRegistrationInputField.setText("");
+
+	public void showRegistrationInstructions() {
+		cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
 	}
 }
-
-
-//public JPanel getRegistrationPanel() {
-//	JPanel registration = new JPanel(new GridLayout(2, 0));
-//	input = new JTextField("Input Name");
-//	userRegistrationButton = new JButton("Register");
-//	registration.add(input);
-//	registration.add(userRegistrationButton);
-////	registration.setVisible(false);
-////	changePanels(this.registration);
-//	return registration;
-//}
-
-
-//public JPanel getRegistration() {
-//	JPanel r = new JPanel();
-//	r.setLayout(new GridLayout(2,0));
-//	userRegistrationInputField = new JTextField(10);
-//	 userRegistrationButton = new JButton("Register User");
-//	userRegistrationButton.addActionListener(this);
-//	r.add(userRegistrationInputField);
-//	r.add(userRegistrationButton);
-//	return r;
-//}
-
-//public JPanel getLogin() {
-//	JPanel l = new JPanel(new GridLayout(2,0));
-//	userLoginInputField = new JTextField(100);
-//	userLoginButton = new JButton("Log In");
-//	userLoginButton.addActionListener(this);
-//	l.add(userLoginInputField);
-//	l.add(userLoginButton);
-//	return l;
-//}
-
-//}
-
-//	public void changePanels(JPanel newPanel) {
-//		frame.getContentPane().remove(this.main);
-////		this.currentPanel = newPanel;
-//		frame.getContentPane().add(newPanel);
-//		frame.getContentPane().invalidate();
-//		frame.getContentPane().validate();
-//	}
-
-//	public void addListener(ActionListener registerListener) {
-//		this.register.addActionListener(registerListener);
-//	}
-//	
-//	public void addUserRegistrationListener(ActionListener userRegistrationListener) {
-//		this.userRegistrationButton.addActionListener(userRegistrationListener);
-//	}
-//	public void loggedInScreen() {
-//		frame.getContentPane().removeAll();
-////		frame.getContentPane().remove();
-//		frame.getContentPane().add(this.main);
-//		frame.getContentPane().invalidate();
-//		frame.getContentPane().validate();
-//		
-//	}

@@ -75,7 +75,7 @@ public class DBConnect {
 //		ResultSet result = statement.executeQuery(commandTwo);
 			int n = 3;
 			while (result.next()) {
-			while (n <6) {
+			while (n<6) {
 //		System.out.println("Name: " + result.getInt("UserID") + " Password: " + result.getString("UserPassword"));
 				imagePath = result.getString(n);
 				imagePaths.add(imagePath);
@@ -90,6 +90,7 @@ public class DBConnect {
 	}
 	
 	public List<String> getUsersFilePathsFromDatabase(int UserID, int loginAttempt) {
+//	public Set<String> getUsersFilePathsFromDatabase(int UserID, int loginAttempt) {
 		List<String> imagePaths = new ArrayList<String>();
 		String commandTwo = "SELECT * FROM Users Where UserID = ? AND LoginMethod = ?";
 		String imagePath = "";
@@ -265,8 +266,24 @@ public class DBConnect {
 	
 	public static void main(String[] args) {
 		DBConnect db = new DBConnect();
-		System.out.println(db.getLoginAttemptNo(10, 1));
+		System.out.println(db.getRecentLoginSuccess(200, 1));
 	}
 
+	public int getRecentLoginSuccess(int userID, int loginMethod) {
+		String command = "Select Successful From LoginAttempts Where UserID = ? AND LoginMethod = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
+		int successful = 0;
+		try {
+			PreparedStatement st = getConnection().prepareStatement(command);
+			st.setInt(1, userID);
+			st.setInt(2, loginMethod);
+			ResultSet result = st.executeQuery();
+			while (result.next()) {
+				successful = result.getInt("Successful");
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		return successful;
+	}
 	
 }

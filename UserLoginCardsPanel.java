@@ -5,9 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-
-//import UserLoginController.UserLoginListener;
-
 public class UserLoginCardsPanel extends JPanel {
 	private CardLayout cl;
 //	UserLoginSelectionPanel u ;

@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -19,26 +20,29 @@ import javax.swing.WindowConstants;
 
 public class UserLoginSelectionPanel extends JPanel {
 	private List<JButton> buttons;
-	private Set<String> filePaths;
+//	 Set<String> filePaths;
+	List<String> filePaths;
 	private JPanel buttonPanel, selectionPanel;
-	private JButton selectionOne, selectionTwo, selectionThree, back, login;
+	private JButton back, login;
+	private JLabel selectionOne, selectionTwo, selectionThree;
 	private int n;
+	private boolean successfulPastLogin;
 	
 	public UserLoginSelectionPanel() {
 		this.setLayout(new BorderLayout());
-		this.filePaths = new HashSet<String>();
+//		this.filePaths = new HashSet<String>();
+		this.filePaths = new ArrayList<String>();
 		setButtonPanel();
 		setSelectionPanel();
-//		setUpCards();
 	}
 
 	private void setSelectionPanel() {
 		this.selectionPanel = new JPanel();
 		this.back = new JButton("Back");
 		this.back.setActionCommand("BACK");
-		this.selectionOne = new JButton();
-		this.selectionTwo = new JButton();
-		this.selectionThree = new JButton();
+		this.selectionOne = new JLabel();
+		this.selectionTwo = new JLabel();
+		this.selectionThree = new JLabel();
 		this.login = new JButton("Log In");
 		this.login.setActionCommand("LOGIN");
 		this.selectionPanel.add(back);
@@ -55,6 +59,9 @@ public class UserLoginSelectionPanel extends JPanel {
 		this.add(this.buttonPanel, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Set the buttons - i.e. set the icon, action command and finally attach it to the button JPanel
+	 */
 	private void setButtons() {
 		int n = 0;
 		this.buttons = new ArrayList<JButton>();
@@ -64,40 +71,47 @@ public class UserLoginSelectionPanel extends JPanel {
 			this.buttons.add(new JButton());
 			this.buttons.get(n).setIcon(new ImageIcon(aPath));
 			this.buttons.get(n).setActionCommand("" + n);
-			this.buttons.get(n).setMargin(new Insets(0, 0, 0, 0));
+//			this.buttons.get(n).setMargin(new Insets(0, 0, 0, 0));
 			this.buttonPanel.add(this.buttons.get(n));
 			n++;
 		}
 	}
 	
-	public void getFilePaths(Set<String> list) {
+	/*
+	 * Getting a registered users 20 picture file paths, these will be shuffled only if the user most recently successfully logged in
+	 */
+	public void getFilePaths(List<String> list) {
+		if (this.successfulPastLogin) {
+		Collections.shuffle(list);
+		}
 		this.filePaths.addAll(list);
 		setButtons();
 	}
 	
+	/**
+	 * Add listeners to each interactive JComponent that is on the JFrame for the user to click on (e.g. each image button, back and login buttons)
+	 * @param alistener
+	 */
 	public void addListener(ActionListener alistener) {
-//		for (JButton button : this.buttons) {
-//			button.addActionListener(alistener);
-//
-//		}
-		for (int i = 0; i < this.buttons.size(); i++) {
-			buttons.get(i).addActionListener(alistener);
+		for (JButton button : this.buttons) {
+			button.addActionListener(alistener);
+
 		}
-		
 		this.back.addActionListener(alistener);
-		
 		this.login.addActionListener(alistener);
 	}
 	
 
 	private int getn() {
-		// TODO Auto-generated method stub
 		return n;
 	}
 
+	/*
+	 * Set the image underneath the image buttons to let the user know which ones have been selected so far
+	 * @Param source is the returned object from the action listener
+	 */
 	public void setImage(Object source) {
 		Icon iconImage = ((JButton) source).getIcon();
-		System.out.println(iconImage.toString());
 		if (n == 0) {
 			selectionOne.setIcon(iconImage);
 		} else if (n == 1) {
@@ -108,6 +122,18 @@ public class UserLoginSelectionPanel extends JPanel {
 		n++;
 	}
 	
+	
+	public static void main(String[] args) {
+		UserLoginSelectionPanel panel = new UserLoginSelectionPanel();
+		UserLoginModel model = new UserLoginModel();
+		model.setUserID(200);
+		model.setLoginMethod(1);
+		panel.getFilePaths(model.getFilePaths());
+//		Iterator<String> iterator = panel.filePaths.iterator();
+//		while (iterator.hasNext()) {
+//			System.out.println(iterator.next());
+//		}
+	}
 	/*
 	public static void main(String[] args) {
 		JFrame f = new JFrame();
@@ -130,4 +156,8 @@ public class UserLoginSelectionPanel extends JPanel {
 		f.pack();
 	}
 */
+
+	public void setSuccess(boolean successfulPastLogin) {
+		this.successfulPastLogin = successfulPastLogin;
+	}
 }

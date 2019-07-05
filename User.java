@@ -1,5 +1,6 @@
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class User {
@@ -91,13 +92,14 @@ public class User {
 		return "Welcome User: " + this.getUserid();
 	}
 	
-	public boolean addImageToDecoySet(String filePath) {
-		boolean success = false;
+	public void addImageToDecoySet(String filePath) {
+//		boolean success = false;
 		if (!(filePath.equals(passwordOne) || filePath.equals(passwordTwo) || filePath.equals(passwordThree))) {
-			success = getSet().add(filePath);
+//			success = getSet().add(filePath);
+			this.getSet().add(filePath);
 //			System.out.println(filePath);
 		}
-		return success;
+//		return success;
 	}
 
 	private Set<String> getSet() {
@@ -115,6 +117,5 @@ public class User {
 			System.out.println(it.next());
 		}
 	}
-	
-	
+
 }

@@ -19,21 +19,22 @@ public class UserRegistrationImagePanel extends JPanel {
 //	private FileNames fnt;
 	ArrayList<JButton> buttons;
 	UserRegistrationPanel urp;
-	List<Image> imageSet;
+	List<String> imageSet;
 
-	public UserRegistrationImagePanel(UserRegistrationPanel urp) {
-//		fnt = new FileNames();
-		setImageList(imageSet);
-		setUp();
-		this.urp = urp;
-	}
-	private void setImageList(List<Image> images) {
+//	public UserRegistrationImagePanel(UserRegistrationPanel urp) {
+////		fnt = new FileNames();
+//		setImageList(imageSet);
+//		setUp();
+//		this.urp = urp;
+//	}
+	
+	private void setImageList(List<String> images) {
 		this.imageSet = images;
 	}
 	
-	public UserRegistrationImagePanel(UserRegistrationPanel urp, List<Image> imageSet) {
+	public UserRegistrationImagePanel(UserRegistrationPanel urp, List<String> imageSet) {
 //		fnt = new FileNames();
-		this.imageSet = new ArrayList<Image>();
+		this.imageSet = new ArrayList<String>();
 		this.imageSet = imageSet;
 		this.urp = urp;
 		setUp();
@@ -41,7 +42,7 @@ public class UserRegistrationImagePanel extends JPanel {
 	
 	private void setUp() {
 		this.imagePanel = new JPanel();
-		this.imagePanel.setLayout(new GridLayout(4,5));
+		this.imagePanel.setLayout(new GridLayout(4,6));
 		this.setPreferredSize(new Dimension(500,500));
 //		Iterator<Map<String, String>> it = fnt.getImageSet().iterator();
 //		List<String> filePaths = new ArrayList<String>();
@@ -55,7 +56,7 @@ public class UserRegistrationImagePanel extends JPanel {
 		for (int i = 0; i < 20; i++) {
 			buttons.add(new JButton());
 //			x.get(i).setIcon(new ImageIcon(filePaths.get(i)));
-			buttons.get(i).setIcon(new ImageIcon(this.imageSet.get(i).getImagePath()));
+			buttons.get(i).setIcon(new ImageIcon(this.imageSet.get(i)));
 			buttons.get(i).setMargin(new Insets(0, 0, 0, 0));
 			buttons.get(i).setActionCommand("" + i);
 			this.imagePanel.add(buttons.get(i));
@@ -112,6 +113,15 @@ public class UserRegistrationImagePanel extends JPanel {
 	public void setImage(Icon filePath, int n) {
 		urp.setImage(filePath, n);
 		
-	}	
+	}
+
+	public void disableButton(String actionCommand) {
+		for (JButton button : this.buttons) {
+			if (button.getActionCommand().equals(actionCommand)) {
+				button.setEnabled(false);
+			}
+		}
+		
+	}
 }
 

@@ -11,7 +11,8 @@ import javax.swing.JButton;
 
 public class UserLoginModel {
 	private DBConnect db;
-	private Set<String> filePaths;
+//	private Set<String> filePaths;
+	private List<String> filePaths;
 	private List<String> passwordPaths;
 	private final int NOOFPASSWORDS = 3;
 	private int UserID, loginMethod, loginAttemptNo;
@@ -21,7 +22,8 @@ public class UserLoginModel {
 	
 	public UserLoginModel() {
 		this.db = new DBConnect();
-		this.filePaths = new HashSet<String>();
+//		this.filePaths = new HashSet<String>();
+		this.filePaths = new ArrayList<String>();
 		this.passwordPaths = new ArrayList<String>();
 		this.enteredPassword = new ArrayList<String>();
 		this.timeTaken = new ArrayList<Float>();
@@ -79,7 +81,7 @@ public class UserLoginModel {
 	/**
 	 * @return the filePaths
 	 */
-	public Set<String> getFilePaths() {
+	public List<String> getFilePaths() {
 		getUsersImages();
 		return filePaths;
 	}
@@ -112,14 +114,6 @@ public class UserLoginModel {
 	public int getNoofpasswords() {
 		return NOOFPASSWORDS;
 	}
-	
-//	public static void main(String[] args) {
-//		UserLoginModel m = new UserLoginModel();
-//		m.getUsersImages(22222, 1);
-//		for (String s : m.getPasswordPaths()) {
-//			System.out.println(s);
-//		}
-//	}
 
 	public void addImage(Object source) {
 		Icon imageIcon = ((JButton) source).getIcon();
@@ -161,6 +155,18 @@ public class UserLoginModel {
 	
 	public int getLoginAttempt() {
 		return this.loginAttemptNo;
+	}
+	
+	public int getMostRecentLoginSuccess() {
+		DBConnect db = new DBConnect();
+		int getLoginSuccessful = db.getRecentLoginSuccess(this.UserID, this.loginMethod);
+		return getLoginSuccessful;
+	}
+	
+	public boolean returnMostRecentLoginSuccess() {
+		int successful = getMostRecentLoginSuccess();
+		boolean success = (successful > 0) ? true : false;
+		return success;
 	}
 	
 	public static void main(String[] args) {

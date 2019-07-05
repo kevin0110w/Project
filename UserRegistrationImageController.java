@@ -53,6 +53,7 @@ public class UserRegistrationImageController {
 				} else if (n == 3) {
 					model.setThirdSelectedImageFilePath(filePath);
 				}
+				panel.disableButton(e.getActionCommand());
 				panel.setImage(icon, n);
 				model.addTimeTaken();
 				n++;

@@ -7,7 +7,6 @@ public class UserRegistrationController {
 	private MainWindow view;
 	private UserRegistrationPanel panel;
 	private UserRegistrationModel model;
-	private FileNames fnt;
 
 	public UserRegistrationController(UserRegistrationPanel x, MainWindow view, UserRegistrationModel model) {
 		this.panel = x;
@@ -20,7 +19,7 @@ public class UserRegistrationController {
 		this.panel.adduserRegistrationButtonListener(new UserRegistrationListener());
 	}
 	
-	class UserRegistrationListener implements MouseListener, ActionListener{
+	class UserRegistrationListener implements ActionListener{
 		DBConnect db;
 		String userIDString;
 		int userID, loginMethod;
@@ -31,70 +30,26 @@ public class UserRegistrationController {
 			} else if (e.getSource() == panel.returnR()) {
 				panel.showNext();
 			} else if (e.getSource() == panel.returnFirst()){
-//				System.out.println(panel.returnFirst().getIcon().toString());
-			} else if (e.getSource() == panel.getSelection()) {
-				model.setInitialTime();
-				panel.setLogInAttempt();
-			} else if (e.getActionCommand().equals("BACK")) {
+			}
+//			} else if (e.getSource() == panel.getSelection()) {
+//				model.setInitialTime();
+//				panel.setLogInAttempt();
+//			} 
+			else if (e.getActionCommand().equals("BACK")) {
 				view.showMainPage();
 			} else if (e.getActionCommand().equals("NEXT")) {
 				try {
-				userIDString = panel.getUserEntry();
-				userID = Integer.parseInt(userIDString);
-				model.setUserID(userID);
-				loginMethod = panel.getLoginMethod();
-				model.setLoginMethod(loginMethod);
+//				userIDString = panel.getUserEntry();
+//				userID = Integer.parseInt(userIDString);
+//				model.setUserID(userID);
+//				loginMethod = panel.getLoginMethod();
+//				model.setLoginMethod(loginMethod);
 				model.addUser();
 				view.showCompletePage();
 				} catch (Exception exception) {
 					
 				}
-				
-//			System.out.println(e.getActionCommand());
-			
-//			db = new DBConnect();
-//			String password = panel.getUserEntry();
-//			int nextUserID = db.returnLatestAddedUserID();
-//			System.out.println(nextUserID);
-//			nextUserID++;
-//			System.out.println(nextUserID);
-//			User user = new User(password, nextUserID);
-//			db.addUserToDatabase(user);
-//			panel.setUserEntry();
-//			view.showMainPage();
-			
-			// to-do
-			// login validator -- user must correctly click
-			// three pictures
 			}
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			panel.setInputText("");
-			
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 }
