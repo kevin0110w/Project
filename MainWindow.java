@@ -16,8 +16,10 @@ public class MainWindow extends JFrame {
 	private CardLayout cl;
 //	private UserRegistrationModel model;
 	private UserRegistrationModel model;
+	private UserLoginModel loginModel;
+	
 	public MainWindow() {
-
+	
 	}
 
 	public void setUp(Container container) {
@@ -42,7 +44,7 @@ public class MainWindow extends JFrame {
 //		registrationPanel = getRegistration();
 //		UserLoginInstructionPanel loginPanel = new UserLoginInstructionPanel();
 //		UserLoginController loginController = new UserLoginController(loginPanel, this);
-		UserLoginModel loginModel = new UserLoginModel();
+		loginModel = new UserLoginModel();
 		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(this);
 		UserLoginController loginController = new UserLoginController(loginPanel, loginModel);
 		cardsPanel = new JPanel(new CardLayout());
@@ -99,7 +101,7 @@ public class MainWindow extends JFrame {
 
 	private void createAndShowGUI() {
 		JFrame frame = new JFrame();
-		frame.setPreferredSize(new Dimension(1050, 550));
+		frame.setPreferredSize(new Dimension(695, 695));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		MainWindow mainWindowView = new MainWindow();
 		mainWindowView.setUp(frame.getContentPane());
@@ -125,7 +127,7 @@ public class MainWindow extends JFrame {
 		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
 	}
 	public void createRegistrationImagePage() {
-		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(this);
+		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel();
 		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(
 				userRegistrationPanel, this, model);
 		userRegistrationPanel.setUpImagePanels();
@@ -151,5 +153,9 @@ public class MainWindow extends JFrame {
 
 	public void showRegistrationInstructions() {
 		cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
+	}
+	
+	public void clearModel() {
+		this.loginModel.clear();
 	}
 }

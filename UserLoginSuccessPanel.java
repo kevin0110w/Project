@@ -8,17 +8,22 @@ public class UserLoginSuccessPanel extends JPanel {
 	private JButton logOffButton;
 	private JButton home;
 	public UserLoginSuccessPanel() {
-		this.setLayout(new BorderLayout());
+		this.setLayout(new GridLayout(2,0));
+		
+		JPanel textPanel = new JPanel();
 		this.textArea = new JTextArea();
+		textPanel.add(this.textArea);
+		
 		
 		JPanel buttonPanel = new JPanel();
-		this.logOffButton = new JButton("Log Off");
-		buttonPanel.add(textArea);
-		buttonPanel.add(this.logOffButton);
-		this.home = new JButton("Home");
+//		this.logOffButton = new JButton("Log Off / Home");
+//		buttonPanel.add(this.logOffButton);
+		this.home = new JButton("Log Off / Home");
 		this.home.setActionCommand("HOME");
 		buttonPanel.add(this.home);
-		this.add(buttonPanel, BorderLayout.CENTER);
+		
+		this.add(textPanel);
+		this.add(buttonPanel);
 	}
 	
 	public void setTextArea(String text) {
@@ -26,7 +31,7 @@ public class UserLoginSuccessPanel extends JPanel {
 	}
 	
 	public void addListeners(ActionListener listener) {
-		this.logOffButton.addActionListener(listener);
+//		this.logOffButton.addActionListener(listener);
 		this.home.addActionListener(listener);
 	}
 }

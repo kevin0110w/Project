@@ -8,17 +8,27 @@ import java.util.Set;
 
 public class UserRegistrationModel {
 	private String firstSelectedImageFilePath, secondSelectedImageFilePath, thirdSelectedImageFilePath;
-//	private FileNames fnt;
 	private FileNames2 fnt2;
-	private int userID, loginMethod;
-	private User user;
+//	private int userID, loginMethod, pictureSet;
+	private int userID, pictureSet;
 	private LocalDateTime initialTime;
-	private List<Float> timeTaken;
+	private List<Double> timeTaken;
+	private User currentUser;
+	private static final int TOTALNUMBEROFDECOYIMAGES = 17;
+//	private static final int LOGINMETHODONE = 1;
+//	private static final int LOGINMETHODTWO = 2;
 	
+	/**
+	 * @return the pictureSet
+	 */
+	public int getPictureSet() {
+		return pictureSet;
+	}
+
+
 	public UserRegistrationModel() {
-//		fnt = new FileNames();
 		fnt2 = new FileNames2();
-		this.timeTaken = new ArrayList<Float>();
+		this.timeTaken = new ArrayList<Double>();
 	}
 	
 
@@ -44,16 +54,16 @@ public class UserRegistrationModel {
 	/**
 	 * @return the loginMethod
 	 */
-	public int getLoginMethod() {
-		return loginMethod;
-	}
+//	public int getLoginMethod() {
+//		return loginMethod;
+//	}
 
 	/**
 	 * @param loginMethod the loginMethod to set
 	 */
-	public void setLoginMethod(int loginMethod) {
-		this.loginMethod = loginMethod;
-	}
+//	public void setLoginMethod(int loginMethod) {
+//		this.loginMethod = loginMethod;
+//	}
 
 //	/**
 //	 * @return the fnt
@@ -127,35 +137,45 @@ public class UserRegistrationModel {
 	
 	public void addUser() {
 		DBConnect db = new DBConnect();
-		this.user = new User(this.getUserID(), this.getLoginMethod(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath());
+//		currentUser = new User(this.getUserID(), this.getLoginMethod(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath(), this.pictureSet);
+		currentUser = new User(this.getUserID(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath(), this.pictureSet);
 		this.createDecoyImageSet();
-		db.addUserToDatabase(this.user);
-		db.addRegistrationTime(this.user, this.timeTaken);
+		currentUser.setTimeTaken(timeTaken);
+		db.addUserToDatabase(this.currentUser);
+//		db.addRegistrationTime(this.currentUser, this.timeTaken);
+		db.addUserSeenDecoyImagesToDatabase(this.currentUser);
+		db.addUserUnseenDecoyImagesToDatabase(this.currentUser);
 	}
 	
-	public void createDecoyImageSet() {
-		Random random = new Random();
-		int n = 0;
-//		Set<Integer> pickedNumbers = new HashSet<Integer>();
-		while (this.user.decoySize() < 17) {
-			n = random.nextInt(fnt2.getUnseenImages().size());
-//			if (pickedNumbers.add(n)) {
-				if (this.getLoginMethod() == 1) {
-					if (n > fnt2.getSeenImages().size()) {
-						n = fnt2.getUnseenImages().size() - fnt2.getSeenImages().size();
-					}
-//				if (user.addImageToDecoySet(fnt.getAllImages().get(n).getImagePath())) {
-//					decoys.add(fnt.getAllImages().get(n).getImagePath());
+//	private void createDecoyImageSet() {
+//		Random random = new Random();
+//		int n = 0;
+//		while (this.currentUser.getDecoySetSize() < TOTALNUMBEROFDECOYIMAGES) {
+//				if (this.getLoginMethod() == LOGINMETHODONE) {
+//					n = random.nextInt(fnt2.getSeenImages().size());
+//					this.currentUser.addImageToDecoySet(this.fnt2.getSeenImages().get(n));
+//				} else if (this.getLoginMethod() == LOGINMETHODTWO) {
+//					n = random.nextInt(fnt2.getUnseenImages().size());
+//					this.currentUser.addImageToDecoySet(this.fnt2.getUnseenImages().get(n));
 //				}
-//				this.user.addImageToDecoySet(this.fnt.getAllImages().get(n).getImagePath());
-					this.user.addImageToDecoySet(this.fnt2.getSeenImages().get(n));
-				} else if (this.getLoginMethod() == 2) {
-					n = random.nextInt(85);
-//				this.user.addImageToDecoySet(this.fnt.getHidden().get(n).getImagePath());
-					this.user.addImageToDecoySet(this.fnt2.getUnseenImages().get(n));
-//				decoys.add(fnt.getHidden().get(n).getImagePath());
-				}
-//			}
+//		}
+////		p.setHiddenImages(decoys);
+//	}
+	
+
+	private void createDecoyImageSet() {
+		Random random = new Random();
+		int n = 0, m = 0;
+		while (this.currentUser.getSeenDecoys().size() < TOTALNUMBEROFDECOYIMAGES || this.currentUser.getUnseenDecoys().size() < TOTALNUMBEROFDECOYIMAGES  ) {
+			if (this.currentUser.getSeenDecoys().size() < TOTALNUMBEROFDECOYIMAGES) {
+				n = random.nextInt(fnt2.getSeenImages().size());
+				this.currentUser.addImageToSeenDecoySet(this.fnt2.getSeenImages().get(n));
+			} 
+			
+			if (this.currentUser.getUnseenDecoys().size() < TOTALNUMBEROFDECOYIMAGES) {
+				m = random.nextInt(fnt2.getUnseenImages().size());
+				this.currentUser.addImageToUnseenDecoySet(this.fnt2.getUnseenImages().get(m));
+			}
 		}
 //		p.setHiddenImages(decoys);
 	}
@@ -173,16 +193,19 @@ public class UserRegistrationModel {
 	public void addTimeTaken() {
 		LocalDateTime intermediateTime = LocalDateTime.now();
 		Duration between = Duration.between(initialTime, intermediateTime);
-		float timeMilliseconds = between.toMillis();
-		this.timeTaken.add(timeMilliseconds);
+		double timeMilliseconds = between.toMillis();
+		double seconds = timeMilliseconds/1000;
+		this.timeTaken.add(seconds);
 		setInitialTime();
 	}
 
-
 	public void setPictureSet(int picsSelection) {
-		this.fnt2.createRegistrationSet(picsSelection);
+		this.pictureSet = picsSelection;
 	}
 	
+	public void createRegistrationSet() {
+		this.fnt2.createRegistrationSet(this.pictureSet);
+	}
 	/*
 	public static void main(String[] args) {
 		UserRegistrationModel model = new UserRegistrationModel();
@@ -197,4 +220,12 @@ public class UserRegistrationModel {
 		}
 	}
 	*/
+
+
+	public void clear() {
+		this.firstSelectedImageFilePath = null;
+		this.secondSelectedImageFilePath = null;
+		this.thirdSelectedImageFilePath = null;
+		this.fnt2 = new FileNames2();
+	}
 }

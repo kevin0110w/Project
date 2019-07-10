@@ -10,7 +10,7 @@ public class FileNames2 {
 	private List<String> listOne, listTwo, listThree, seenImages, unseenImages;
 	
 	/*
-	 * Each separate list should contain 20 images for each panel in the registration sleection phase
+	 * Each separate list should contain 20 images for each panel in the registration selection phase
 	 * Screen images will contain the 60 images that the user has seen
 	 * The Unseen images will contain the remainder from the directory that the user hasn't seen
 	 * Depending on the login method, either Screen or Unseen images will be used to create the decoy set
@@ -54,7 +54,7 @@ public class FileNames2 {
 	/*
 	 * This method will return the file paths of the images from memory, depending on which selection is chosen
 	 */
-	public List<String> returnFiles(int selection) {
+	private List<String> returnFiles(int selection) {
 		String path = null;
 		List<String> allImages = new ArrayList<String>();
 		switch (selection) {
@@ -166,7 +166,7 @@ public class FileNames2 {
 		System.out.println(fnt.getListOne().size());
 		System.out.println(fnt.getListTwo().size());
 		System.out.println(fnt.getListThree().size());
-		System.out.println(fnt.getScreenImages().size());
+		System.out.println(fnt.getSeenImages().size());
 		System.out.println(fnt.getUnseenImages().size());
 	}
 }

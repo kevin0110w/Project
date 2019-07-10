@@ -1,9 +1,11 @@
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+
 
 public class UserLoginCardsPanel extends JPanel {
 	private CardLayout cl;
@@ -14,22 +16,17 @@ public class UserLoginCardsPanel extends JPanel {
 	UserLoginInstructionPanel loginInstructionPanel;
 	UserLoginSelectionPanel loginSelectionPanel;
 	UserLoginSuccessPanel userLoginSuccessPanel;
+	private static final String LOGININSTRUCTIONS ="LOGININSTRUCTIONS", LOGIN = "LOGIN", SUCCESS = "SUCCESS";
+	
 //	UserLoginModel userLoginModel;
 //	UserLoginSelectionController userLoginSelectionController;
 	
 	public UserLoginCardsPanel(MainWindow mw) {
 		this.mw = mw;
 		this.setLayout(new CardLayout());
-		this.loginInstructionPanel = new UserLoginInstructionPanel();
-		this.loginSelectionPanel = new UserLoginSelectionPanel();
-		this.userLoginSuccessPanel = new UserLoginSuccessPanel();
+		setupCards();
 //		this.userLoginModel = new UserLoginModel();
-		this.add(loginInstructionPanel, "LOGININSTRUCTIONS");
-		this.add(loginSelectionPanel, "LOGIN");
-		this.add(userLoginSuccessPanel, "SUCCESS");
-		this.cl = (CardLayout) this.getLayout();
-		this.setVisible(true);
-		this.cl.show(this, "LOGININSTRUCTIONS");	
+		
 	}
 	
 	public void loginPanel() {
@@ -53,9 +50,17 @@ public class UserLoginCardsPanel extends JPanel {
 	public String getInput() {
 		return loginInstructionPanel.getInput();
 	}
+	
+	public int getPictureSelection() {
+		return loginInstructionPanel.getPictureSelection();
+	}
 
 	public void setLoginInstructionPanel(ActionListener listener) {
 		this.loginInstructionPanel.addUserLoginListener(listener);
+	}
+	
+	public void setLoginInstructionMouseListener(MouseListener l) {
+		this.loginInstructionPanel.addUserLoginMouseListener(l);
 	}
 	
 	
@@ -83,6 +88,28 @@ public class UserLoginCardsPanel extends JPanel {
 
 	public void setLoginSuccessPanel(ActionListener userLoginSuccessListener) {
 		this.userLoginSuccessPanel.addListeners(userLoginSuccessListener);
+	}
+
+	public void setupCards() {
+		this.loginInstructionPanel = new UserLoginInstructionPanel();
+		this.loginSelectionPanel = new UserLoginSelectionPanel();
+		this.userLoginSuccessPanel = new UserLoginSuccessPanel();
+		this.add(loginInstructionPanel, LOGININSTRUCTIONS);
+		this.add(loginSelectionPanel, LOGIN);
+		this.add(userLoginSuccessPanel, SUCCESS);
+		this.cl = (CardLayout) this.getLayout();
+		this.setVisible(true);
+		this.cl.show(this, LOGININSTRUCTIONS);	
+	}
+
+	public void clearInstructionPanel() {
+		// TODO Auto-generated method stub
+		this.loginInstructionPanel.clear();
+	}
+
+	public void clearSelectionPanel() {
+		this.loginSelectionPanel.clear();
+		
 	}
 
 }

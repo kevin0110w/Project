@@ -4,6 +4,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -38,17 +39,17 @@ public class UserRegistrationInstructionPanel extends JPanel {
 		textFieldPanel.add(this.input);
 		
 		JPanel selectionPanel = new JPanel();
-		loginChoices = new String[3];
-		setLoginChoices();
-		this.selectLogin = new JComboBox(loginChoices);
-		this.selectLogin.setActionCommand("SELECTLOGIN");
+//		loginChoices = new String[3];
+//		setLoginChoices();
+//		this.selectLogin = new JComboBox(loginChoices);
+//		this.selectLogin.setActionCommand("SELECTLOGIN");
 		
 		this.picsChoices = new String[4];
 		setPicsChoices();
 		this.selectPics = new JComboBox(this.picsChoices);
 		this.selectPics.setActionCommand("SELECTPICS");
 		
-		selectionPanel.add(this.selectLogin);
+//		selectionPanel.add(this.selectLogin);
 		selectionPanel.add(this.selectPics);
 		
 		JPanel buttonPanel = new JPanel();
@@ -88,7 +89,7 @@ public class UserRegistrationInstructionPanel extends JPanel {
 		this.back.addActionListener(listener);
 		this.next.addActionListener(listener);
 		this.input.addMouseListener((MouseListener) listener);
-		this.selectLogin.addActionListener(listener);
+//		this.selectLogin.addActionListener(listener);
 		this.selectPics.addActionListener(listener);
 	}
 	
@@ -101,16 +102,12 @@ public class UserRegistrationInstructionPanel extends JPanel {
 	}
 
 	public int getLoginMethod() {
-		int login = selectLogin.getSelectedIndex();
-		System.out.println(login);
-		int loginMethod = Integer.parseInt(loginChoices[login]);
-		System.out.println(loginMethod);
+		int loginMethod = selectLogin.getSelectedIndex();
 		return loginMethod;
 	}
 	
 	public int getPicsSelection() {
-		int pics = selectPics.getSelectedIndex();
-		int picsSelection = Integer.parseInt(picsChoices[pics]);
+		int picsSelection = selectPics.getSelectedIndex();
 		return picsSelection;
 	}
 

@@ -6,12 +6,10 @@ import javax.swing.JButton;
 
 public class UserRegistrationImageController {
 	private UserRegistrationImagePanel panel;
-	private MainWindow window;
 	private UserRegistrationModel model;
 	
-	public UserRegistrationImageController(UserRegistrationImagePanel panel, MainWindow window, UserRegistrationModel model) {
+	public UserRegistrationImageController(UserRegistrationImagePanel panel, UserRegistrationModel model) {
 		this.panel = panel;
-		this.window = window;
 		this.model = model;
 		this.panel.addListener(new UserRegistrationImageListener());
 	}
@@ -52,14 +50,12 @@ public class UserRegistrationImageController {
 					model.setSecondSelectedImageFilePath(filePath);
 				} else if (n == 3) {
 					model.setThirdSelectedImageFilePath(filePath);
+					panel.disableAllImageButtons();
 				}
 				panel.disableButton(e.getActionCommand());
 				panel.setImage(icon, n);
 				model.addTimeTaken();
 				n++;
-//				panel.printString(e.getSource());
-//				panel.setImage(e.getSource());
-//				panel.addImage(e.getSource());
 				break;
 			}
 		}

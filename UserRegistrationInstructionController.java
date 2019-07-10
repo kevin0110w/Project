@@ -20,7 +20,25 @@ public class UserRegistrationInstructionController {
 	}
 
 	class UserRegistrationInstructionListener implements MouseListener, ActionListener {
-		int pics, login, userID;
+		int pics = 0, login = 0, userID = 0; 
+		
+		public boolean invalidInput(int input) {
+			return input == 0;
+		}
+		
+		public void invalidPicSelection(boolean invalid) {
+			if (invalid) {
+				JOptionPane.showMessageDialog(panel, "Please select a valid picture set", "Invalid picture type selection",
+						JOptionPane.WARNING_MESSAGE);
+			}
+		}
+		
+//		public void invalidLoginSelection(boolean invalid) {
+//			if (invalid) {
+//				JOptionPane.showMessageDialog(panel, "Please select a valid registration method", "Invalid registration method selection",
+//						JOptionPane.WARNING_MESSAGE);
+//			}
+//		}
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
@@ -30,22 +48,33 @@ public class UserRegistrationInstructionController {
 			case "NEXT":
 					try {
 						userID = Integer.parseInt(panel.getUserEntry());
+						if (invalidInput(pics)) {
+							invalidPicSelection(invalidInput(pics));
+							break;
+						} 
+//						else if (invalidInput(login)) {
+//							invalidPicSelection(invalidInput(login));
+//							break;	
+//						}
 					} catch (NumberFormatException exception) {
 						JOptionPane.showMessageDialog(panel, "Please enter a numeric UserID only", "UserID Input Error",
 								JOptionPane.WARNING_MESSAGE);
 						break;
 					}
 				model.setUserID(userID);
-				model.setLoginMethod(login);
+//				model.setLoginMethod(login);
 				model.setPictureSet(pics);
+				model.createRegistrationSet();
 				mainWindow.showRegistrationPage();
 				model.setInitialTime();
 				break;
-			case "SELECTLOGIN":
-				login = panel.getLoginMethod();
-				break;
+//			case "SELECTLOGIN":
+//				login = panel.getLoginMethod();
+//				invalidLoginSelection(invalidInput(login));
+//				break;
 			case "SELECTPICS":
 				pics = panel.getPicsSelection();
+				invalidPicSelection(invalidInput(pics));
 				break;
 			}
 		}

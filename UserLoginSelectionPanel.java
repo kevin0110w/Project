@@ -38,18 +38,22 @@ public class UserLoginSelectionPanel extends JPanel {
 
 	private void setSelectionPanel() {
 		this.selectionPanel = new JPanel();
+		
 		this.back = new JButton("Back");
 		this.back.setActionCommand("BACK");
+		this.selectionPanel.add(back);
+		
 		this.selectionOne = new JLabel();
 		this.selectionTwo = new JLabel();
 		this.selectionThree = new JLabel();
-		this.login = new JButton("Log In");
-		this.login.setActionCommand("LOGIN");
-		this.selectionPanel.add(back);
 		this.selectionPanel.add(selectionOne);
 		this.selectionPanel.add(selectionTwo);
 		this.selectionPanel.add(selectionThree);
-		this.selectionPanel.add(this.login);
+		
+		this.login = new JButton("Log In");
+		this.login.setActionCommand("LOGIN");
+		this.selectionPanel.add(login);
+		
 		this.add(this.selectionPanel, BorderLayout.SOUTH);
 	}
 
@@ -70,6 +74,7 @@ public class UserLoginSelectionPanel extends JPanel {
 			String aPath = it.next();
 			this.buttons.add(new JButton());
 			this.buttons.get(n).setIcon(new ImageIcon(aPath));
+			this.buttons.get(n).setDisabledIcon(new ImageIcon(aPath));
 			this.buttons.get(n).setActionCommand("" + n);
 //			this.buttons.get(n).setMargin(new Insets(0, 0, 0, 0));
 			this.buttonPanel.add(this.buttons.get(n));
@@ -81,9 +86,9 @@ public class UserLoginSelectionPanel extends JPanel {
 	 * Getting a registered users 20 picture file paths, these will be shuffled only if the user most recently successfully logged in
 	 */
 	public void getFilePaths(List<String> list) {
-		if (this.successfulPastLogin) {
-		Collections.shuffle(list);
-		}
+//		if (this.successfulPastLogin) {
+//		Collections.shuffle(list);
+//		}
 		this.filePaths.addAll(list);
 		setButtons();
 	}
@@ -113,27 +118,27 @@ public class UserLoginSelectionPanel extends JPanel {
 	public void setImage(Object source) {
 		Icon iconImage = ((JButton) source).getIcon();
 		if (n == 0) {
-			selectionOne.setIcon(iconImage);
+			this.selectionOne.setIcon(iconImage);
 		} else if (n == 1) {
-			selectionTwo.setIcon(iconImage);
+			this.selectionTwo.setIcon(iconImage);
 		} else if (n == 2) {
-			selectionThree.setIcon(iconImage);
+			this.selectionThree.setIcon(iconImage);
 		}
 		n++;
 	}
 	
 	
-	public static void main(String[] args) {
-		UserLoginSelectionPanel panel = new UserLoginSelectionPanel();
-		UserLoginModel model = new UserLoginModel();
-		model.setUserID(200);
-		model.setLoginMethod(1);
-		panel.getFilePaths(model.getFilePaths());
-//		Iterator<String> iterator = panel.filePaths.iterator();
-//		while (iterator.hasNext()) {
-//			System.out.println(iterator.next());
-//		}
-	}
+//	public static void main(String[] args) {
+//		UserLoginSelectionPanel panel = new UserLoginSelectionPanel();
+//		UserLoginModel model = new UserLoginModel();
+//		model.setUserID(200);
+//		model.setLoginMethod(1);
+//		panel.getFilePaths(model.getDecoyImages());
+////		Iterator<String> iterator = panel.filePaths.iterator();
+////		while (iterator.hasNext()) {
+////			System.out.println(iterator.next());
+////		}
+//	}
 	/*
 	public static void main(String[] args) {
 		JFrame f = new JFrame();
@@ -159,5 +164,28 @@ public class UserLoginSelectionPanel extends JPanel {
 
 	public void setSuccess(boolean successfulPastLogin) {
 		this.successfulPastLogin = successfulPastLogin;
+	}
+
+	public void disableButtons() {
+		for (JButton button : this.buttons) {
+			button.setEnabled(false);
+		}
+		
+	}
+
+	public void clear() {
+		this.filePaths.clear();
+//		for (JButton button : this.buttons) {
+//			this.buttonPanel.remove(button);
+//			
+//		}
+		this.buttons.clear();
+		this.remove(this.buttonPanel);
+		this.remove(this.selectionPanel);
+		this.n = 0;
+		setButtonPanel();
+		setSelectionPanel();
+		revalidate();
+		repaint();
 	}
 }

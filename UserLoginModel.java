@@ -1,9 +1,12 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.Icon;
@@ -12,21 +15,27 @@ import javax.swing.JButton;
 public class UserLoginModel {
 	private DBConnect db;
 //	private Set<String> filePaths;
-	private List<String> filePaths;
+	private List<String> images;
 	private List<String> passwordPaths;
 	private final int NOOFPASSWORDS = 3;
-	private int UserID, loginMethod, loginAttemptNo;
+	private int UserID, loginMethod, loginAttemptNo, pictureSetSelection;
 	private List<String> enteredPassword;
-	private List<Float> timeTaken;
+	private List<Double> timeTaken;
 	private LocalDateTime initialTime;
+	private List<Integer> successOfPasswords;
+	private boolean lastLoginSuccesful;
 	
 	public UserLoginModel() {
 		this.db = new DBConnect();
-//		this.filePaths = new HashSet<String>();
-		this.filePaths = new ArrayList<String>();
+		this.images = new ArrayList<String>();
 		this.passwordPaths = new ArrayList<String>();
 		this.enteredPassword = new ArrayList<String>();
-		this.timeTaken = new ArrayList<Float>();
+		this.timeTaken = new ArrayList<Double>();
+		this.successOfPasswords = new ArrayList<Integer>();
+	}
+	
+	public List<String> getEnteredPasswords() {
+		return this.enteredPassword;
 	}
 	
 	public void setUserID(int UserID) {
@@ -46,12 +55,20 @@ public class UserLoginModel {
 	}
 	
 	public void getUsersImages() {
-		this.filePaths.addAll(db.getUsersFilePathsFromDatabase(UserID, loginMethod));
+		switch(loginMethod) {
+			case 1:
+				this.images.addAll(db.getSeenDecoyImageSetFilePathsFromDatabase(UserID, pictureSetSelection));
+				break;
+			case 2:
+				this.images.addAll(db.getUnseenDecoyImageSetFilePathsFromDatabase(UserID, pictureSetSelection));
+				break;
+//		this.filePaths.addAll(db.getRegistrationsFilePathsFromDatabase(UserID, loginMethod, pictureSetSelection));
 //		Iterator<String> it = filePaths.iterator();
 //		Testing to make sure getting the correct filepaths from the db
 //		while (it.hasNext()) {
 //			System.out.println(it.next());
 //		}
+		}
 		formPasswordPaths();
 //		this.db.closeConnection();
 	}
@@ -59,7 +76,7 @@ public class UserLoginModel {
 	private void formPasswordPaths() {
 //		int n = 0;
 //		while (n < getNoofpasswords()) {
-			this.passwordPaths.addAll(db.getUsersPasswordsFromDatabase(UserID, loginMethod));
+			this.passwordPaths.addAll(db.getUserPasswordFilePathsFromDatabase(UserID, pictureSetSelection));
 //			n++;
 //		}
 	}
@@ -81,16 +98,17 @@ public class UserLoginModel {
 	/**
 	 * @return the filePaths
 	 */
-	public List<String> getFilePaths() {
+	public List<String> getDecoyImages() {
 		getUsersImages();
-		return filePaths;
+		shuffleDecoyImages();
+		return images;
 	}
 
 	/**
 	 * @param filePaths the filePaths to set
 	 */
-	public void setFilePaths(List<String> filePaths) {
-		this.filePaths.addAll(filePaths);
+	public void setDecoyImages(List<String> filePaths) {
+		this.images.addAll(filePaths);
 	}
 
 	/**
@@ -126,11 +144,16 @@ public class UserLoginModel {
 
 	public void addLoginAttempt() {
 		DBConnect db = new DBConnect();
-		db.addLoginAttemptToDB(this.getUserID(), this.getLoginMethod(), this.enteredPassword, this.timeTaken, this.correctPassword(), this.loginAttemptNo);
+		addSuccessOfPasswords();
+//		db.addLoginAttemptToDB(this.getUserID(), this.getLoginMethod(), this.enteredPassword, this.timeTaken, this.correctPassword(), this.successOfPasswords, this.loginAttemptNo, this.pictureSetSelection);
+		db.addLoginAttemptToDatabase(this.getUserID(), this.getLoginMethod(), this.pictureSetSelection, this.enteredPassword, this.timeTaken, this.successOfPasswords, this.correctPassword(), this.loginAttemptNo);
+		if (!this.correctPassword()) {
+			db.updateUserFilePaths(this.UserID, this.loginMethod, this.pictureSetSelection, this.images);
+		}
 		db.closeConnection();
 	}
 	
-	public void addTimeTakenPerPassword(Float time) {
+	public void addTimeTakenPerPassword(Double time) {
 		this.timeTaken.add(time);
 	}
 
@@ -141,15 +164,17 @@ public class UserLoginModel {
 	public void addTime() {
 		LocalDateTime intermediateTime = LocalDateTime.now();
 		Duration timeBetween = Duration.between(initialTime, intermediateTime);
-		float milliseconds = timeBetween.toMillis();
-		this.timeTaken.add(milliseconds);
-		
+		double milliseconds = timeBetween.toMillis();
+		double seconds = milliseconds / 1000;
+		this.timeTaken.add(seconds);
+		setInitialTime();
 	}
 	
 	public void setLoginAttempt() {
 		DBConnect db = new DBConnect();
-		this.loginAttemptNo = db.getLoginAttemptNo(UserID, loginMethod);
-		this.loginAttemptNo = (this.loginAttemptNo == 0) ? 1 : ++this.loginAttemptNo; 
+		this.loginAttemptNo = db.getRecentLoginAttemptNo(UserID, loginMethod, pictureSetSelection);
+		this.loginAttemptNo = (this.loginAttemptNo == 0) ? 1 : ++this.loginAttemptNo;
+		System.out.println(this.loginAttemptNo + " in model");
 		db.closeConnection();
 	}
 	
@@ -159,18 +184,51 @@ public class UserLoginModel {
 	
 	public int getMostRecentLoginSuccess() {
 		DBConnect db = new DBConnect();
-		int getLoginSuccessful = db.getRecentLoginSuccess(this.UserID, this.loginMethod);
+		int getLoginSuccessful = db.getRecentLoginSuccess(this.UserID, this.loginMethod, this.pictureSetSelection);
 		return getLoginSuccessful;
 	}
 	
-	public boolean returnMostRecentLoginSuccess() {
+	public void returnMostRecentLoginSuccess() {
 		int successful = getMostRecentLoginSuccess();
-		boolean success = (successful > 0) ? true : false;
-		return success;
+		this.lastLoginSuccesful = (successful > 0) ? true : false;
 	}
 	
-	public static void main(String[] args) {
-		
+	private void shuffleDecoyImages() {
+		if (this.lastLoginSuccesful || this.loginAttemptNo == 1) {
+			Collections.shuffle(this.images);
+		}
 	}
-	
+
+	private void addSuccessOfPasswords() {
+		for (int i = 0; i < enteredPassword.size(); i++) {
+			if (enteredPassword.get(i).equals(passwordPaths.get(i))) {
+				this.successOfPasswords.add(1);
+			} else {
+				this.successOfPasswords.add(0);
+			}
+		}
+	}
+
+	public void setPictureSelection(int pictureSelection) {
+		this.pictureSetSelection = pictureSelection;
+	}
+
+	public void clear() {
+		images.clear();
+		passwordPaths.clear();
+		UserID = 0;
+		loginMethod = 0;
+		loginAttemptNo = 0;
+		pictureSetSelection = 0;
+		enteredPassword.clear();
+		timeTaken.clear();
+		successOfPasswords.clear();
+		lastLoginSuccesful = false;
+	}
+
+	public boolean returnIsValid() {
+		DBConnect db = new DBConnect();
+		boolean isValid = db.returnIsRegistered(this.UserID, this.pictureSetSelection);
+		return isValid;
+	}
 }

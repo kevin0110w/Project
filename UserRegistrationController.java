@@ -12,43 +12,38 @@ public class UserRegistrationController {
 		this.panel = x;
 		this.view = view;
 		this.model = model;
+		this.panel.setModel(this.model);
 		this.panel.setImageSetOne(model.getFnt().getListOne());
 		this.panel.setImageSetTwo(model.getFnt().getListTwo());
 		this.panel.setImageSetThree(model.getFnt().getListThree());
-		this.panel.setModel(this.model);
 		this.panel.adduserRegistrationButtonListener(new UserRegistrationListener());
 	}
-	
-	class UserRegistrationListener implements ActionListener{
-		DBConnect db;
+
+	class UserRegistrationListener implements ActionListener {
 		String userIDString;
 		int userID, loginMethod;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == panel.returnL()) {
+			switch (e.getActionCommand()) {
+			case "SCROLLLEFT":
 				panel.showPrevious();
-			} else if (e.getSource() == panel.returnR()) {
+				break;
+			case "SCROLLRIGHT":
 				panel.showNext();
-			} else if (e.getSource() == panel.returnFirst()){
-			}
-//			} else if (e.getSource() == panel.getSelection()) {
-//				model.setInitialTime();
-//				panel.setLogInAttempt();
-//			} 
-			else if (e.getActionCommand().equals("BACK")) {
+				break;
+			case "BACK":
 				view.showMainPage();
-			} else if (e.getActionCommand().equals("NEXT")) {
+				model.clear();
+				break;
+			case "NEXT":
 				try {
-//				userIDString = panel.getUserEntry();
-//				userID = Integer.parseInt(userIDString);
-//				model.setUserID(userID);
-//				loginMethod = panel.getLoginMethod();
-//				model.setLoginMethod(loginMethod);
-				model.addUser();
-				view.showCompletePage();
+					model.addUser();
+					view.showCompletePage();
 				} catch (Exception exception) {
-					
+
 				}
+				break;
 			}
 		}
 	}
