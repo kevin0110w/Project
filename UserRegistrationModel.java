@@ -1,11 +1,14 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
+/**
+ * This class is responsible for storing all the data recorded during the registration phase and then passing all the data to the dbconnect class to be recorded
+ * on the database
+ *
+ */
 public class UserRegistrationModel {
 	private String firstSelectedImageFilePath, secondSelectedImageFilePath, thirdSelectedImageFilePath;
 	private FileNames2 fnt2;
@@ -15,8 +18,20 @@ public class UserRegistrationModel {
 	private List<Double> timeTaken;
 	private User currentUser;
 	private static final int TOTALNUMBEROFDECOYIMAGES = 17;
+	private DBConnect db;
 //	private static final int LOGINMETHODONE = 1;
 //	private static final int LOGINMETHODTWO = 2;
+	
+	
+	/**
+	 * Create a new DBConnect object for database modifying purposes, FileNames2 object for generating string for images and decoys
+	 * this.timeTaken is an indexed list to store the time taken to make an image selection
+	 */
+	public UserRegistrationModel() {
+		this.db = new DBConnect();
+		this.fnt2 = new FileNames2();
+		this.timeTaken = new ArrayList<Double>();
+	}
 	
 	/**
 	 * @return the pictureSet
@@ -25,18 +40,14 @@ public class UserRegistrationModel {
 		return pictureSet;
 	}
 
-
-	public UserRegistrationModel() {
-		fnt2 = new FileNames2();
-		this.timeTaken = new ArrayList<Double>();
+	/*
+	 * Method to set the pictureset field variable
+	 * @Param selection from the instruction panel drop down box
+	 */
+	public void setPictureSet(int picsSelection) {
+		this.pictureSet = picsSelection;
 	}
 	
-
-	public UserRegistrationModel(FileNames2 fnt2) {
-		this.fnt2 = fnt2;
-	}
-
-
 	/**
 	 * @return the userID
 	 */
@@ -65,20 +76,6 @@ public class UserRegistrationModel {
 //		this.loginMethod = loginMethod;
 //	}
 
-//	/**
-//	 * @return the fnt
-//	 */
-//	public FileNames getFnt() {
-//		return fnt;
-//	}
-//
-//	/**
-//	 * @param fnt the fnt to set
-//	 */
-//	public void setFnt(FileNames fnt) {
-//		this.fnt = fnt;
-//	}
-	
 	/**
 	 * @return the fnt
 	 */
@@ -135,16 +132,20 @@ public class UserRegistrationModel {
 		this.thirdSelectedImageFilePath = thirdSelectedImageFilePath;
 	}
 	
+	/**
+	 * Clear all local stored data associated with this registration for another user to be able to register, once the data has been stored on the 
+	 * database
+	 */
 	public void addUser() {
-		DBConnect db = new DBConnect();
 //		currentUser = new User(this.getUserID(), this.getLoginMethod(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath(), this.pictureSet);
-		currentUser = new User(this.getUserID(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath(), this.pictureSet);
+		this.currentUser = new User(this.getUserID(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath(), this.pictureSet);
 		this.createDecoyImageSet();
-		currentUser.setTimeTaken(timeTaken);
-		db.addUserToDatabase(this.currentUser);
+		this.currentUser.setTimeTaken(timeTaken);
+		this.db.addUserToDatabase(this.currentUser);
 //		db.addRegistrationTime(this.currentUser, this.timeTaken);
-		db.addUserSeenDecoyImagesToDatabase(this.currentUser);
-		db.addUserUnseenDecoyImagesToDatabase(this.currentUser);
+//		db.addUserSeenDecoyImagesToDatabase(this.currentUser);
+//		db.addUserUnseenDecoyImagesToDatabase(this.currentUser);
+		this.clear(); // clear all locally stored data from a recent registration
 	}
 	
 //	private void createDecoyImageSet() {
@@ -162,7 +163,12 @@ public class UserRegistrationModel {
 ////		p.setHiddenImages(decoys);
 //	}
 	
-
+	/**
+	 * Creates the decoy image sets for a user
+	 * The program will create both versions at the same time.
+	 * Function will keep looping until both sets have the same 17 images.
+	 * Images chosen randomly. Image strings are stored in a set in the User class to ensure there is no duplication
+	 */
 	private void createDecoyImageSet() {
 		Random random = new Random();
 		int n = 0, m = 0;
@@ -188,7 +194,8 @@ public class UserRegistrationModel {
 	}
 	
 	/*
-	 * Finding the difference between clicks
+	 * Find the difference between clicks and add it to the arraylist of timeTaken 
+	 * Resets the localdatetime object
 	 */
 	public void addTimeTaken() {
 		LocalDateTime intermediateTime = LocalDateTime.now();
@@ -198,34 +205,29 @@ public class UserRegistrationModel {
 		this.timeTaken.add(seconds);
 		setInitialTime();
 	}
-
-	public void setPictureSet(int picsSelection) {
-		this.pictureSet = picsSelection;
-	}
 	
+	/*
+	 * Creates the registration set of 60 images that'll be viewed by the user in the registration panels
+	 */
 	public void createRegistrationSet() {
 		this.fnt2.createRegistrationSet(this.pictureSet);
 	}
+	
 	/*
-	public static void main(String[] args) {
-		UserRegistrationModel model = new UserRegistrationModel();
-//		model.setUserID(1);
-//		model.setLoginMethod(1);
-//		model.setFirstSelectedImageFilePath("HELLO");
-//		model.setSecondSelectedImageFilePath("GOODBYE");
-//		model.setThirdSelectedImageFilePath("BOOM");
-//		model.addUser();
-		for (Image i : model.getFnt().getListOne()) {
-			System.out.println(i.getImagePath());
-		}
-	}
-	*/
-
-
+	 * Clears any local data associated with any user who's clicked back after not fully completing registered
+	 */
 	public void clear() {
 		this.firstSelectedImageFilePath = null;
 		this.secondSelectedImageFilePath = null;
 		this.thirdSelectedImageFilePath = null;
+		this.timeTaken.clear();
 		this.fnt2 = new FileNames2();
+	}
+
+	/*
+	 * Returns whether a user associated a specific userid and pictureset has already been registered
+	 */
+	public boolean isUserAlreadyRegistered() {
+		return db.returnIsRegistered(userID, pictureSet);
 	}
 }

@@ -1,6 +1,10 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * This class is responsible for coordinating actions between the complete panel with the main window
+ *
+ */
 public class UserRegistrationCompleteController {
 
 	private UserRegistrationCompletePanel panel;
@@ -18,7 +22,7 @@ public class UserRegistrationCompleteController {
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
 			case "HOME":
-				mw.showMainPage();
+				mw.showMainPage(); 
 				break;
 			case "EXIT":
 				System.exit(0);

@@ -1,11 +1,14 @@
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -23,11 +26,27 @@ public class UserRegistrationInstructionPanel extends JPanel {
 	}
 	
 	private void setUpInstructionArea() {
+		JPanel panel = new JPanel();
 		this.textArea = new JTextArea();
-		String text = "You will be presented with 60 images on the next Screen.\n\n To register a new account, you will be required to choose 3 images as your password to log in to the program on future occasions.\n\n Click next to continue or to go back, click on back";
-		this.textArea.setText(text);
-		this.add(textArea);
+		this.textArea.setColumns(50);
+		this.textArea.setEditable(false);
+		String text = "Thank you for taking part in this experiment.\n\n";
+		text += "To register a new account, you will need to enter a UserID in the text box, select a picture set from the drop down and then select 3 images from a selection of 60.\n\n";
 		
+		text += "The 60 images will be displayed across 3 panels which you can scroll through using the buttons provided.\n\n";
+		
+		text += "Your choices will be timed and you'll be asked to complete a follow-up questionnaire regarding your choices and general thoughts on this form of authentication.\n\n";
+		
+		text += "To log back in the program, you will need to select the 3 images that you initially picked, in the correct order.\n\n";
+		
+		text += "Click next to continue or to go back, click on back\n\n";	
+		String three = "3";
+		String sixty = "60";
+		
+		this.textArea.setLineWrap(true);
+		this.textArea.setText(text);
+		panel.add(textArea);
+		this.add(panel);
 	}
 	
 	private void setUpClickableArea() {
@@ -61,8 +80,6 @@ public class UserRegistrationInstructionPanel extends JPanel {
 		buttonPanel.add(back);
 		buttonPanel.add(next);
 		
-		
-		
 		clickablePanel.add(textFieldPanel);
 		clickablePanel.add(selectionPanel);
 		clickablePanel.add(buttonPanel);
@@ -90,7 +107,7 @@ public class UserRegistrationInstructionPanel extends JPanel {
 		this.next.addActionListener(listener);
 		this.input.addMouseListener((MouseListener) listener);
 //		this.selectLogin.addActionListener(listener);
-		this.selectPics.addActionListener(listener);
+//		this.selectPics.addActionListener(listener);
 	}
 	
 	public void setInputText(String string) {
@@ -113,6 +130,10 @@ public class UserRegistrationInstructionPanel extends JPanel {
 
 	public JTextField getInputArea() {
 		return this.input;
+	}
+
+	public void resetPicsSelectionBox() {
+		this.selectPics.setSelectedIndex(0);
 	}
 	
 }

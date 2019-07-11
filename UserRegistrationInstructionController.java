@@ -1,4 +1,3 @@
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -6,6 +5,10 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JOptionPane;
 
+/**
+ * This class is responsible for coordinating activities between the registration panel and the registration model
+ *
+ */
 public class UserRegistrationInstructionController {
 	private MainWindow mainWindow;
 	private UserRegistrationInstructionPanel panel;
@@ -20,17 +23,22 @@ public class UserRegistrationInstructionController {
 	}
 
 	class UserRegistrationInstructionListener implements MouseListener, ActionListener {
-		int pics = 0, login = 0, userID = 0; 
 		
+		/**
+		 * Check whether a user has made a selection in the drop down boxes
+		 * @param input - index selected in the down
+		 * @return
+		 */
 		public boolean invalidInput(int input) {
 			return input == 0;
 		}
 		
-		public void invalidPicSelection(boolean invalid) {
-			if (invalid) {
+		/**
+		 * Throw up a dialog box if an invalid picture set selection is chosen
+		 */
+		public void invalidPicSelection() {
 				JOptionPane.showMessageDialog(panel, "Please select a valid picture set", "Invalid picture type selection",
 						JOptionPane.WARNING_MESSAGE);
-			}
 		}
 		
 //		public void invalidLoginSelection(boolean invalid) {
@@ -43,46 +51,67 @@ public class UserRegistrationInstructionController {
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
 			case "BACK":
-				mainWindow.showMainPage();
+				mainWindow.showMainPage(); // show the main page of the program
+				panel.resetPicsSelectionBox(); // reset the jcombo box to the 0th index element  
+				try {
+					panel.setInputText("Please enter your UserID"); // reset the input box
+				} catch (NumberFormatException e) {
+
+				}	
 				break;
 			case "NEXT":
-					try {
-						userID = Integer.parseInt(panel.getUserEntry());
-						if (invalidInput(pics)) {
-							invalidPicSelection(invalidInput(pics));
-							break;
-						} 
+				int userID;
+				try {
+					 userID = Integer.parseInt(panel.getUserEntry()); // try and capture the inputted text
+					if (invalidInput(panel.getPicsSelection())) {
+						invalidPicSelection();
+						break;
+					}
 //						else if (invalidInput(login)) {
 //							invalidPicSelection(invalidInput(login));
 //							break;	
 //						}
-					} catch (NumberFormatException exception) {
-						JOptionPane.showMessageDialog(panel, "Please enter a numeric UserID only", "UserID Input Error",
-								JOptionPane.WARNING_MESSAGE);
-						break;
-					}
-				model.setUserID(userID);
+				} catch (NumberFormatException exception) { // throw up a dialog box if incorrect userid entered
+					JOptionPane.showMessageDialog(panel, "Please enter a numeric UserID only", "UserID Input Error",
+							JOptionPane.WARNING_MESSAGE);
+					break;
+				}
+				model.setUserID(userID); // set the userid field in the model
 //				model.setLoginMethod(login);
-				model.setPictureSet(pics);
-				model.createRegistrationSet();
-				mainWindow.showRegistrationPage();
-				model.setInitialTime();
+				model.setPictureSet(panel.getPicsSelection()); // set the picture set field in the model
+				if (!model.isUserAlreadyRegistered()) { // check whether user is registered on the database
+				model.createRegistrationSet(); // otherwise make model create the registration set of 60 images
+				mainWindow.showRegistrationPage(); // show the registration page
+				model.setInitialTime(); // start the clock to time user clicks
+				try {
+					panel.setInputText("Please enter your UserID"); // otherwise reset the input 
+					panel.resetPicsSelectionBox(); // reset the jcombo box incase user clicks back
+				} catch (NumberFormatException e) {
+
+				}	
+				} else { // throw up a warning if a user already exists
+					JOptionPane.showMessageDialog(panel, "A User Already Exists With That UserID and Picture Set Choice", "User Registration Error",
+							JOptionPane.WARNING_MESSAGE);
+					break;
+				}
 				break;
 //			case "SELECTLOGIN":
 //				login = panel.getLoginMethod();
 //				invalidLoginSelection(invalidInput(login));
 //				break;
-			case "SELECTPICS":
-				pics = panel.getPicsSelection();
-				invalidPicSelection(invalidInput(pics));
-				break;
+//			case "SELECTPICS":
+//				int pics = panel.getPicsSelection();
+//				if (invalidInput(pics)) {
+//					invalidPicSelection();
+//				}
+//				break;
 			}
 		}
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getSource() == panel.getInputArea()) {
-				panel.setInputText("");
+				panel.setInputText(""); // clear the placeholder text if the input box is selected with the mouse.
 			}
 			
 		}

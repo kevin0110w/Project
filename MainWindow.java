@@ -14,7 +14,6 @@ public class MainWindow extends JFrame {
 	private JButton loginButton, registerButton;
 	private JPanel mainPanel, registrationPanel, loginPanel, cardsPanel;
 	private CardLayout cl;
-//	private UserRegistrationModel model;
 	private UserRegistrationModel model;
 	private UserLoginModel loginModel;
 	
@@ -41,32 +40,33 @@ public class MainWindow extends JFrame {
 		thirdPanel.add(registerButton);
 		secondPanel.add(thirdPanel, BorderLayout.CENTER);
 		mainPanel.add(secondPanel, BorderLayout.CENTER);
-//		registrationPanel = getRegistration();
-//		UserLoginInstructionPanel loginPanel = new UserLoginInstructionPanel();
-//		UserLoginController loginController = new UserLoginController(loginPanel, this);
-		loginModel = new UserLoginModel();
-		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(this);
-		UserLoginController loginController = new UserLoginController(loginPanel, loginModel);
+
 		cardsPanel = new JPanel(new CardLayout());
 		cardsPanel.add(mainPanel, MAIN);
-//		addUserToDB();
-//		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel(user, this);
-//		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(userRegistrationPanel, this);
+		createLoginPanel();
 		createRegistrationInstructionPage();
-		UserRegistrationCompletePanel userRegistrationCompletePanel = new UserRegistrationCompletePanel();
-		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel,
-				this);
-
+		createRegistrationImagePage();
+		createRegistrationCompletePage();
 		
-//		cardsPanel.add(registrationPanel, REGISTRATION);
-		cardsPanel.add(loginPanel, LOGIN);
-		cardsPanel.add(userRegistrationCompletePanel, COMPLETE);
-//		cardsPanel.setVisible(false); // only show the next screen once a button is pressed
-
+		
 		container.add(aPanel, BorderLayout.PAGE_START);
 		container.add(cardsPanel);
 		this.cl = (CardLayout) (cardsPanel.getLayout());
 		cardsPanel.setVisible(true);
+	}
+
+	private void createLoginPanel() {
+		this.loginModel = new UserLoginModel();
+		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(this);
+		UserLoginController loginController = new UserLoginController(loginPanel, loginModel);
+		cardsPanel.add(loginPanel, LOGIN);
+	}
+
+	private void createRegistrationCompletePage() {
+		UserRegistrationCompletePanel userRegistrationCompletePanel = new UserRegistrationCompletePanel();
+		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel,
+				this);
+		cardsPanel.add(userRegistrationCompletePanel, COMPLETE);
 	}
 
 	public JFrame getFrame() {
@@ -99,6 +99,9 @@ public class MainWindow extends JFrame {
 		});
 	}
 
+	/**
+	 * Create a show the gui
+	 */
 	private void createAndShowGUI() {
 		JFrame frame = new JFrame();
 		frame.setPreferredSize(new Dimension(695, 695));
@@ -110,52 +113,78 @@ public class MainWindow extends JFrame {
 		@SuppressWarnings("unused")
 		MainWindowController mainWindowController = new MainWindowController(mainWindowView);
 	}
-
+	
+	/**
+	 * Method to set the main label text
+	 * @param string
+	 */
 	public void setLabelText(String string) {
 		this.headerLabel.setText(string);
 	}
-
+	
+	/**
+	 * Show the home page
+	 */
 	public void showMainPage() {
 		this.headerLabel.setText("Main Menu");
 		cl.show(cardsPanel, MAIN);
 	}
 	
+	/**
+	 * Create the registration instruction panel and the associated controller
+	 */
 	public void createRegistrationInstructionPage() {
 		UserRegistrationInstructionPanel userInstructionPanel = new UserRegistrationInstructionPanel();
 		UserRegistrationInstructionController userInstructionController = new UserRegistrationInstructionController(
 				userInstructionPanel, this, model);
 		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
 	}
+	
+	/**
+	 * Create the registration image page with the 60 images and the controller
+	 */
 	public void createRegistrationImagePage() {
 		UserRegistrationPanel userRegistrationPanel = new UserRegistrationPanel();
 		UserRegistrationController userRegistrationPanelController = new UserRegistrationController(
-				userRegistrationPanel, this, model);
+				userRegistrationPanel, this, this.model);
 		userRegistrationPanel.setUpImagePanels();
 		cardsPanel.add(userRegistrationPanel, REGISTRATION);
 	}
+	
+	/**
+	 * show the registration page
+	 */
 	public void showRegistrationPage() {
-		createRegistrationImagePage();
 		cl.show(cardsPanel, REGISTRATION);
 	}
+	
+	/**
+	 * Show the login page
+	 */
 	public void showLoginPage() {
 		cl.show(cardsPanel, LOGIN);
 	}
 
+	/**
+	 * show the user registration complete page
+	 */
 	public void showCompletePage() {
 		cl.show(cardsPanel, COMPLETE);
 	}
 
-	public void addListeners(ActionListener listener) {
-		this.registerButton.addActionListener(listener);
-		this.loginButton.addActionListener(listener);
-
-	}
-
+	/**
+	 * Show the registration instructions panel
+	 */
 	public void showRegistrationInstructions() {
 		cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
 	}
 	
-	public void clearModel() {
-		this.loginModel.clear();
+	/**
+	 * Add action listeners to the interactive buttons
+	 * @param listener
+	 */
+	public void addListeners(ActionListener listener) {
+		this.registerButton.addActionListener(listener);
+		this.loginButton.addActionListener(listener);
 	}
 }

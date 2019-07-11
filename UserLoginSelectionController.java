@@ -48,7 +48,7 @@ public class UserLoginSelectionController {
 			case "BACK":
 				break;
 			case "LOGIN":
-				mainPanel.loginUser();
+				mainPanel.showLoginCompletePage();
 				break;
 			}
 			

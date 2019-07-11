@@ -5,34 +5,42 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+/**
+ * This class is the view that'll be displayed once a registration has been completed
+ *
+ */
 public class UserRegistrationCompletePanel extends JPanel {
 
 	private JTextArea message;
-	private JButton exit;
-	private JButton home;
+	private JButton home, exit;
 	private JPanel buttonPanel;
 
 	public UserRegistrationCompletePanel() {
-		this.setLayout(new GridLayout(2,0));
 		setUp();
 		
 	}
-
+	
+	/**
+	 * Sets up the view
+	 */
 	private void setUp() {
-		message = new JTextArea();
-		message.setText("Thank you for registering a new account. \n\n To go home, click on the button marked \"Home\" and to quit, click on \"Exit\"");
+		this.message = new JTextArea(5, 50);
+		this.message.setText("Registration Phase Complete");
 		this.add(message);
-		home = new JButton("Home");
-		home.setActionCommand("HOME");
-		exit = new JButton("Exit");
-		exit.setActionCommand("EXIT");
-		buttonPanel = new JPanel();
-		buttonPanel.add(home);
-		buttonPanel.add(exit);
+		this.home = new JButton("Log Off / Home");
+		this.home.setActionCommand("HOME");
+		this.exit = new JButton("Exit");
+		this.exit.setActionCommand("EXIT");
+		this.buttonPanel = new JPanel();
+		this.buttonPanel.add(home);
 		this.add(buttonPanel);
 	}
 	
-	void addActionListener(ActionListener listener) {
+	/**
+	 * Add action listeners to the interactive buttons
+	 * @param listener
+	 */
+	public void addActionListener(ActionListener listener) {
 		this.exit.addActionListener(listener);
 		this.home.addActionListener(listener);
 	}
