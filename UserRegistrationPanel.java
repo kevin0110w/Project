@@ -34,11 +34,8 @@ public class UserRegistrationPanel extends JPanel {
 		this.imageListThree = new ArrayList<String>(); // to hold third set of 20 images
 		this.setLayout(new BorderLayout()); // set display layout
 		this.imagesCardPanel = new JPanel(new CardLayout()); // create a new JPanel of cardlayout that'll hold the three separate image panels
-
 		this.add(imagesCardPanel, BorderLayout.CENTER);  
-		
 		this.bottomPanel = new JPanel(new BorderLayout()); // a panel to hold the buttons and selected images
-		
 		this.setupSelectedImagePanel(); // set up the selected images panel
 		this.setupButtons(); // set up various interactive buttons
 		this.add(bottomPanel, BorderLayout.SOUTH);

@@ -81,6 +81,7 @@ public class UserRegistrationInstructionController {
 				model.setPictureSet(panel.getPicsSelection()); // set the picture set field in the model
 				if (!model.isUserAlreadyRegistered()) { // check whether user is registered on the database
 				model.createRegistrationSet(); // otherwise make model create the registration set of 60 images
+				mainWindow.createRegistrationImagePage();
 				mainWindow.showRegistrationPage(); // show the registration page
 				model.setInitialTime(); // start the clock to time user clicks
 				try {

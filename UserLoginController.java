@@ -174,6 +174,7 @@ public class UserLoginController {
 				case "" + 18:
 				case "" + 19:
 				case "" + 20:
+					mainPanel.getLoginSelectionPanel().disableButton(arg0.getActionCommand());
 					mainPanel.setImage(arg0.getSource()); // set the image to the panel 
 					model.addImage(arg0.getSource()); // add the image to the model's field variable entered passwords
 					model.addTime(); // add the time taken to make this click in the model

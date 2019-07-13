@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
@@ -61,7 +62,8 @@ public class UserLoginSelectionPanel extends JPanel {
 	 */
 	private void setButtonPanel() {
 		this.buttonPanel = new JPanel();
-		this.buttonPanel.setLayout(new GridLayout(4,5));
+//		this.buttonPanel.setLayout(new BorderLayout());
+//		this.buttonPanel.setMaximumSize(new Dimension(30, 30));
 		this.add(this.buttonPanel, BorderLayout.CENTER);
 	}
 	
@@ -80,15 +82,24 @@ public class UserLoginSelectionPanel extends JPanel {
 		int counter = 0;
 		this.buttons = new ArrayList<JButton>();
 		Iterator<String> it = this.filePaths.iterator();
+		JPanel panel = new JPanel();
 		while (it.hasNext()) {
 			String aPath = it.next();
 			this.buttons.add(new JButton());
+			this.buttons.get(counter).setSize(new Dimension(100,100));
 			this.buttons.get(counter).setIcon(new ImageIcon(aPath));
 			this.buttons.get(counter).setDisabledIcon(new ImageIcon(aPath));
 			this.buttons.get(counter).setActionCommand("" + counter);
 			this.buttons.get(counter).setMargin(new Insets(0, 0, 0, 0));
-			this.buttonPanel.add(this.buttons.get(counter));
+//			this.buttonPanel.add(this.buttons.get(counter));
+			panel.add(this.buttons.get(counter));
 			counter++;
+			/* 5 images each row */
+			if ((counter) % 5 == 0) {
+				this.buttonPanel.add(panel);
+				panel = new JPanel();
+			}
+			
 		}
 	}
 	
@@ -121,6 +132,17 @@ public class UserLoginSelectionPanel extends JPanel {
 		clickCounter++;
 	}
 	
+	/**
+	 * Disable a button if it's been selected before.
+	 * @Param - the action command associated with a clicked button
+	 */
+	public void disableButton(String actionCommand) {
+		for (JButton button : this.buttons) {
+			if (button.getActionCommand().equals(actionCommand)) {
+				button.setEnabled(false);
+			}
+		}
+	}
 	/**
 	 * Disable buttons once 3 images have been clicked
 	 */

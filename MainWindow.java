@@ -12,7 +12,7 @@ public class MainWindow extends JFrame {
 	private JFrame frame;
 	private JLabel headerLabel;
 	private JButton loginButton, registerButton;
-	private JPanel mainPanel, registrationPanel, loginPanel, cardsPanel;
+	private JPanel mainPanel, cardsPanel;
 	private CardLayout cl;
 	private UserRegistrationModel model;
 	private UserLoginModel loginModel;
@@ -40,15 +40,12 @@ public class MainWindow extends JFrame {
 		thirdPanel.add(registerButton);
 		secondPanel.add(thirdPanel, BorderLayout.CENTER);
 		mainPanel.add(secondPanel, BorderLayout.CENTER);
-
 		cardsPanel = new JPanel(new CardLayout());
 		cardsPanel.add(mainPanel, MAIN);
 		createLoginPanel();
 		createRegistrationInstructionPage();
-		createRegistrationImagePage();
+//		createRegistrationImagePage();
 		createRegistrationCompletePage();
-		
-		
 		container.add(aPanel, BorderLayout.PAGE_START);
 		container.add(cardsPanel);
 		this.cl = (CardLayout) (cardsPanel.getLayout());
@@ -59,16 +56,10 @@ public class MainWindow extends JFrame {
 		this.loginModel = new UserLoginModel();
 		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(this);
 		UserLoginController loginController = new UserLoginController(loginPanel, loginModel);
-		cardsPanel.add(loginPanel, LOGIN);
+		this.cardsPanel.add(loginPanel, LOGIN);
 	}
 
-	private void createRegistrationCompletePage() {
-		UserRegistrationCompletePanel userRegistrationCompletePanel = new UserRegistrationCompletePanel();
-		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel,
-				this);
-		cardsPanel.add(userRegistrationCompletePanel, COMPLETE);
-	}
-
+	
 	public JFrame getFrame() {
 		return frame;
 	}
@@ -121,22 +112,14 @@ public class MainWindow extends JFrame {
 	public void setLabelText(String string) {
 		this.headerLabel.setText(string);
 	}
-	
-	/**
-	 * Show the home page
-	 */
-	public void showMainPage() {
-		this.headerLabel.setText("Main Menu");
-		cl.show(cardsPanel, MAIN);
-	}
-	
+
 	/**
 	 * Create the registration instruction panel and the associated controller
 	 */
 	public void createRegistrationInstructionPage() {
 		UserRegistrationInstructionPanel userInstructionPanel = new UserRegistrationInstructionPanel();
 		UserRegistrationInstructionController userInstructionController = new UserRegistrationInstructionController(
-				userInstructionPanel, this, model);
+				userInstructionPanel, this, this.model);
 		cardsPanel.add(userInstructionPanel, REGISTRATIONINSTRUCTIONS);
 	}
 	
@@ -149,6 +132,28 @@ public class MainWindow extends JFrame {
 				userRegistrationPanel, this, this.model);
 		userRegistrationPanel.setUpImagePanels();
 		cardsPanel.add(userRegistrationPanel, REGISTRATION);
+	}
+	
+	private void createRegistrationCompletePage() {
+		UserRegistrationCompletePanel userRegistrationCompletePanel = new UserRegistrationCompletePanel();
+		UserRegistrationCompleteController urcpc = new UserRegistrationCompleteController(userRegistrationCompletePanel,
+				this);
+		this.cardsPanel.add(userRegistrationCompletePanel, COMPLETE);
+	}
+	
+	/**
+	 * Show the home page
+	 */
+	public void showMainPage() {
+		this.headerLabel.setText("Main Menu");
+		cl.show(cardsPanel, MAIN);
+	}
+	
+	/**
+	 * Show the registration instructions panel
+	 */
+	public void showRegistrationInstructions() {
+		cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
 	}
 	
 	/**
@@ -172,12 +177,6 @@ public class MainWindow extends JFrame {
 		cl.show(cardsPanel, COMPLETE);
 	}
 
-	/**
-	 * Show the registration instructions panel
-	 */
-	public void showRegistrationInstructions() {
-		cl.show(cardsPanel, REGISTRATIONINSTRUCTIONS);
-	}
 	
 	/**
 	 * Add action listeners to the interactive buttons
