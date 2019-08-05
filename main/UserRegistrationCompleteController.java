@@ -1,9 +1,11 @@
 package main;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * This class is responsible for coordinating actions between the complete panel with the main window
+ * This class is responsible for coordinating actions between the complete panel
+ * with the main window
  *
  */
 public class UserRegistrationCompleteController {
@@ -16,9 +18,10 @@ public class UserRegistrationCompleteController {
 //		this.panel = panel;
 //		this.mw = mw;
 		this.userRegistrationCardsPanel = panel;
-		this.userRegistrationCardsPanel.getUserRegistrationCompletePanel().addActionListener(new UserRegistrationCompleteListener());
+		this.userRegistrationCardsPanel.getUserRegistrationCompletePanel()
+				.addActionListener(new UserRegistrationCompleteListener());
 	}
-	
+
 	class UserRegistrationCompleteListener implements ActionListener {
 
 		@Override
@@ -27,14 +30,12 @@ public class UserRegistrationCompleteController {
 			case "HOME":
 				userRegistrationCardsPanel.showInstructionPanel();
 				userRegistrationCardsPanel.getMw().showMainPage();
-				break;
-			case "EXIT":
-				System.exit(0);
+				userRegistrationCardsPanel.getMw().updateSmallFrameSize();
 				break;
 			}
-			
+
 		}
-		
+
 	}
 
 }

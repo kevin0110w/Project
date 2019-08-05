@@ -2,8 +2,13 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,10 +16,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import main.User;
 import main.UserLoginModel;
 
 public class UserLoginModelTest {
 	private UserLoginModel model;
+	private User user;
+	private List<String> enteredPassword;
+	private List<Double> timeTaken;
+	private List<Integer> successOfPasswords;
+	private int loginAttemptNo;
+	private boolean correctPassword;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -36,7 +48,7 @@ public class UserLoginModelTest {
 
 	@Test
 	public void testAllListVariablesAreInitiallyEmpty() {
-		assertTrue("imageFilePaths initially empty", model.getImageFilePaths().size() == 0);
+		assertTrue("imageFilePaths initially empty", model.getImages().size() == 0);
 		assertTrue("passwordPaths initially empty", model.getPasswordPaths().size() == 0);
 		assertTrue("enteredPassword initially empty", model.getEnteredPasswords().size() == 0);
 		assertTrue("timeTaken initially empty", model.getTimeTaken().size() == 0);
@@ -46,17 +58,17 @@ public class UserLoginModelTest {
 	@Test
 	public void testClearMethod() {
 		populateUserLoginModel();
-		assertTrue("imageFilePaths emptied", model.getImageFilePaths().size() == 0);
-		assertTrue("passwordPaths emptied", model.getPasswordPaths().size() == 0);
-		assertTrue("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
-		assertTrue("timeTaken emptied", model.getTimeTaken().size() == 0);
-		assertTrue("successOfPasswords emptied", model.getSuccessOfPasswords().size() == 0);
-		assertTrue("UserID cleared", model.getUserID() == 0);
-		assertTrue("Login Method cleared", model.getLoginMethod() == 0);
-		assertTrue("Login Attempt No cleared", model.getLoginAttempt() == 0);
-		assertTrue("Picture Set Selection cleared", model.getPictureSetSelection() == 0);
+		assertFalse("imageFilePaths emptied", model.getImages().size() == 0);
+		assertFalse("passwordPaths emptied", model.getPasswordPaths().size() == 0);
+		assertFalse("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
+		assertFalse("timeTaken emptied", model.getTimeTaken().size() == 0);
+		assertFalse("successOfPasswords emptied", model.getSuccessOfPasswords().size() == 0);
+		assertFalse("UserID cleared", model.getUserID() == 0);
+		assertFalse("Login Method cleared", model.getLoginMethod() == 0);
+		assertFalse("Login Attempt No cleared", model.getLoginAttempt() == 0);
+		assertFalse("Picture Set Selection cleared", model.getPictureSetSelection() == 0);
 		this.model.clear();
-		assertTrue("imageFilePaths emptied", model.getImageFilePaths().size() == 0);
+		assertTrue("imageFilePaths emptied", model.getImages().size() == 0);
 		assertTrue("passwordPaths emptied", model.getPasswordPaths().size() == 0);
 		assertTrue("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
 		assertTrue("timeTaken emptied", model.getTimeTaken().size() == 0);
@@ -73,7 +85,8 @@ public class UserLoginModelTest {
 		this.model.setUserID(1);
 		this.model.setPictureSelection(1);
 		this.model.getUsersImages();
-		assertTrue("Image files populated and equals 20", this.model.getImageFilePaths().size() == 20);
+		this.model.formPasswordPaths();
+		assertTrue("Image files populated and equals 20", this.model.getImages().size() == 20);
 		assertTrue("Password files populated and equals 3", this.model.getPasswordPaths().size() == 3);
 	}
 	
@@ -83,16 +96,17 @@ public class UserLoginModelTest {
 		this.model.setUserID(1);
 		this.model.setPictureSelection(1);
 		this.model.getUsersImages();
-		assertTrue("Image files populated and equals 20", this.model.getImageFilePaths().size() == 20);
+		this.model.formPasswordPaths();
+		assertTrue("Image files populated and equals 20", this.model.getImages().size() == 20);
 		assertTrue("Password files populated and equals 3", this.model.getPasswordPaths().size() == 3);
 	}
 	
 	@Test
 	public void testCorrectPassword() {
 		List<String> aList = new ArrayList<String>();
-		aList.add("file");
-		aList.add("file");
-		aList.add("file");
+		aList.add("file1");
+		aList.add("file2");
+		aList.add("file3");
 		this.model.setEnteredPassword(aList);
 		this.model.setPasswordPaths(aList);
 		assertTrue(this.model.correctPassword());
@@ -110,7 +124,21 @@ public class UserLoginModelTest {
 		aList2.add("abc");
 		aList2.add("abc");
 		this.model.setPasswordPaths(aList2);
-		assertTrue(this.model.correctPassword());
+		assertFalse(this.model.correctPassword());
+	}
+	
+	@Test
+	public void testSetInitialTime() {
+		assertEquals("Should fail as null value", LocalDateTime.now(), this.model.getInitialTime());
+		this.model.setInitialTime();
+		assertEquals(LocalDateTime.now(), this.model.getInitialTime());
+	}
+	@Test
+	public void testAddTime() {
+		this.model.setInitialTime();
+		assertTrue(this.model.getTimeTaken().size() == 0);
+		this.model.addTime();
+		assertTrue(this.model.getTimeTaken().size() == 1);
 	}
 	
 	@Test
@@ -118,20 +146,96 @@ public class UserLoginModelTest {
 		List<String> list1 = new ArrayList<String>();
 		list1.add("file");
 		list1.add("elif");
-		this.model.setImageFilePaths(list1);
+		this.model.setImages(list1);
 		this.model.setUserID(10);
 		this.model.setPictureSelection(2);
 		this.model.setLoginMethod(2);
 		this.model.setLoginAttempt();
-		this.model.setLastLoginSuccessful(true);
+		this.model.setLastLoginSuccesful(true);
 		this.model.shuffleDecoyImages();
-		assertTrue("images shuffled", this.model.isShuffled());
-		this.model.setLastLoginSuccessful(false);
+		assertTrue("images shuffled", this.model.getShuffled());
+		this.model.setLastLoginSuccesful(false);
 		this.model.setShuffled(false);
 		this.model.shuffleDecoyImages();
-		assertTrue("images shuffled", this.model.isShuffled());
+		assertFalse("images shuffled", this.model.getShuffled());
 	}
 	
+	@Test
+	public void testIsValid() {
+		deleteTestUserRegistration();
+		User user = createUserDetails();
+		model.setUserID(user.getUserid());
+		model.setPictureSelection(user.getPictureSet());
+		model.setLoginMethod(user.getLoginMethod());
+		model.getDb().addUserToDatabase(user);
+		boolean isValid = model.returnIsValid();
+		assertTrue(isValid);
+		deleteTestUserRegistration();
+	}
+	
+	@Test
+	public void testAddSuccessOfPasswords() {
+		populateUserLoginModel();
+		this.model.getSuccessOfPasswords().clear();
+		List<Integer> success = new ArrayList();
+		success.add(1);
+		success.add(1);
+		success.add(1);
+		this.model.addSuccessOfPasswords();
+		assertEquals(success, model.getSuccessOfPasswords());
+		
+	}
+	
+	@Test
+	public void testGetMostRecentLoginSuccess() {
+		this.user = createUserDetails();
+		deleteTestUserRegistration();
+		model.setUserID(user.getUserid());
+		model.setPictureSelection(user.getPictureSet());
+		model.setLoginMethod(user.getLoginMethod());
+		deleteTestUserLoginAttempt();
+		model.getDb().addUserToDatabase(user);
+		addLoginAttemptToDatabase();
+		int successful = model.getMostRecentLoginSuccess();
+		assertTrue(successful == 1);
+		deleteTestUserRegistration();
+		deleteTestUserLoginAttempt();
+	}
+	
+	@Test
+	public void testReturnMostRecentLoginSuccess() {
+		this.user = createUserDetails();
+		deleteTestUserRegistration();
+		model.setUserID(user.getUserid());
+		model.setPictureSelection(user.getPictureSet());
+		model.setLoginMethod(user.getLoginMethod());
+		deleteTestUserLoginAttempt();
+		model.getDb().addUserToDatabase(user);
+		addLoginAttemptToDatabase();
+		model.returnMostRecentLoginSuccess();
+		assertTrue(model.getLastLoginSuccesful());
+		deleteTestUserRegistration();
+		deleteTestUserLoginAttempt();
+	}
+	
+	@Test
+	public void testSetLoginAttempt() {
+		this.user = createUserDetails();
+		deleteTestUserRegistration();
+		model.setUserID(user.getUserid());
+		model.setPictureSelection(user.getPictureSet());
+		model.setLoginMethod(user.getLoginMethod());
+		deleteTestUserLoginAttempt();
+		model.getDb().addUserToDatabase(user);
+		addLoginAttemptToDatabase();
+		int loginAttemptNo = model.getDb().getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
+		assertEquals(1, loginAttemptNo);
+		model.setLoginAttempt();
+		loginAttemptNo = model.getLoginAttempt();
+		assertEquals("loginAttemptNo has been incremented via getLoginAttempt()", 1, loginAttemptNo);
+		deleteTestUserRegistration();
+		deleteTestUserLoginAttempt();
+	}
 	public void populateUserLoginModel() {
 		populateImagesList(generatePasswordsList());
 		populatePasswordPathsList(generatePasswordsList());
@@ -163,7 +267,7 @@ public class UserLoginModelTest {
 	}
 
 	private void populateLastLoginSuccesful() {
-		this.model.setLastLoginSuccessful(true);
+		this.model.setLastLoginSuccesful(true);
 		
 	}
 
@@ -224,6 +328,100 @@ public class UserLoginModelTest {
 			imageFiles.add("UserImage " + counter);
 			counter++;
 		}
-		this.model.setImageFilePaths(imageFiles);
+		this.model.setImages(imageFiles);
 	}
+	
+	/**
+	 * Helper method to creating a new user
+	 * @return
+	 */
+	public User createUserDetails() {
+		this.user = new User(999999, "a", "b", "c", 1, 1);
+		List<Double> time = new ArrayList<Double>();
+		time.add(0.0);
+		time.add(0.0);
+		time.add(0.0);
+		user.setTimeTaken(time);
+		Set<String> images = new HashSet<String>();
+		int n = 17;
+		int counter = 1;
+		while (images.size() < n) {
+			images.add("password" + " " + counter);
+			user.addImageToImageSet("password" + " " + counter);
+			counter++;
+		}
+		return user;
+	}
+	/*
+	 * Helper method to delete a user from a database and avoid any primary key exceptions
+	 */
+	public void deleteTestUserRegistration() {
+		model.getDb().connectToDatabase();
+		String command = "Delete From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
+		try {
+			PreparedStatement st = model.getDb().getConnection().prepareStatement(command);
+			st.setInt(1, 999999);
+			st.setInt(2, 1);
+			st.setInt(3, 1);
+			st.executeUpdate();
+			st.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		} finally {
+			
+		}
+	}
+	
+	public void addLoginAttemptToDatabase() {
+		this.enteredPassword = new ArrayList<String>();
+		this.enteredPassword = createEnteredPasswords();
+		this.timeTaken = new ArrayList<Double>();
+		this.timeTaken = createTimeTaken();
+		this.successOfPasswords = new ArrayList<Integer>();
+		this.successOfPasswords = createSuccess();
+		this.correctPassword = true;
+		this.loginAttemptNo = 1;
+		model.getDb().addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, successOfPasswords, correctPassword, loginAttemptNo);
+	}
+	
+	public void deleteTestUserLoginAttempt() {
+		model.getDb().connectToDatabase();
+		String command = "Delete From AllLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
+		try {
+			PreparedStatement st = model.getDb().getConnection().prepareStatement(command);
+			st.setInt(1, 999999);
+			st.setInt(2, 1);
+			st.setInt(3, 1);
+			st.executeUpdate();
+			st.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		} finally {
+			model.getDb().closeConnection();
+		}
+	}
+	private List<Integer> createSuccess() {
+		List<Integer> successOfPasswords = new ArrayList<Integer>();
+		successOfPasswords.add(1);
+		successOfPasswords.add(1);
+		successOfPasswords.add(1);
+		return successOfPasswords;
+	}
+
+	private List<Double> createTimeTaken() {
+		List<Double> timeTaken = new ArrayList<Double>();
+		timeTaken.add(0.05);
+		timeTaken.add(0.05);
+		timeTaken.add(0.05);
+		return timeTaken;
+	}
+
+	private List<String> createEnteredPasswords() {
+		List<String> enteredPasswords = new ArrayList<String>();
+		enteredPasswords.add("a");
+		enteredPasswords.add("b");
+		enteredPasswords.add("c");
+		return enteredPasswords;
+	}
+
 }

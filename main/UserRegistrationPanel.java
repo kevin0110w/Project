@@ -2,13 +2,19 @@ package main;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import main.UserRegistrationController.UserRegistrationListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +26,7 @@ import java.util.List;
 public class UserRegistrationPanel extends JPanel {
 	private JButton back, next, scrollL, scrollR;
 	private JPanel imagesCardPanel, bottomPanel;
-	private CardLayout cl;
+	private CardLayout imagePanelCL, selectedImagesCL;
 	private final static String ONE = "one";
 	private final static String TWO = "two";
 	private final static String THREE = "three";
@@ -28,6 +34,8 @@ public class UserRegistrationPanel extends JPanel {
 //	private Printer p;
 	private List<String> imageListOne, imageListTwo, imageListThree;
 	private UserRegistrationImagePanel imagePanelOne, imagePanelTwo, imagePanelThree;
+	private JPanel bottomPanel2;
+	private JPanel showPanel;
 
 	public UserRegistrationPanel() {
 		this.imageListOne = new ArrayList<String>(); // to hold first set of 20 images
@@ -35,63 +43,103 @@ public class UserRegistrationPanel extends JPanel {
 		this.imageListThree = new ArrayList<String>(); // to hold third set of 20 images
 		this.setLayout(new BorderLayout()); // set display layout
 		this.setup();
-		this.cl = (CardLayout) (this.imagesCardPanel.getLayout());
 	}
 
 	/**
 	 * Sets up the two panels for images and buttons. This is called to refresh the screen whenever a new display is to be shown
 	 */
 	public void setup() {
+		this.setTopLabel();
 		this.setImagesCardPanel();
 		this.bottomPanel = new JPanel(new BorderLayout()); // a panel to hold the buttons and selected images
-		this.setupSelectedImagePanel(); // set up the selected images panel
+//		this.setPasswordButtonCardPanel();
 		this.setupButtons(); // set up various interactive buttons
+		this.setupSelectedImagePanel(); // set up the selected images panel
 	}
 	
-	private void setImagesCardPanel() {
-		this.imagesCardPanel = new JPanel(new CardLayout()); // create a new JPanel of cardlayout that'll hold the three separate image panels
-		this.add(imagesCardPanel, BorderLayout.CENTER);  
-		this.cl = (CardLayout) (this.imagesCardPanel.getLayout());
-	}
 	/**
-	 * Set up the interactive buttons in this JPanel
+	 * Instructions pinned to the top of the screen as a JLabel
+	 */
+	private void setTopLabel() {
+		JPanel panel = new JPanel();
+		JPanel topPanel = new JPanel(new GridLayout(2,0));
+		JLabel instructionsOne = new JLabel();
+		JLabel instructionsTwo = new JLabel();
+//		JLabel instructionsThree = new JLabel();
+		String instructionsTextOne = "Create a password by selecting 3 images, one by one and in a memorable order.";
+		String instructionsTextTwo = "Use the scroll left and right buttons to view all images and click on next when done.";
+//		String instructionsTextThree = "Once 3 images have been selected, please click on the next button";
+		instructionsOne.setText(instructionsTextOne);
+		instructionsTwo.setText(instructionsTextTwo);
+//		instructionsThree.setText(instructionsTextThree);
+		topPanel.add(instructionsOne);
+		topPanel.add(instructionsTwo);
+//		topPanel.add(instructionsThree);
+		panel.add(topPanel);
+		this.add(panel, BorderLayout.NORTH);
+	}
+	
+	/**
+	 * Create a panel in the centre of the JPanel that will hold three different image panels
+	 */
+	private void setImagesCardPanel() {
+		this.imagesCardPanel = new JPanel(new CardLayout());
+		this.add(imagesCardPanel, BorderLayout.CENTER);  
+		this.imagePanelCL = (CardLayout) (this.imagesCardPanel.getLayout());
+	}
+	
+	/**
+	 * Set up interactive buttons in this JPanel for scrolling through the image panels and going back and next
 	 */
 	private void setupButtons() {
 		JPanel buttonPanel = new JPanel(); // create a new panel to house these buttons
-		this.back = new JButton("BACK"); // creating a back button
+		this.back = new JButton("Back"); // creating a back button
 		this.back.setActionCommand("BACK"); // set action command to ensure correct button fired
-		this.scrollL = new JButton("Scroll Left"); // create a scroll left button
-		this.scrollL.setActionCommand("SCROLLLEFT"); // set action command to ensure correct button fired
-		this.scrollR = new JButton("Scroll Right"); // create a scroll right button
-		this.scrollR.setActionCommand("SCROLLRIGHT"); // set action command to ensu re correct button fired
 		this.next = new JButton("Next"); // create a new next button
 		this.next.setEnabled(false); // initially disable this and reenable once three images chosen
 		this.next.setActionCommand("NEXT"); // set action command to  ensure correct button fired
 		buttonPanel.add(this.back); // add the buttons to the button panel
-		buttonPanel.add(this.scrollL);
-		buttonPanel.add(this.scrollR);
 		buttonPanel.add(this.next);
 		this.bottomPanel.add(buttonPanel, BorderLayout.SOUTH); // add the button panel to this object
+		setUpScrollButtons();
 		this.add(bottomPanel, BorderLayout.SOUTH);
 	}
+	
+	private void setUpScrollButtons() {
+		JPanel scrollPanelLeft = new JPanel(new BorderLayout());
+		JPanel scrollPanelRight = new JPanel(new BorderLayout());
+		this.scrollL = new JButton("Scroll Left"); // create a scroll left button
+		this.scrollL.setActionCommand("SCROLLLEFT"); // set action command to ensure correct button fired
+		this.scrollR = new JButton("Scroll Right"); // create a scroll right button
+		this.scrollR.setActionCommand("SCROLLRIGHT"); // set action command to ensu re correct button fired
+		scrollPanelLeft.add(scrollL, BorderLayout.SOUTH);
+		scrollPanelRight.add(scrollR, BorderLayout.SOUTH);
+//		this.bottomPanel.add(scrollPanel, BorderLayout.NORTH);
+		this.bottomPanel.add(scrollPanelLeft, BorderLayout.WEST);
+		this.bottomPanel.add(scrollPanelRight, BorderLayout.EAST);
+		
+	}
 
+//	public void setPasswordButtonCardPanel() {
+//		this.bottomPanel2 = new JPanel(new CardLayout());
+//		this.showPanel = new JPanel();
+//		this.bottomPanel2.add(this.showPanel, "SHOWPANEL");
+//		this.bottomPanel.add(this.bottomPanel2, BorderLayout.CENTER);
+//		this.bottomPanel2.setVisible(true);
+//		this.selectedImagesCL = (CardLayout) (this.bottomPanel2.getLayout());
+//	}
+	
 	/**
 	 * The selected Images will be house in a separate panel
 	 */
-	private void setupSelectedImagePanel() {
+	public void setupSelectedImagePanel() {
 		JPanel imagePanel = new JPanel(); // create the images panel
-		
 		this.selectedImageOne = new JLabel(); // create new jlabels that'll display the new icons
-		this.selectedImageOne.setMaximumSize(new Dimension(100, 100));// set sizes	
 		this.selectedImageTwo = new JLabel();// create new jlabels that'll display the new icons
-		this.selectedImageTwo.setMaximumSize(new Dimension(100, 100));// set sizes
 		this.selectedImageThree = new JLabel();// create new jlabels that'll display the new icons
-		this.selectedImageThree.setMaximumSize(new Dimension(100, 100));// set sizes
-		
 		imagePanel.add(selectedImageOne); // add the jlabels to this image panel
 		imagePanel.add(selectedImageTwo); 
 		imagePanel.add(selectedImageThree);
- 
 		this.bottomPanel.add(imagePanel, BorderLayout.CENTER); // add the selected image panel to this object
  	}
 	
@@ -99,7 +147,7 @@ public class UserRegistrationPanel extends JPanel {
 	 * Adding action listeners to each interactive button
 	 * @param aListener - an action listener from the userregistrationimagecontroller class
 	 */
-	public void adduserRegistrationButtonListener(ActionListener aListener) {
+	public void adduserRegistrationActionListener(ActionListener aListener) {
 		this.scrollL.addActionListener(aListener);
 		this.scrollR.addActionListener(aListener);
 		this.next.addActionListener(aListener);
@@ -130,14 +178,14 @@ public class UserRegistrationPanel extends JPanel {
 	 * Show a former image panel
 	 */
 	public void showPrevious() {
-		this.cl.previous(this.imagesCardPanel);
+		this.imagePanelCL.previous(this.imagesCardPanel);
 	}
 
 	/**
 	 * Show a latter image panel
 	 */
 	public void showNext() {
-		this.cl.next(this.imagesCardPanel);
+		this.imagePanelCL.next(this.imagesCardPanel);
 	}
 
 	/**
@@ -219,7 +267,10 @@ public class UserRegistrationPanel extends JPanel {
 	public void setImagePanelThree(UserRegistrationImagePanel imagePanelThree) {
 		this.imagePanelThree = imagePanelThree;
 	}
-
+	
+	/**
+	 * Reset the class by clearing the arraylists holding file paths and set up the buttons and image panels again.
+	 */
 	public void clear() {
 		this.imageListOne.clear(); 
 		this.imageListTwo.clear();

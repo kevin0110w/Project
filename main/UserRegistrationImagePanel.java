@@ -36,7 +36,7 @@ public class UserRegistrationImagePanel extends JPanel {
 	 * each button with an action command for easy linking with the controller class
 	 */
 	private void setUp() {
-		this.imagePanel = new JPanel();
+		this.imagePanel = new JPanel(new GridLayout(4,5));
 		this.buttons = new ArrayList<JButton>();
 		int counter = 0;
 		Iterator<String> it = this.imageSet.iterator();
@@ -52,12 +52,8 @@ public class UserRegistrationImagePanel extends JPanel {
 			buttons.get(counter).setActionCommand("" + counter);
 			this.imagePanel.add(this.buttons.get(counter));
 			counter++;
-
-			if (counter % 5 == 0) {
-				this.add(imagePanel);
-				this.imagePanel = new JPanel();
-			}
 		}
+		this.add(imagePanel);
 	}
 	
 	public void addListener(ActionListener alistener) {

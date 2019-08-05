@@ -22,7 +22,8 @@ public class UserRegistrationController {
 		this.userRegistrationCardsPanel.getUserRegistrationPanel().setImageSetOne(model.getImageFiles().getListOne()); // set the 1st image set in the UserRegistrationPanel class to create a unique panel
 		this.userRegistrationCardsPanel.getUserRegistrationPanel().setImageSetTwo(model.getImageFiles().getListTwo()); // set the 2nd image set in the UserRegistrationPanel class to create a unique panel
 		this.userRegistrationCardsPanel.getUserRegistrationPanel().setImageSetThree(model.getImageFiles().getListThree()); // set the 3rd image set in the UserRegistrationPanel class to create a unique panel
-		this.userRegistrationCardsPanel.getUserRegistrationPanel().adduserRegistrationButtonListener(new UserRegistrationListener()); // associate each interactive button in the user registration panel with an action listener
+		this.userRegistrationCardsPanel.getUserRegistrationPanel().adduserRegistrationActionListener(new UserRegistrationListener()); // associate each interactive button in the user registration panel with an action listener
+//		this.userRegistrationCardsPanel.getUserRegistrationPanel().adduserRegistrationMouseListener(new UserRegistrationListener());
 //		UserRegistrationImageController controllerPanelOne = new UserRegistrationImageController(this.userRegistrationCardsPanel.getUserRegistrationPanel().getImagePanelOne(), model);
 //		UserRegistrationImageController controllerPanelTwo = new UserRegistrationImageController(this.userRegistrationCardsPanel.getUserRegistrationPanel().getImagePanelTwo(), model);
 //		UserRegistrationImageController controllerPanelThree = new UserRegistrationImageController(this.userRegistrationCardsPanel.getUserRegistrationPanel().getImagePanelThree(), model);
@@ -33,7 +34,7 @@ public class UserRegistrationController {
 				this.userRegistrationCardsPanel);
 	}
 
-	class UserRegistrationListener implements ActionListener {
+	class UserRegistrationListener implements ActionListener, MouseListener {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -56,11 +57,44 @@ public class UserRegistrationController {
 					createCompleteController();
 					model.clear();
 					userRegistrationCardsPanel.getUserRegistrationPanel().clear();
+					userRegistrationCardsPanel.getMw().setLabelRegistrationComplete();
+					userRegistrationCardsPanel.getMw().updateSmallFrameSize();
 				} catch (Exception exception) {
 					exception.printStackTrace();
 				}
 				break;
 			}
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.getSource() == userRegistrationCardsPanel.getUserRegistrationPanel().getPasswordButton()) {
+				userRegistrationCardsPanel.getUserRegistrationPanel().showSelectedImages();
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			userRegistrationCardsPanel.getUserRegistrationPanel().showShowMeButton();
+
 		}
 	}
 }

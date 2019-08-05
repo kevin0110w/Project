@@ -21,6 +21,13 @@ import org.junit.Test;
 
 public class DBConnectTest {
 	private DBConnect db;
+	private User user;
+	private List<String> enteredPassword;
+	private List<Double> timeTaken;
+	private List<Integer> successOfPasswords;
+	private boolean correctPassword;
+	private int loginAttemptNo;
+	private boolean recentlySuccessful = true;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -32,29 +39,22 @@ public class DBConnectTest {
 	@Before
 	public void setUp() throws Exception {
 		db = new DBConnect();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		
-	}
-
-	@Test
-	public void testAddUserToDatabase() {
-		try {
-			setUp();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		User user = createUserDetails();
-		db.addUserToDatabase(user);
-		user = returnLatestAddedUserToDB(1, 1, 1);
-		assertEquals(1, user.getUserid());
+		deleteTestUserRegistration();
+		deleteTestUserLoginAttempt();
 	}
 	
+	@After
+	public void tearDown() throws Exception {
+//		deleteTestUserRegistration();
+//		deleteTestUserLoginAttempt();
+	}
+	
+	/**
+	 * Helper method to creating a new user
+	 * @return
+	 */
 	public User createUserDetails() {
-		User user = new User(1, "a", "b", "c", 1, 1);
+		this.user = new User(999999, "a", "b", "c", 1, 1);
 		List<Double> time = new ArrayList<Double>();
 		time.add(0.0);
 		time.add(0.0);
@@ -65,14 +65,144 @@ public class DBConnectTest {
 		int counter = 1;
 		while (images.size() < n) {
 			images.add("password" + " " + counter);
+			user.addImageToImageSet("password" + " " + counter);
 			counter++;
 		}
-		user.setSeenDecoys(images);
 		return user;
+	}
+
+	/*
+	 * Helper method to delete a user from a database and avoid any primary key exceptions
+	 */
+	public void deleteTestUserRegistration() {
+		db.connectToDatabase();
+		String command = "Delete From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
+		try {
+			PreparedStatement st = db.getConnection().prepareStatement(command);
+			st.setInt(1, 999999);
+			st.setInt(2, 1);
+			st.setInt(3, 1);
+			st.executeUpdate();
+			st.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		} finally {
+			
+		}
+	}
+	
+	public void deleteTestUserLoginAttempt() {
+		db.connectToDatabase();
+		String command = "Delete From AllLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
+		try {
+			PreparedStatement st = db.getConnection().prepareStatement(command);
+			st.setInt(1, 999999);
+			st.setInt(2, 1);
+			st.setInt(3, 1);
+			st.executeUpdate();
+			st.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		} finally {
+			db.closeConnection();
+		}
+	}
+
+	@Test
+	public void testConnection() {
+		db.connectToDatabase();
+		try {
+			assertFalse(db.getConnection().isClosed());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testClosed() {
+		db.connectToDatabase();
+		db.closeConnection();
+		try {
+			assertTrue(db.getConnection().isClosed());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testAddUserToDatabase() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		user = returnLatestAddedUserToDB(999999, 1, 1);
+		assertEquals(999999, user.getUserid());
+		assertEquals(1, user.getPictureSet());
+		assertEquals(2, user.getLoginMethod());
+	}
+	
+	@Test
+	public void testPasswordFilesReturned() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		List<String> passwordsFromDB = db.getUserPasswordFilePathsFromDatabase(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		List<String> passwordsLocal = new ArrayList<String>();
+		passwordsLocal.add("a");
+		passwordsLocal.add("b");
+		passwordsLocal.add("c");
+		assertEquals(passwordsFromDB, passwordsLocal);
+	}
+	
+//	@Test
+//	public void returnUserSeenImagesFromDatabase() {
+//		User user = createUserDetails();
+//		db.addUserToDatabase(user);
+//		Set<String> set = new HashSet<String>();
+//		List<String> list = db.getSeenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
+//		set.addAll(list);
+//		assertEquals(user.getImages(), set);
+//	}
+	
+	@Test
+	public void returnUserUnseenImagesFromDatabase() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		Set<String> set = new HashSet<String>();
+		List<String> list = db.getUnseenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
+		set.addAll(list);
+		assertEquals(user.getImages(), set);
+	}
+	
+	
+	@Test
+	public void testUpdateFilePaths() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		List<String> seenImagesBeforeUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet());
+//		List<String> unseenImagesBeforeUpdate = db.getUnseenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
+		seenImagesBeforeUpdate.add(user.getPasswordOne());
+		seenImagesBeforeUpdate.add(user.getPasswordTwo());
+		seenImagesBeforeUpdate.add(user.getPasswordThree());
+//		unseenImagesBeforeUpdate.add(user.getPasswordOne());
+//		unseenImagesBeforeUpdate.add(user.getPasswordTwo());
+//		unseenImagesBeforeUpdate.add(user.getPasswordThree());
+		List<String> updatedImages = new ArrayList<String>();
+		int maxImages = 17;
+		int counter = 0;
+		while (updatedImages.size() < maxImages) {
+			updatedImages.add("image " + counter);
+			counter++;
+		}
+		updatedImages.add(user.getPasswordOne());
+		updatedImages.add(user.getPasswordTwo());
+		updatedImages.add(user.getPasswordThree());
+		db.updateUserFilePaths(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), updatedImages);
+		List<String> seenImagesAfterUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet());
+//		List<String> unseenImagesAfterUpdate = db.getUnseenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
+		assertNotEquals(seenImagesBeforeUpdate, seenImagesAfterUpdate);
+//		assertEquals(unseenImagesBeforeUpdate, unseenImagesAfterUpdate);
 	}
 	
 	public User returnLatestAddedUserToDB(int userID, int pictureSet, int loginMethod) {
-		User u = null;
+		User user = null;
 		db.connectToDatabase();
 		String command = "Select * From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
@@ -88,12 +218,160 @@ public class DBConnectTest {
 				String passwordTwo = result.getString("PasswordTwo");
 				String passwordThree = result.getString("PasswordThree");
 				int loginMethod1 = result.getInt("LoginMethod");
-				u = new User(UserID, passwordOne, passwordTwo, passwordThree, pictureSet1, loginMethod1);
+				user = new User(UserID, passwordOne, passwordTwo, passwordThree, pictureSet1, loginMethod1);
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		} finally {
 		}
-		return u;
+		return user;
+	}
+	
+	public void addLoginAttemptToDatabase() {
+		this.enteredPassword = new ArrayList<String>();
+		this.enteredPassword = createEnteredPasswords();
+		this.timeTaken = new ArrayList<Double>();
+		this.timeTaken = createTimeTaken();
+		this.successOfPasswords = new ArrayList<Integer>();
+		this.successOfPasswords = createSuccess();
+		this.correctPassword = true;
+		this.loginAttemptNo = 1;
+		db.addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, successOfPasswords, correctPassword, loginAttemptNo);
+	}
+	@Test
+	public void testAddLoginAttemptToDatabase() {
+		String selectedImageOne = null, selectedImageTwo = null, selectedImageThree = null;
+		double timeTakenToChooseImageOne = 0.0, timeTakenToChooseImageTwo = 0.0, timeTakenToChooseImageThree = 0.0;
+		int userid = 0, pictureset = 0, loginmethod = 0, successfulImageOne = 0, successfulImageTwo = 0, successfulImageThree = 0, attemptNumber = 0;
+		boolean overallSuccessful = false;
+		
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		addLoginAttemptToDatabase();
+		db.connectToDatabase();
+//		int recentLoginSucess = db.getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
+//		assertEquals(1, recentLoginSucess);
+//		int recentLoginAttemptNo = db.getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
+//		assertEquals(1, recentLoginAttemptNo);
+		String command = "Select * From Allloginattempts where UserID = ? and PictureSet = ? and LoginMethod = ?";
+		try {
+			PreparedStatement st = db.getConnection().prepareStatement(command);
+			st.setInt(1, user.getUserid());
+			st.setInt(2, user.getPictureSet());
+			st.setInt(3, user.getLoginMethod());
+			ResultSet rs = st.executeQuery();
+			while (rs.next()) {
+				userid = rs.getInt("UserID");
+				loginmethod = rs.getInt("Loginmethod");
+				pictureset = rs.getInt("PictureSet");
+				selectedImageOne = rs.getString("SelectedImageOne");
+				selectedImageTwo = rs.getString("SelectedImageTwo");
+				selectedImageThree = rs.getString("SelectedImageThree");
+				timeTakenToChooseImageOne = rs.getDouble("timeTakenToChooseImageOne");
+				timeTakenToChooseImageTwo = rs.getDouble("timeTakenToChooseImageTwo");
+				timeTakenToChooseImageThree = rs.getDouble("timeTakenToChooseImageThree");
+				successfulImageOne = rs.getInt("successfulImageOne");
+				successfulImageTwo = rs.getInt("successfulImageTwo");
+				successfulImageThree = rs.getInt("successfulImageThree");
+				overallSuccessful = rs.getInt("OverallSuccessful") == 1 ? true : false;
+				attemptNumber = rs.getInt("attemptNumber");
+			}
+			st.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			db.closeConnection();
+		}
+		
+		List<String> selectedImages = createSelectedImages(selectedImageOne, selectedImageTwo, selectedImageThree);
+		List<Double> timeTakenList = createTimeTaken(timeTakenToChooseImageOne, timeTakenToChooseImageTwo, timeTakenToChooseImageThree);
+		List<Integer> successfulImagesList = createSuccessfulImages(successfulImageOne, successfulImageTwo, successfulImageThree);
+		assertEquals(user.getUserid(), userid);
+		assertEquals(user.getLoginMethod(), loginmethod);
+		assertEquals(user.getPictureSet(), pictureset);
+		assertEquals(this.enteredPassword, selectedImages);
+		assertEquals(this.timeTaken, timeTakenList);
+		assertEquals(this.successOfPasswords, successfulImagesList);
+		assertEquals(this.loginAttemptNo, attemptNumber);
+		assertEquals(this.correctPassword, overallSuccessful);
+	}
+	
+	@Test
+	public void testReturnIsRegistered() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		boolean isRegistered = db.returnIsRegistered(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		assertTrue(isRegistered);
+	}
+	
+	@Test
+	public void testGetRecentLoginAttemptNumber() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		addLoginAttemptToDatabase();
+		int loginAttempt = db.getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
+		assertEquals(this.loginAttemptNo, loginAttempt);
+	}
+	
+	@Test
+	public void testGetRecentLoginSuccess() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		addLoginAttemptToDatabase();
+		int recentlySuccessful = db.getRecentLoginSuccess(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
+		boolean rsuccessful = (recentlySuccessful == 1) ? true : false;
+		assertEquals(this.recentlySuccessful, rsuccessful);
+	}
+
+	private List<Integer> createSuccessfulImages(int successfulImageOne, int successfulImageTwo,
+			int successfulImageThree) {
+		List<Integer> alist = new ArrayList<Integer>();
+		alist.add(successfulImageOne);
+		alist.add(successfulImageTwo);
+		alist.add(successfulImageThree);
+		return alist;
+	}
+
+	private List<Double> createTimeTaken(double timeTakenToChooseImageOne, double timeTakenToChooseImageTwo,
+			double timeTakenToChooseImageThree) {
+		List<Double> alist = new ArrayList<Double>();
+		alist.add(timeTakenToChooseImageOne);
+		alist.add(timeTakenToChooseImageTwo);
+		alist.add(timeTakenToChooseImageThree);
+		return alist;
+	}
+
+	private List<String> createSelectedImages(String selectedImageOne, String selectedImageTwo,
+			String selectedImageThree) {
+		List<String> alist = new ArrayList<String>();
+		alist.add(selectedImageOne);
+		alist.add(selectedImageTwo);
+		alist.add(selectedImageThree);
+		return alist;
+	}
+
+	private List<Integer> createSuccess() {
+		List<Integer> successOfPasswords = new ArrayList<Integer>();
+		successOfPasswords.add(1);
+		successOfPasswords.add(1);
+		successOfPasswords.add(1);
+		return successOfPasswords;
+	}
+
+	private List<Double> createTimeTaken() {
+		List<Double> timeTaken = new ArrayList<Double>();
+		timeTaken.add(0.05);
+		timeTaken.add(0.05);
+		timeTaken.add(0.05);
+		return timeTaken;
+	}
+
+	private List<String> createEnteredPasswords() {
+		List<String> enteredPasswords = new ArrayList<String>();
+		enteredPasswords.add("a");
+		enteredPasswords.add("b");
+		enteredPasswords.add("c");
+		return enteredPasswords;
 	}
 }
+

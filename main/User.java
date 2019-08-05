@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.Set;
 
 public class User {
-	private String passwordOne, passwordTwo, passwordThree;
-	private int userid, loginMethod, pictureSet;
+	private String userid, passwordOne, passwordTwo, passwordThree;
+//	private int userid, loginMethod, pictureSet;
+	private int loginMethod, pictureSet;
+	private double overallTimeTaken;
 	private Set<String> decoys, seenDecoys, unseenDecoys, images;
 	private List<Double> timeTaken;
+	private Printer printer;
 	
-//	public User(int userid, int loginattempt, String passwordone, String passwordtwo, String passwordthree, int pictureSet) {
-	public User(int userid, String passwordone, String passwordtwo, String passwordthree, int pictureSet, int loginMethod) {
+	public User(String userid, String passwordone, String passwordtwo, String passwordthree, int pictureSet, int loginMethod, double overallTimeTaken) {
 		this.userid = userid;
 		this.passwordOne = passwordone;
 		this.passwordTwo = passwordtwo;
@@ -24,6 +26,36 @@ public class User {
 		this.timeTaken = new ArrayList<Double>();
 		this.loginMethod = loginMethod;
 		addPasswordsToImageSet();
+		this.overallTimeTaken = overallTimeTaken;
+		this.printer = new Printer();
+	}
+
+	/**
+	 * @return the overallTimeTaken
+	 */
+	public double getOverallTimeTaken() {
+		return overallTimeTaken;
+	}
+
+	/**
+	 * @param overallTimeTaken the overallTimeTaken to set
+	 */
+	public void setOverallTimeTaken(double overallTimeTaken) {
+		this.overallTimeTaken = overallTimeTaken;
+	}
+
+	/**
+	 * @return the printer
+	 */
+	public Printer getPrinter() {
+		return printer;
+	}
+
+	/**
+	 * @param printer the printer to set
+	 */
+	public void setPrinter(Printer printer) {
+		this.printer = printer;
 	}
 
 	public void setPictureSet(int pictureSet) {
@@ -90,14 +122,14 @@ public class User {
 	/**
 	 * @return the userid
 	 */
-	public int getUserid() {
+	public String getUserid() {
 		return userid;
 	}
 
 	/**
 	 * @param userid the userid to set
 	 */
-	public void setUserid(int userid) {
+	public void setUserid(String userid) {
 		this.userid = userid;
 	}
 
@@ -143,6 +175,13 @@ public class User {
 	public void setImages(Set<String> images) {
 		this.images = images;
 	}
+	
+	@Override
+	public boolean equals(Object user) {
+		User newUser = (User) user; 
+		return newUser.getUserid().equals(this.userid) && newUser.getPictureSet() == this.getPictureSet() && newUser.getLoginMethod() == this.loginMethod;
+	}
+
 
 //	public void addImageToDecoySet(String filePath) {
 //	if (!(filePath.equals(passwordOne) || filePath.equals(passwordTwo) || filePath.equals(passwordThree))) {
@@ -186,6 +225,7 @@ public class User {
 ///**
 // * @param unseenDecoys the unseenDecoys to set
 // */
+	
 //public void setUnseenDecoys(Set<String> unseenDecoys) {
 //	this.unseenDecoys = unseenDecoys;
 //}

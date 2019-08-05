@@ -89,8 +89,8 @@ public class UserLoginController {
 					try {
 						success = true;
 					userIdString = userLoginCardsPanel.getInput(); 
-					int userID = Integer.parseInt(userIdString); 
-					userLoginModel.setUserID(userID);// set the user id
+//					int userID = Integer.parseInt(userIdString); 
+					userLoginModel.setUserID(userIdString);// set the user id
 					pictureSelection = userLoginCardsPanel.getPictureSelection();
 					loginSelection = userLoginCardsPanel.getSelection();
 					if (loginSelection == 0 || pictureSelection == 0) {
@@ -231,17 +231,6 @@ public class UserLoginController {
 			
 		}
 
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-			userLoginCardsPanel.getLoginSelectionPanel().showSelectedImages();
-			
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
-			userLoginCardsPanel.getLoginSelectionPanel().showShowMeButton();
-			
-		}
 	}
 	
 	class UserLoginSuccessListener implements ActionListener {

@@ -16,7 +16,7 @@ public class UserLoginCardsPanel extends JPanel {
 //	private MainWindow mw;
 	private UserLoginInstructionPanel loginInstructionPanel;
 	private UserLoginSelectionPanel loginSelectionPanel;
-	private UserLoginSuccessPanel userLoginSuccessPanel;
+	private UserLoginCompletePanel userLoginCompletePanel;
 	private static final String LOGININSTRUCTIONS ="LOGININSTRUCTIONS", LOGIN = "LOGIN", LOGINCOMPLETE = "LOGINCOMPLETE";
 
 	
@@ -88,13 +88,13 @@ public class UserLoginCardsPanel extends JPanel {
 		this.getLoginInstructionPanel().addUserLoginMouseListener(l);
 	}
 	
-	/**
-	 * set the action listeners in the login selection panel
-	 * @param listener
-	 */
-	public void setLoginSelectionPanel(ActionListener listener) {
-		this.loginSelectionPanel.addListener(listener);	
-	}
+//	/**
+//	 * set the action listeners in the login selection panel
+//	 * @param listener
+//	 */
+//	public void setLoginSelectionPanel(ActionListener listener) {
+//		this.loginSelectionPanel.addListener(listener);	
+//	}
 
 	/**
 	 * call the method that will select a chosen image to the panel in the selection panel
@@ -125,7 +125,7 @@ public class UserLoginCardsPanel extends JPanel {
 	public void setupCards() {
 		this.setLoginInstructionPanel(new UserLoginInstructionPanel());
 		this.setLoginSelectionPanel(new UserLoginSelectionPanel());
-		this.setUserLoginSuccessPanel(new UserLoginSuccessPanel());
+		this.setUserLoginSuccessPanel(new UserLoginCompletePanel());
 		this.add(getLoginInstructionPanel(), LOGININSTRUCTIONS);
 		this.add(getLoginSelectionPanel(), LOGIN);
 		this.add(getUserLoginSuccessPanel(), LOGINCOMPLETE);
@@ -172,17 +172,35 @@ public class UserLoginCardsPanel extends JPanel {
 		this.loginInstructionPanel = loginInstructionPanel;
 	}
 
-	public UserLoginSuccessPanel getUserLoginSuccessPanel() {
-		return userLoginSuccessPanel;
+	public UserLoginCompletePanel getUserLoginSuccessPanel() {
+		return userLoginCompletePanel;
 	}
 
-	public void setUserLoginSuccessPanel(UserLoginSuccessPanel userLoginSuccessPanel) {
-		this.userLoginSuccessPanel = userLoginSuccessPanel;
+	public void setUserLoginSuccessPanel(UserLoginCompletePanel userLoginCompletePanel) {
+		this.userLoginCompletePanel = userLoginCompletePanel;
 	}
 
 	public void setLoginSelectionMouseListener(MouseListener userSelectionListener) {
 		this.getLoginSelectionPanel().addMouseListeners(userSelectionListener);
 		
+	}
+
+	public void addUserSelectionListener(ActionListener userSelectionListener) {
+		loginSelectionPanel.addUserSelectionListener(userSelectionListener);
+		
+	}
+
+	public void setLoginSelectionPanel(ActionListener userSelectionListener) {
+		loginSelectionPanel.addUserSelectionListener(userSelectionListener);
+		
+	}
+
+	public void setLoginCompletePanelText(String text) {
+		userLoginCompletePanel.setTextArea(text);	
+	}
+	
+	public UserLoginSelectionPanel getUserLoginSelectionPanel() {
+		return this.loginSelectionPanel;
 	}
 }
 

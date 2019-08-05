@@ -1,4 +1,5 @@
 package main;
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 
@@ -11,30 +12,33 @@ import javax.swing.JTextArea;
  *
  */
 public class UserRegistrationCompletePanel extends JPanel {
-
 	private JTextArea message;
-	private JButton home, exit;
-	private JPanel buttonPanel;
+	private JButton home;
 
 	public UserRegistrationCompletePanel() {
 		setUp();
-		
 	}
 	
 	/**
 	 * Sets up the view
 	 */
 	private void setUp() {
-		this.message = new JTextArea(5, 50);
-		this.message.setText("Registration Phase Complete");
-		this.add(message);
-		this.home = new JButton("Log Off / Home");
+		this.setLayout(new BorderLayout());
+		JPanel messagePanel = new JPanel();
+		this.message = new JTextArea();
+		this.message.setText("Registration Phase Completed. \n\nClick on the Log Off button below to \nreturn to the main menu");
+		this.message.setEditable(false);
+		this.message.setColumns(20);
+		this.message.setLineWrap(true);
+		messagePanel.add(message);
+		
+		JPanel homeButtonPanel = new JPanel();
+		this.home = new JButton("Log Off");
 		this.home.setActionCommand("HOME");
-		this.exit = new JButton("Exit");
-		this.exit.setActionCommand("EXIT");
-		this.buttonPanel = new JPanel();
-		this.buttonPanel.add(home);
-		this.add(buttonPanel);
+		homeButtonPanel.add(home);
+		
+		this.add(messagePanel, BorderLayout.CENTER);
+		this.add(homeButtonPanel, BorderLayout.SOUTH);
 	}
 	
 	/**
@@ -42,7 +46,6 @@ public class UserRegistrationCompletePanel extends JPanel {
 	 * @param listener
 	 */
 	public void addActionListener(ActionListener listener) {
-		this.exit.addActionListener(listener);
 		this.home.addActionListener(listener);
 	}
 }

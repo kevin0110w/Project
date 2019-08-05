@@ -34,49 +34,24 @@ public class UserTest {
 	
 	@Test
 	public void testImageSetInitiallyContainingThreePasswords() {
-		assertTrue(aUser.getImages().size() == 3);
+		assertTrue("3 password images added after initialising the list", aUser.getImages().size() == 3);
 	}
 	
-//	@Test
-//	public void testSeenDecoySetInitiallyZero() {
-//		assertTrue(aUser.getSeenDecoys().size() == 0);
-//	}
-//	
-//	@Test
-//	public void testUnseenDecoySetInitiallyZero() {
-//		assertTrue(aUser.getUnseenDecoys().size() == 0);
-//	}
-	
+	@Test
+	public void testTimeTakenListInitiallyZero() {
+		assertEquals(0, aUser.getTimeTaken().size());
+	}
+
 	@Test
 	public void testAddingPasswordToImageSet()  {
 		String passwordOne = "passwordone";
 		assertTrue(aUser.getImages().size() == 3);
 		this.aUser.addImageToImageSet(passwordOne);
-		assertTrue(aUser.getImages().size() == 4);
+		assertTrue("Should fail as the set already contains an element of the same value", aUser.getImages().size() == 4);
 		String passwordone = "a";
 		this.aUser.addImageToImageSet(passwordone);
-		assertTrue(aUser.getImages().size() == 4);
+		assertTrue("Should pass as there isn't one containing this element's value", aUser.getImages().size() == 4);
 	}
-	
-//	@Test
-//	public void addFileToSeenDecoySet()  {
-//		String passwordOne = "passwordone";
-//		this.aUser.addImageToSeenDecoySet(passwordOne);
-//		assertTrue(aUser.getDecoySet().size() == 1);
-//		String passwordone = "a";
-//		this.aUser.addImageToSeenDecoySet(passwordone);
-//		assertTrue(aUser.getDecoySet().size() == 1);
-//	}
-//	
-//	@Test
-//	public void addFileToUnseenDecoySet()  {
-//		String passwordOne = "passwordone";
-//		this.aUser.addImageToUnseenDecoySet(passwordOne);
-//		assertTrue(aUser.getDecoySet().size() == 1);
-//		String passwordone = "a";
-//		this.aUser.addImageToUnseenDecoySet(passwordone);
-//		assertTrue(aUser.getDecoySet().size() == 1);
-//	}
 	
 	@Test
 	public void testTimeTakenInitialSize() {

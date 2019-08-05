@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -24,20 +25,23 @@ import javax.swing.JPanel;
 public class UserLoginSelectionPanel extends JPanel {
 	private List<JButton> buttons;
 	private List<String> filePaths;
-	private JPanel buttonPanel, bottomPanel, bottomPanel2;
+	private JPanel buttonPanel, bottomPanel, selectedImagesPanel ;
+//	private JButton back, login, showPassword, showButton;
 	private JButton back, login;
 	private JLabel selectionOne, selectionTwo, selectionThree;
 	private int clickCounter;
-	private CardLayout cl;
-	private JPanel showPanel;
-	private JButton showButton;
-	
 	
 	public UserLoginSelectionPanel() {
+		JPanel topPanel = new JPanel(new GridLayout(0,3));
+		topPanel.add(new JLabel());
+		JPanel instruction = new JPanel();
+		JLabel t = new JLabel();
+		t.setText("Please select the 3 images that make up your password, one by one and in order.");
+		instruction.add(t);
 		this.setLayout(new BorderLayout()); // set this to border layout
+		this.add(instruction, BorderLayout.NORTH);
 		this.filePaths = new ArrayList<String>(); // create a new arraylist object
 		setBottomPanel();
-		setCardPanel();
 		setButtonPanel(); // set the image buttons
 		setSelectionPanel(); // set the selection panel along with interactive buttons
 		setBackLoginButtons();
@@ -52,50 +56,54 @@ public class UserLoginSelectionPanel extends JPanel {
 	 * This method will create the panel that will house various interactive buttons and the icons of the selected images
 	 */
 	private void setSelectionPanel() {
-		JPanel selectedImagesPanel = new JPanel();
+		this.selectedImagesPanel = new JPanel();
 		this.selectionOne = new JLabel();
 		this.selectionTwo = new JLabel();
 		this.selectionThree = new JLabel();
-		selectedImagesPanel.add(selectionOne);
-		selectedImagesPanel.add(selectionTwo);
-		selectedImagesPanel.add(selectionThree);	
-		this.bottomPanel2.add(selectedImagesPanel, "SELECTEDIMAGES");
-//		this.bottomPanel.add(selectedImagesPanel, BorderLayout.CENTER);
+//		this.selectionOne = new JButton();
+//		this.selectionTwo = new JButton();
+//		this.selectionThree = new JButton();
+//		this.selectionOne.setActionCommand("ONE");
+//		this.selectionTwo.setActionCommand("TWO");
+//		this.selectionThree.setActionCommand("THREE");
+		this.selectedImagesPanel.add(selectionOne);
+		this.selectedImagesPanel.add(selectionTwo);
+		this.selectedImagesPanel.add(selectionThree);
+		showPasswords();
+		this.bottomPanel.add(selectedImagesPanel, BorderLayout.CENTER);
 	}
 	
-	public void setCardPanel() {
-		this.bottomPanel2 = new JPanel(new CardLayout());
-		this.showPanel = new JPanel();
-		this.showButton = new JButton("Show Password");
-		this.showButton.setActionCommand("SHOW");
-		this.showPanel.add(this.showButton);
-		this.bottomPanel2.add(this.showPanel, "SHOWPANEL");
-		this.bottomPanel.add(this.bottomPanel2, BorderLayout.CENTER);
-		this.bottomPanel2.setVisible(true);
-		this.cl = (CardLayout) (this.bottomPanel2.getLayout());
-		showShowMeButton();
-	}
-
 	private void setBackLoginButtons() {
 		JPanel backloginPanel = new JPanel();
 		this.back = new JButton("Back");
 		this.back.setActionCommand("BACK");
-		this.login = new JButton("Log In");
-		this.login.setActionCommand("LOGIN");
+//		this.showButton = new JButton("Show Password");
+//		this.showButton.setActionCommand("SHOW");
+		this.login = new JButton("Next");
+		this.login.setActionCommand("NEXT");
 		backloginPanel.add(this.back);
+//		backloginPanel.add(this.showButton);
 		backloginPanel.add(this.login);
 		this.bottomPanel.add(backloginPanel, BorderLayout.SOUTH);
-		
 	}
 	
-	public void showShowMeButton() {
-		this.cl.show(this.bottomPanel2, "SHOWPANEL");
+	
+	public void showPasswords() {
+		this.selectedImagesPanel.setVisible(true);
 	}
 	
-	public void showSelectedImages() {
-		this.cl.show(this.bottomPanel2, "SELECTEDIMAGES");
-	}
+//	public void hidePasswords() {
+//		this.selectedImagesPanel.setVisible(false);
+//	}
 	
+//	public void setShowButton() {
+//		this.showButton.setText("Show Password");
+//	}
+//	
+//	public void setHideButton() {
+//		this.showButton.setText("Hide Password");
+//	}
+
 	/**
 	 * This method sets the layout of the image buttons
 	 */
@@ -119,7 +127,7 @@ public class UserLoginSelectionPanel extends JPanel {
 		int counter = 0;
 		this.buttons = new ArrayList<JButton>();
 		Iterator<String> it = this.filePaths.iterator();
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new GridLayout(4,5));
 		while (it.hasNext()) {
 			String aPath = it.next();
 			this.buttons.add(new JButton());
@@ -135,25 +143,13 @@ public class UserLoginSelectionPanel extends JPanel {
 			panel.add(this.buttons.get(counter));
 			counter++;
 			/* 5 images each row */
-			if (counter % 5 == 0) {
-				this.buttonPanel.add(panel);
-				panel = new JPanel();
-			}
+//			if (counter % 5 == 0) {
+//				this.buttonPanel.add(panel);
+//				panel = new JPanel();
+//			}
 			
 		}
-	}
-	
-	
-	/**
-	 * Add listeners to each interactive JComponent that is on the JFrame for the user to click on (e.g. each image button, back and login buttons)
-	 * @param alistener
-	 */
-	public void addListener(ActionListener alistener) {
-		for (JButton button : this.buttons) {
-			button.addActionListener(alistener);
-		}
-		this.back.addActionListener(alistener);
-		this.login.addActionListener(alistener);
+		this.buttonPanel.add(panel);
 	}
 
 	/*
@@ -203,16 +199,27 @@ public class UserLoginSelectionPanel extends JPanel {
 		this.remove(this.bottomPanel); // to be recreated on a future login
 		this.clickCounter = 0; // reset the click counter
 		setBottomPanel();
-		setCardPanel();
 		setButtonPanel(); // set up button panel again 
 		setSelectionPanel(); // set selection panel again
 		setBackLoginButtons();
 		revalidate();
 		repaint();
 	}
-
+	
+	
+	/**
+	 * Add listeners to each interactive JComponent that is on the JFrame for the user to click on (e.g. each image button, back and login buttons)
+	 * @param alistener
+	 */
+	public void addUserSelectionListener(ActionListener userSelectionListener) {
+		for (JButton button : this.buttons) {
+			button.addActionListener(userSelectionListener);
+		}
+		this.back.addActionListener(userSelectionListener);
+		this.login.addActionListener(userSelectionListener);
+//		this.showButton.addActionListener(userSelectionListener);
+	}
+	
 	public void addMouseListeners(MouseListener userSelectionListener) {
-		this.showButton.addMouseListener(userSelectionListener);
-		
 	}
 }

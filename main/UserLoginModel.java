@@ -9,29 +9,117 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 
 /**
- * This class is responsible for storing the data during the login phase and coordinating this with the DBConnect class for that data to be persistantly stored
+ * This class is responsible for storing the data during the login phase and coordinating this with the DBConnect class for that data to be persistently stored
  */
 public class UserLoginModel {
+	private String UserID;
 	private DBConnect db;
-	private List<String> images; // 20 images to be displayed to user
-	private List<String> passwordPaths; // a list of the 3 images - password
+	private List<String> images, passwordPaths, enteredPasswords; // 20 images to be displayed to user
 	private final int NOOFPASSWORDS = 3;
-	private int UserID, loginMethod, loginAttemptNo, pictureSetSelection;
-	private List<String> enteredPassword; // a list of the selected password filepaths
+//	private int UserID, loginMethod, loginAttemptNo, pictureSetSelection;
+	private int loginMethod, loginAttemptNo, pictureSetSelection;
 	private List<Double> timeTaken; // a list of times takens to select an image
+	private double totalTimeTaken;
 	private LocalDateTime initialTime; // an initial time which is reset after every click
 	private List<Integer> successOfPasswords; // a list of 1s and 0s to show whether a selection is correct
-	private boolean lastLoginSuccesful; // whether the most recent log in was successful
-	private boolean shuffled;
-
+	private boolean lastLoginSuccesful, shuffled; // whether the most recent log in was successful
 
 	public UserLoginModel() {
 		this.db = new DBConnect();
 		this.images = new ArrayList<String>();
 		this.passwordPaths = new ArrayList<String>();
-		this.enteredPassword = new ArrayList<String>();
+		this.enteredPasswords = new ArrayList<String>();
 		this.timeTaken = new ArrayList<Double>();
+		this.totalTimeTaken = 0;
 		this.successOfPasswords = new ArrayList<Integer>();
+	}
+
+	/**
+	 * @return the successOfPasswords
+	 */
+	public List<Integer> getSuccessOfPasswords() {
+		return successOfPasswords;
+	}
+
+	/**
+	 * @return the pictureSetSelection
+	 */
+	public int getPictureSetSelection() {
+		return pictureSetSelection;
+	}
+
+	/**
+	 * @param pictureSetSelection the pictureSetSelection to set
+	 */
+	public void setPictureSetSelection(int pictureSetSelection) {
+		this.pictureSetSelection = pictureSetSelection;
+	}
+
+	/**
+	 * @return the enteredPassword
+	 */
+	public List<String> getEnteredPassword() {
+		return enteredPasswords;
+	}
+
+	/**
+	 * @param enteredPassword the enteredPassword to set
+	 */
+	public void setEnteredPassword(List<String> enteredPassword) {
+		this.enteredPasswords = enteredPassword;
+	}
+
+	/**
+	 * @return the initialTime
+	 */
+	public LocalDateTime getInitialTime() {
+		return initialTime;
+	}
+
+	/**
+	 * @param initialTime the initialTime to set
+	 */
+	public void setInitialTime(LocalDateTime initialTime) {
+		this.initialTime = initialTime;
+	}
+
+	/**
+	 * @return the lastLoginSuccesful
+	 */
+	public boolean getLastLoginSuccesful() {
+		return lastLoginSuccesful;
+	}
+
+	/**
+	 * @param lastLoginSuccesful the lastLoginSuccesful to set
+	 */
+	public void setLastLoginSuccesful(boolean lastLoginSuccesful) {
+		this.lastLoginSuccesful = lastLoginSuccesful;
+	}
+
+	/**
+	 * @return the nOOFPASSWORDS
+	 */
+	public int getNOOFPASSWORDS() {
+		return NOOFPASSWORDS;
+	}
+	
+	public void setLoginAttemptNo(int number) {
+		this.loginAttemptNo = number;
+	}
+
+	/**
+	 * @return the loginAttemptNo
+	 */
+	public int getLoginAttemptNo() {
+		return loginAttemptNo;
+	}
+
+	/**
+	 * @param successOfPasswords the successOfPasswords to set
+	 */
+	public void setSuccessOfPasswords(List<Integer> successOfPasswords) {
+		this.successOfPasswords = successOfPasswords;
 	}
 
 	/**
@@ -39,14 +127,14 @@ public class UserLoginModel {
 	 * @return
 	 */
 	public List<String> getEnteredPasswords() {
-		return this.enteredPassword;
+		return this.enteredPasswords;
 	}
 
 	/**
 	 * Set a userID
 	 * @param UserID
 	 */
-	public void setUserID(int UserID) {
+	public void setUserID(String UserID) {
 		this.UserID = UserID;
 	}
 
@@ -62,7 +150,7 @@ public class UserLoginModel {
 	 * get a User Id
 	 * @return
 	 */
-	public int getUserID() {
+	public String getUserID() {
 		return this.UserID;
 	}
 
@@ -80,14 +168,47 @@ public class UserLoginModel {
 	 *
 	 */
 	public void getUsersImages() {
-		switch(loginMethod) {
-			case 1:
-				this.images.addAll(db.getSeenDecoyImageSetFilePathsFromDatabase(UserID, pictureSetSelection));
-				break;
-			case 2:
-				this.images.addAll(db.getUnseenDecoyImageSetFilePathsFromDatabase(UserID, pictureSetSelection));
-				break;
+		this.images.addAll(db.getDecoyImageSetFromDB(UserID, pictureSetSelection, loginMethod));
+		printImages();
+	}
+
+	private void printImages() {
+		if (lastLoginSuccesful) {
+			System.out.println("last login successful");
+		} else {
+			System.out.println("last login unsuccessful");
 		}
+		for (String s : this.images) {
+			System.out.println(s);
+		}
+	}
+
+	/**
+	 * @return the images
+	 */
+	public List<String> getImages() {
+		return images;
+	}
+
+	/**
+	 * @param images the images to set
+	 */
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
+
+	/**
+	 * @return the timeTaken
+	 */
+	public List<Double> getTimeTaken() {
+		return timeTaken;
+	}
+
+	/**
+	 * @param timeTaken the timeTaken to set
+	 */
+	public void setTimeTaken(List<Double> timeTaken) {
+		this.timeTaken = timeTaken;
 	}
 
 	/**
@@ -110,24 +231,20 @@ public class UserLoginModel {
 	public void setDb(DBConnect db) {
 		this.db = db;
 	}
-
-	/**
-	 * First get them from the database
-	 * Next shuffle them if the most recent login was successful
-	 * @return the filePaths
-	 */
-	public List<String> getDecoyImages() {
-		getUsersImages();
-		formPasswordPaths();
-		shuffleDecoyImages();
-		return images;
-	}
-
+	
 	/**
 	 * @param filePaths the filePaths to set
 	 */
 	public void setDecoyImages(List<String> filePaths) {
 		this.images.addAll(filePaths);
+	}
+	
+	/**
+	 * Set the picture Selection
+	 * @param pictureSelection
+	 */
+	public void setPictureSelection(int pictureSelection) {
+		this.pictureSetSelection = pictureSelection;
 	}
 
 	/**
@@ -151,13 +268,42 @@ public class UserLoginModel {
 		return NOOFPASSWORDS;
 	}
 
+	public void setShuffled(boolean b) {
+		this.shuffled = b;
+		
+	}
+
+	public boolean getShuffled() {
+		return this.shuffled;
+	}
+	
+	/**
+	 * get the login attempt number
+	 * @return
+	 */
+	public int getLoginAttempt() {
+		return this.loginAttemptNo;
+	}
+	
+	/**
+	 * First get them from the database
+	 * Next shuffle them if the most recent login was successful
+	 * @return the filePaths
+	 */
+	public List<String> getDecoyImages() {
+		getUsersImages();
+		formPasswordPaths();
+		shuffleDecoyImages();
+		return images;
+	}
+
 	/**
 	 * Store a selected image's filepath to the list of entered passwords
 	 * @param source
 	 */
 	public void addImage(Object source) {
 		Icon imageIcon = ((JButton) source).getIcon();
-		this.enteredPassword.add(imageIcon.toString());
+		this.enteredPasswords.add(imageIcon.toString());
 	}
 
 	/**
@@ -165,7 +311,7 @@ public class UserLoginModel {
 	 * @return
 	 */
 	public boolean correctPassword() {
-		return this.enteredPassword.equals(this.passwordPaths);
+		return this.enteredPasswords.equals(this.passwordPaths);
 	}
 
 	/**
@@ -175,7 +321,8 @@ public class UserLoginModel {
 	public void addLoginAttempt() {
 		addSuccessOfPasswords();
 //		db.addLoginAttemptToDB(this.getUserID(), this.getLoginMethod(), this.enteredPassword, this.timeTaken, this.correctPassword(), this.successOfPasswords, this.loginAttemptNo, this.pictureSetSelection);
-		db.addLoginAttemptToDatabase(this.getUserID(), this.getLoginMethod(), this.pictureSetSelection, this.enteredPassword, this.timeTaken, this.successOfPasswords, this.correctPassword(), this.loginAttemptNo);
+		db.addLoginAttemptToDatabase(this.getUserID(), this.getLoginMethod(), this.pictureSetSelection, this.enteredPasswords, this.timeTaken, this.totalTimeTaken, this.successOfPasswords, this.correctPassword(), this.loginAttemptNo);
+		
 		if (!this.correctPassword()) {
 			db.updateUserFilePaths(this.UserID, this.loginMethod, this.pictureSetSelection, this.images);
 		}
@@ -187,6 +334,7 @@ public class UserLoginModel {
 	 */
 	public void addTimeTakenPerPassword(Double time) {
 		this.timeTaken.add(time);
+		
 	}
 
 	/**
@@ -205,6 +353,8 @@ public class UserLoginModel {
 		double milliseconds = timeBetween.toMillis();
 		double seconds = milliseconds / 1000;
 		this.timeTaken.add(seconds);
+		this.totalTimeTaken += seconds;
+		System.out.println(totalTimeTaken);
 		setInitialTime();
 	}
 
@@ -215,14 +365,6 @@ public class UserLoginModel {
 	public void setLoginAttempt() {
 		this.loginAttemptNo = db.getRecentLoginAttemptNo(UserID, loginMethod, pictureSetSelection);
 		this.loginAttemptNo = (this.loginAttemptNo == 0) ? 1 : ++this.loginAttemptNo;
-	}
-
-	/**
-	 * get the login attempt number
-	 * @return
-	 */
-	public int getLoginAttempt() {
-		return this.loginAttemptNo;
 	}
 
 	/**
@@ -245,43 +387,30 @@ public class UserLoginModel {
 	/**
 	 * If the most recent log in was successful or if this is the first attempt, then make sure the images are shuffled
 	 */
-	private void shuffleDecoyImages() {
-		if (this.lastLoginSuccesful && !this.isShuffled() || this.loginAttemptNo == 1) {
+	public void shuffleDecoyImages() {
+		if (this.lastLoginSuccesful && !this.getShuffled() || this.loginAttemptNo == 1) {
 			Collections.shuffle(this.images);
 			this.setShuffled(true);
 		}
 	}
 
-	private void setShuffled(boolean b) {
-		this.shuffled = b;
-		
-	}
-
-	private boolean isShuffled() {
-		return this.shuffled;
-	}
 
 	/**
 	 * Checks whether each element in the entered password is the same as the password list and add it to the list named successOfPasswords
-	 * 1 = true, 0 = false;
+	 * 1 = true, 0 = false; 2 = selected image is found in the password but was chosen in the incorrect order
 	 */
-	private void addSuccessOfPasswords() {
-		for (int i = 0; i < enteredPassword.size(); i++) {
-			if (enteredPassword.get(i).equals(passwordPaths.get(i))) {
+	public void addSuccessOfPasswords() {
+		for (int i = 0; i < enteredPasswords.size(); i++) {
+			if (enteredPasswords.get(i).equals(passwordPaths.get(i))) {
 				this.successOfPasswords.add(1);
+			} else if (passwordPaths.contains(enteredPasswords.get(i))) {
+				this.successOfPasswords.add(2);
 			} else {
 				this.successOfPasswords.add(0);
 			}
 		}
 	}
 
-	/**
-	 * Set the picture Selection
-	 * @param pictureSelection
-	 */
-	public void setPictureSelection(int pictureSelection) {
-		this.pictureSetSelection = pictureSelection;
-	}
 
 	/**
 	 * Return whether the data entered into the instruction panel already belongs to a registered user.
@@ -293,9 +422,6 @@ public class UserLoginModel {
 		return isValid;
 	}
 	
-	public void setLoginAttemptNo(int number) {
-		this.loginAttemptNo = number;
-	}
 
 	/**
 	 * A reset method to clear all locally stored data and ensure there is no carry over with future logins.
@@ -303,14 +429,20 @@ public class UserLoginModel {
 	public void clear() {
 		images.clear();
 		passwordPaths.clear();
-		UserID = 0;
+		UserID = null;
 		loginMethod = 0;
 		loginAttemptNo = 0;
 		pictureSetSelection = 0;
-		enteredPassword.clear();
+		enteredPasswords.clear();
 		timeTaken.clear();
 		successOfPasswords.clear();
 		lastLoginSuccesful = false;
 		shuffled = false;
+		totalTimeTaken = 0.0;
 	}
+
+//	public boolean getSuccessfulAttempt() {
+//		// TODO Auto-generated method stub
+//		return this.successful;
+//	}
 }
