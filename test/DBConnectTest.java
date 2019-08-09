@@ -28,6 +28,8 @@ public class DBConnectTest {
 	private boolean correctPassword;
 	private int loginAttemptNo;
 	private boolean recentlySuccessful = true;
+	private double overallTimeTaken;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -54,7 +56,7 @@ public class DBConnectTest {
 	 * @return
 	 */
 	public User createUserDetails() {
-		this.user = new User(999999, "a", "b", "c", 1, 1);
+		this.user = new User("999999", "a", "b", "c", 1, 1, 0);
 		List<Double> time = new ArrayList<Double>();
 		time.add(0.0);
 		time.add(0.0);
@@ -79,7 +81,7 @@ public class DBConnectTest {
 		String command = "Delete From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setInt(1, 999999);
+			st.setString(1, "999999");
 			st.setInt(2, 1);
 			st.setInt(3, 1);
 			st.executeUpdate();
@@ -96,7 +98,7 @@ public class DBConnectTest {
 		String command = "Delete From AllLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setInt(1, 999999);
+			st.setString(1, "999999");
 			st.setInt(2, 1);
 			st.setInt(3, 1);
 			st.executeUpdate();
@@ -133,10 +135,10 @@ public class DBConnectTest {
 	public void testAddUserToDatabase() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
-		user = returnLatestAddedUserToDB(999999, 1, 1);
-		assertEquals(999999, user.getUserid());
+		user = returnRegisteredUser("999999", 1, 1);
+		assertEquals("999999", user.getUserid());
 		assertEquals(1, user.getPictureSet());
-		assertEquals(2, user.getLoginMethod());
+		assertEquals(1, user.getLoginMethod());
 	}
 	
 	@Test
@@ -148,25 +150,15 @@ public class DBConnectTest {
 		passwordsLocal.add("a");
 		passwordsLocal.add("b");
 		passwordsLocal.add("c");
-		assertEquals(passwordsFromDB, passwordsLocal);
+		assertEquals(passwordsLocal, passwordsFromDB);
 	}
 	
-//	@Test
-//	public void returnUserSeenImagesFromDatabase() {
-//		User user = createUserDetails();
-//		db.addUserToDatabase(user);
-//		Set<String> set = new HashSet<String>();
-//		List<String> list = db.getSeenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
-//		set.addAll(list);
-//		assertEquals(user.getImages(), set);
-//	}
-	
 	@Test
-	public void returnUserUnseenImagesFromDatabase() {
+	public void returnUserDecoyImageSetFromDatabase() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
 		Set<String> set = new HashSet<String>();
-		List<String> list = db.getUnseenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
+		List<String> list = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
 		set.addAll(list);
 		assertEquals(user.getImages(), set);
 	}
@@ -176,14 +168,10 @@ public class DBConnectTest {
 	public void testUpdateFilePaths() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
-		List<String> seenImagesBeforeUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet());
-//		List<String> unseenImagesBeforeUpdate = db.getUnseenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
-		seenImagesBeforeUpdate.add(user.getPasswordOne());
-		seenImagesBeforeUpdate.add(user.getPasswordTwo());
-		seenImagesBeforeUpdate.add(user.getPasswordThree());
-//		unseenImagesBeforeUpdate.add(user.getPasswordOne());
-//		unseenImagesBeforeUpdate.add(user.getPasswordTwo());
-//		unseenImagesBeforeUpdate.add(user.getPasswordThree());
+		List<String> decoyImagesBeforeUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		decoyImagesBeforeUpdate.add(user.getPasswordOne());
+		decoyImagesBeforeUpdate.add(user.getPasswordTwo());
+		decoyImagesBeforeUpdate.add(user.getPasswordThree());
 		List<String> updatedImages = new ArrayList<String>();
 		int maxImages = 17;
 		int counter = 0;
@@ -195,30 +183,29 @@ public class DBConnectTest {
 		updatedImages.add(user.getPasswordTwo());
 		updatedImages.add(user.getPasswordThree());
 		db.updateUserFilePaths(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), updatedImages);
-		List<String> seenImagesAfterUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet());
-//		List<String> unseenImagesAfterUpdate = db.getUnseenDecoyImageSetFilePathsFromDatabase(user.getUserid(), user.getPictureSet());
-		assertNotEquals(seenImagesBeforeUpdate, seenImagesAfterUpdate);
-//		assertEquals(unseenImagesBeforeUpdate, unseenImagesAfterUpdate);
+		List<String> decoyImagesImagesAfterUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		assertNotEquals(decoyImagesBeforeUpdate, decoyImagesImagesAfterUpdate);
 	}
 	
-	public User returnLatestAddedUserToDB(int userID, int pictureSet, int loginMethod) {
+	public User returnRegisteredUser(String userID, int pictureSet, int loginMethod) {
 		User user = null;
 		db.connectToDatabase();
 		String command = "Select * From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setInt(1, userID);
+			st.setString(1, "999999");
 			st.setInt(2, pictureSet);
 			st.setInt(3, loginMethod);
 			ResultSet result = st.executeQuery();
 			while (result.next()) {
-				int UserID = result.getInt("UserID");
+				String UserID = result.getString("UserID");
 				int pictureSet1 = result.getInt("PictureSet");
 				String passwordOne = result.getString("PasswordOne");
 				String passwordTwo = result.getString("PasswordTwo");
 				String passwordThree = result.getString("PasswordThree");
 				int loginMethod1 = result.getInt("LoginMethod");
-				user = new User(UserID, passwordOne, passwordTwo, passwordThree, pictureSet1, loginMethod1);
+				double overallTimeTaken = result.getDouble("TotalTimeTaken");
+				user = new User(UserID, passwordOne, passwordTwo, passwordThree, pictureSet1, loginMethod1, overallTimeTaken);
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -236,32 +223,31 @@ public class DBConnectTest {
 		this.successOfPasswords = createSuccess();
 		this.correctPassword = true;
 		this.loginAttemptNo = 1;
-		db.addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, successOfPasswords, correctPassword, loginAttemptNo);
+		this.overallTimeTaken = 1.0;
+		db.addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, overallTimeTaken, successOfPasswords, correctPassword, loginAttemptNo);
 	}
+	
 	@Test
 	public void testAddLoginAttemptToDatabase() {
-		String selectedImageOne = null, selectedImageTwo = null, selectedImageThree = null;
-		double timeTakenToChooseImageOne = 0.0, timeTakenToChooseImageTwo = 0.0, timeTakenToChooseImageThree = 0.0;
-		int userid = 0, pictureset = 0, loginmethod = 0, successfulImageOne = 0, successfulImageTwo = 0, successfulImageThree = 0, attemptNumber = 0;
+		String selectedImageOne = null, selectedImageTwo = null, selectedImageThree = null, userid = null;
+		double timeTakenToChooseImageOne = 0.0, timeTakenToChooseImageTwo = 0.0, timeTakenToChooseImageThree = 0.0, overallTimeTaken = 0.0;
+		int pictureset = 0, loginmethod = 0, successfulImageOne = 0, successfulImageTwo = 0, successfulImageThree = 0, attemptNumber = 0;
 		boolean overallSuccessful = false;
 		
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
 		addLoginAttemptToDatabase();
 		db.connectToDatabase();
-//		int recentLoginSucess = db.getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
-//		assertEquals(1, recentLoginSucess);
-//		int recentLoginAttemptNo = db.getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
-//		assertEquals(1, recentLoginAttemptNo);
+		
 		String command = "Select * From Allloginattempts where UserID = ? and PictureSet = ? and LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setInt(1, user.getUserid());
+			st.setString(1, user.getUserid());
 			st.setInt(2, user.getPictureSet());
 			st.setInt(3, user.getLoginMethod());
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
-				userid = rs.getInt("UserID");
+				userid = rs.getString("UserID");
 				loginmethod = rs.getInt("Loginmethod");
 				pictureset = rs.getInt("PictureSet");
 				selectedImageOne = rs.getString("SelectedImageOne");
@@ -270,6 +256,7 @@ public class DBConnectTest {
 				timeTakenToChooseImageOne = rs.getDouble("timeTakenToChooseImageOne");
 				timeTakenToChooseImageTwo = rs.getDouble("timeTakenToChooseImageTwo");
 				timeTakenToChooseImageThree = rs.getDouble("timeTakenToChooseImageThree");
+				overallTimeTaken = rs.getDouble("OverallTime");
 				successfulImageOne = rs.getInt("successfulImageOne");
 				successfulImageTwo = rs.getInt("successfulImageTwo");
 				successfulImageThree = rs.getInt("successfulImageThree");

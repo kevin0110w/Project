@@ -23,7 +23,6 @@ public class UserRegistrationModel {
 	private DBConnect db;
 	private static final int LOGINMETHODONE = 1;
 	private static final int LOGINMETHODTWO = 2;
-	private int counter = 1;
 	private List<String> alternativeRegistrationSeenImages; // an arraylist to store the images that a user may have seen from a previous registration
 	/**
 	 * Create a new DBConnect object for database modifying purposes, FileNames2 object for generating string for images and decoys
@@ -175,28 +174,20 @@ public class UserRegistrationModel {
 		this.currentUser.setTimeTaken(timeTaken);
 		this.db.addUserToDatabase(this.currentUser);
 		this.addUserSeenImagestoDB();
-
-//		db.addRegistrationTime(this.currentUser, this.timeTaken);
-//		db.addUserSeenDecoyImagesToDatabase(this.currentUser);
-//		db.addUserUnseenDecoyImagesToDatabase(this.currentUser);
-// Check if there are duplicates.
-		printCheckUp();
 		this.clear(); // clear all locally stored data from a recent registration
 	}
-	
-	private void printCheckUp() {
-		List<String> images = new ArrayList<String>();
-		images.addAll(this.currentUser.getImages());
-		this.currentUser.getPrinter().setDecoyImages(images);
-		this.currentUser.getPrinter().setSeenImages(this.imageFiles.getSeenImages());
-		this.currentUser.getPrinter().setCounter(++counter);
-		this.currentUser.getPrinter().printToFile();
-	}
-
+	/**
+	 * Check whether the user has already registered using a different login method of
+	 * the same picture set
+	 * Set that to a list variable in this class.
+	 */
 	private void setAlternativeLoginImages() {
 		this.alternativeRegistrationSeenImages.addAll(this.db.getUserSeenImages(this.userID, this.pictureSet, this.alternativeLogin));
 	}
 
+	/**
+	 * Set the alternative login method to check if a user might have registered previously.
+	 */
 	private void setAlternativeLogin() {
 		switch (loginMethod) {
 		case 1:
@@ -206,9 +197,12 @@ public class UserRegistrationModel {
 			alternativeLogin = 1;
 			break;
 		}
-		
 	}
 
+	/**
+	 * Store the list of images that a user has seen during the registration phase to the
+	 * database 
+	 */
 	private void addUserSeenImagestoDB() {
 		List<String> images = new ArrayList<String>();
 		images.addAll(this.imageFiles.getListOne());
@@ -217,10 +211,15 @@ public class UserRegistrationModel {
 		db.addUsersSeenImagestoDatabase(this.userID, this.pictureSet, this.loginMethod, images);
 	}
 
+	/**
+	 * Create a decoy image set for a registered user
+	 * In method one, only images from the seen registration set will be chosen, at random
+	 * In method two, only images that is not seen in either registration attempts for a user is chosen
+	 */
 	public void createDecoyImageSet() {
 		Random random = new Random();
 		int n = 0;
-		while (this.currentUser.getImageSetSize() < TOTALNUMBEROFDECOYIMAGES) {
+		while (this.currentUser.getImages().size() < TOTALNUMBEROFDECOYIMAGES) {
 				if (this.getLoginMethod() == LOGINMETHODONE) {
 					n = random.nextInt(this.imageFiles.getSeenImages().size());
 					this.currentUser.addImageToImageSet(this.imageFiles.getSeenImages().get(n));
@@ -235,29 +234,6 @@ public class UserRegistrationModel {
 //		p.setHiddenImages(decoys);
 		
 	}
-	
-	/**
-	 * Creates the decoy image sets for a user
-	 * The program will create both versions at the same time.
-	 * Function will keep looping until both sets have the same 17 images.
-	 * Images chosen randomly. Image strings are stored in a set in the User class to ensure there is no duplication
-	 */
-//	private void createDecoyImageSet() {
-//		Random random = new Random();
-//		int n = 0, m = 0;
-//		while (this.currentUser.getSeenDecoys().size() < TOTALNUMBEROFDECOYIMAGES || this.currentUser.getUnseenDecoys().size() < TOTALNUMBEROFDECOYIMAGES  ) {
-//			if (this.currentUser.getSeenDecoys().size() < TOTALNUMBEROFDECOYIMAGES) {
-//				n = random.nextInt(imageFiles.getSeenImages().size());
-//				this.currentUser.addImageToSeenDecoySet(this.imageFiles.getSeenImages().get(n));
-//			} 
-//			
-//			if (this.currentUser.getUnseenDecoys().size() < TOTALNUMBEROFDECOYIMAGES) {
-//				m = random.nextInt(imageFiles.getUnseenImages().size());
-//				this.currentUser.addImageToUnseenDecoySet(this.imageFiles.getUnseenImages().get(m));
-//			}
-//		}
-//		p.setHiddenImages(decoys);
-//	}
 	
 	/*
 	 * Set the initial time to start when the user first sees the images

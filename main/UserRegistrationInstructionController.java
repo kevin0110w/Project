@@ -45,8 +45,10 @@ public class UserRegistrationInstructionController {
 		 * @param input - index selected in the down
 		 * @return
 		 */
-		public boolean invalidInput(int pictureSetSelection, int loginSelection) {
-			return pictureSetSelection == 0 || loginSelection == 0;
+		public boolean invalidInput(int pictureSetSelection, int loginSelection, String userID) {
+			String text = "Please enter your student ID here";
+			text = text.toUpperCase();
+			return pictureSetSelection == 0 || loginSelection == 0 || userID.equals(text);
 		}
 
 		/**
@@ -54,7 +56,7 @@ public class UserRegistrationInstructionController {
 		 */
 		public void invalidSelection() {
 			JOptionPane.showMessageDialog(userRegistrationCardsPanel.getUserRegistrationInstructionPanel(),
-					"Please select a valid picture/login", "Invalid picture set or login method selection",
+					"Please enter valid user registration details.", "Invalid User Registration Details",
 					JOptionPane.WARNING_MESSAGE);
 		}
 		
@@ -75,13 +77,13 @@ public class UserRegistrationInstructionController {
 				mainWindow.setLabelMainMenu();
 				break;
 			case "NEXT":
-				int userID, pictureSetSelection, loginSelection;
+				int pictureSetSelection, loginSelection;
 				String id = null;
 				id = getUserID().toUpperCase();
 				pictureSetSelection = userRegistrationCardsPanel.getUserRegistrationInstructionPanel()
 						.getPicsSelection();
 				loginSelection = userRegistrationCardsPanel.getUserRegistrationInstructionPanel().getLoginMethod();
-				if (invalidInput(pictureSetSelection, loginSelection)) {
+				if (invalidInput(pictureSetSelection, loginSelection, id)) {
 					invalidSelection();
 					break;
 				}

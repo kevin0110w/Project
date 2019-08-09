@@ -13,7 +13,6 @@ import java.util.Set;
 public class ImageFiles {
 	private static final int NUMBEROFREGISTRATIONIMAGES = 60;
 	private List<String> listOne, listTwo, listThree, seenImages, unseenImages;
-	private Printer printer;
 	
 	/*
 	 * Each separate list should contain 20 images for each panel in the registration selection phase
@@ -27,39 +26,6 @@ public class ImageFiles {
 		this.listThree = new ArrayList<String>();
 		this.seenImages = new ArrayList<String>();
 		this.unseenImages = new ArrayList<String>();
-		this.printer = new Printer();
-	}
-
-	/**
-	 * Create the 60 images to display on the registration screen
-	 * @param selection - picture set selection
-	 */
-	public void createRegistrationSet(int selection) {
-		List<String> allImages = new ArrayList<String>();
-		allImages = returnFiles(selection);
-		this.unseenImages.addAll(allImages); // add all images to the unseen list and remove the seen ones from this list
-		int counter = 0;
-		Random random = new Random();
-		Set<Integer> decidedNumbers = new HashSet<Integer>(); // to ensure no duplication
-		while (counter < getNumberofregistrationimages()) {
-			boolean successfuladdition = false;
-			while (!successfuladdition) {
-				int index = random.nextInt(allImages.size());
-				if (decidedNumbers.add(index)) {
-					if (counter <= 19) {
-						this.listOne.add(allImages.get(index));
-					} else if (counter >= 20 && counter <= 39) {
-						this.listTwo.add(allImages.get(index));
-					} else if (counter >= 40 && counter <= 59) {
-						this.listThree.add(allImages.get(index));
-					}
-					this.seenImages.add(allImages.get(index));
-					this.unseenImages.remove((allImages).get(index));
-					successfuladdition = true;
-				}
-			}
-			counter++;
-		}
 	}
 	
 	/*
@@ -70,15 +36,12 @@ public class ImageFiles {
 		List<String> allImages = new ArrayList<String>();
 		switch (selection) {
 		case 1:
-//			path = "C:\\Users\\woohoo\\eclipse-workspace\\project\\art";
 			path += "\\art";
 			break;
 		case 2:
-//			path = "C:\\Users\\woohoo\\eclipse-workspace\\project\\mikons1";
 			path += "\\mikons";
 			break;
 		case 3:
-//			path = "C:\\Users\\woohoo\\eclipse-workspace\\project\\mikons2";
 			path += "\\doodle";
 			break;
 		}

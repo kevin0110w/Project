@@ -36,9 +36,9 @@ public class UserRegistrationInstructionPanel extends JPanel {
 		this.textArea.setColumns(50);
 		this.textArea.setEditable(false);
 		String text = "Thank you for taking part in this experiment.\n\n";
-		text += "To get started, you will need to enter your user ID in the text box, select a login method and a \npicture set from the drop-down boxes below.\n\n";
+		text += "To get started, you will need to enter your user ID in the text box, select a login method and a \npicture set from the drop-down boxes below. You will do this 6 times with each of the different login \nmethods and picture sets.\n\n";
 		text += "When you click next, you'll be presented with 60 images, displayed across 3 panels. You can scroll \nleft and right using the buttons provided.\n\n";
-		text += "You must pick 3 unique images, one by one and remember the order in which these are selected. \n\n";
+		text += "You must pick 3 unique images, one by one and remember the order in which these are selected. \nOnce an image is selected, it cannot be deleted so please take your time.\n\n";
 		text += "Your choices will be timed and you'll be asked to complete a follow-up questionnaire regarding your choices and general thoughts on this form of authentication.\n\n";
 		text += "To log back in the program, you will need to select the 3 images that you initially picked, in the correct order.\n\n";
 		text += "Click next to continue or back to return to the previous screen.";	

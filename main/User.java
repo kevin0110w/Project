@@ -4,14 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class is responsible for storing all the data that is associated with a user during the registration phase.
+ * @author woohoo
+ *
+ */
 public class User {
 	private String userid, passwordOne, passwordTwo, passwordThree;
-//	private int userid, loginMethod, pictureSet;
 	private int loginMethod, pictureSet;
 	private double overallTimeTaken;
-	private Set<String> decoys, seenDecoys, unseenDecoys, images;
+	private Set<String> images;
 	private List<Double> timeTaken;
-	private Printer printer;
 	
 	public User(String userid, String passwordone, String passwordtwo, String passwordthree, int pictureSet, int loginMethod, double overallTimeTaken) {
 		this.userid = userid;
@@ -19,15 +22,11 @@ public class User {
 		this.passwordTwo = passwordtwo;
 		this.passwordThree = passwordthree;
 		this.pictureSet = pictureSet;
-//		this.decoys = new HashSet<String>();
-//		this.seenDecoys = new HashSet<String>();
-//		this.unseenDecoys = new HashSet<String>();
 		this.images = new HashSet<String>();
 		this.timeTaken = new ArrayList<Double>();
 		this.loginMethod = loginMethod;
 		addPasswordsToImageSet();
 		this.overallTimeTaken = overallTimeTaken;
-		this.printer = new Printer();
 	}
 
 	/**
@@ -45,27 +44,25 @@ public class User {
 	}
 
 	/**
-	 * @return the printer
+	 * Set the picture set chosen
+	 * @param pictureSet
 	 */
-	public Printer getPrinter() {
-		return printer;
-	}
-
-	/**
-	 * @param printer the printer to set
-	 */
-	public void setPrinter(Printer printer) {
-		this.printer = printer;
-	}
-
 	public void setPictureSet(int pictureSet) {
 		this.pictureSet = pictureSet;
 	}
 
+	/**
+	 * Get the picture set number
+	 * @return
+	 */
 	public int getPictureSet() {
 		return this.pictureSet;
 	}
 
+	/**
+	 * Get the list of times taken
+	 * @return
+	 */
 	public List<Double> getTimeTaken() {
 		return this.timeTaken;
 	}
@@ -141,25 +138,29 @@ public class User {
 	}
 
 	/**
-	 * @param loginattempt the loginattempt to set
+	 * @param loginattempt - the loginattempt selected during registration to set
 	 */
 	public void setLoginMethod(int loginMethod) {
 		this.loginMethod = loginMethod;
 	}
 
+	/**
+	 * Add any image to the user's image set
+	 * @param imageFile
+	 */
 	public void addImageToImageSet(String imageFile) {
 		this.images.add(imageFile);
 	}
 	
 
+	/**
+	 * Add the 3 password images to a user's set of image that'll be stored in the 
+	 * database for holding challenge sets.
+	 */
 	private void addPasswordsToImageSet() {
 		addImageToImageSet(this.passwordOne);
 		addImageToImageSet(this.passwordTwo);
 		addImageToImageSet(this.passwordThree);
-	}
-
-	public int getImageSetSize() {
-		return this.images.size();
 	}
 
 	/**
@@ -176,64 +177,13 @@ public class User {
 		this.images = images;
 	}
 	
+	/**
+	 * A  method to compare that two registered users are equal
+	 * for testing purposes.
+	 */
 	@Override
 	public boolean equals(Object user) {
 		User newUser = (User) user; 
 		return newUser.getUserid().equals(this.userid) && newUser.getPictureSet() == this.getPictureSet() && newUser.getLoginMethod() == this.loginMethod;
 	}
-
-
-//	public void addImageToDecoySet(String filePath) {
-//	if (!(filePath.equals(passwordOne) || filePath.equals(passwordTwo) || filePath.equals(passwordThree))) {
-//		this.getDecoySet().add(filePath);
-//	}
-//}
-//
-//public void addImageToUnseenDecoySet(String filePath) {
-//	if (!(filePath.equals(passwordOne) || filePath.equals(passwordTwo) || filePath.equals(passwordThree))) {
-//		this.getUnseenDecoys().add(filePath);
-//	}
-//}
-//
-//public void addImageToSeenDecoySet(String filePath) {
-//	if (!(filePath.equals(passwordOne) || filePath.equals(passwordTwo) || filePath.equals(passwordThree))) {
-//		this.getSeenDecoys().add(filePath);
-//	}
-//}
-//
-///**
-// * @return the seenDecoys
-// */
-//public Set<String> getSeenDecoys() {
-//	return seenDecoys;
-//}
-//
-///**
-// * @param seenDecoys the seenDecoys to set
-// */
-//public void setSeenDecoys(Set<String> seenDecoys) {
-//	this.seenDecoys = seenDecoys;
-//}
-//
-///**
-// * @return the unseenDecoys
-// */
-//public Set<String> getUnseenDecoys() {
-//	return unseenDecoys;
-//}
-//
-///**
-// * @param unseenDecoys the unseenDecoys to set
-// */
-	
-//public void setUnseenDecoys(Set<String> unseenDecoys) {
-//	this.unseenDecoys = unseenDecoys;
-//}
-//
-//
-//public Set<String> getDecoySet() {
-//	return this.decoys;
-//}
-	
-
 }

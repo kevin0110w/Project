@@ -19,10 +19,21 @@ import main.ImageFiles;
  */
 public class ImageFilesTest {
 	private ImageFiles imageFiles;
+	private String startingPath = System.getProperty("user.dir");
+	private String exampleArtFile = startingPath + "\\art\\image (1).jpg";
+	private String exampleMikonFile = startingPath + "\\mikons\\1.gif";
+	private String exampleDoodleFile = startingPath + "\\doodle\\1.gif";
+	private List<String> listArt, listMikon, listDoodle;
 
 	@Before
 	public void setUp() throws Exception {
 		this.imageFiles = new ImageFiles();
+		this.listArt = new ArrayList<String>();
+		this.listMikon = new ArrayList<String>();
+		this.listDoodle = new ArrayList<String>();
+		this.listArt.add(exampleArtFile);
+		this.listMikon.add(exampleMikonFile);
+		this.listDoodle.add(exampleDoodleFile);
 	}
 
 	@After
@@ -43,8 +54,8 @@ public class ImageFilesTest {
 	}
 	
 	@Test
-	public void testRegistrationSetOnlySixtyImages() {
-		imageFiles.createRegistrationSet(1);
+	public void testEachListHasTwentyImages() {
+		imageFiles.createRegistrationSet(1, listArt);
 		int listOneSize = imageFiles.getListOne().size();
 		int listTwoSize = imageFiles.getListTwo().size();
 		int listThreeSize = imageFiles.getListThree().size();
@@ -85,27 +96,58 @@ public class ImageFilesTest {
 	}
 	
 	@Test
-	public void testSeenImagesIsPopulated() {
-		imageFiles.createRegistrationSet(1);
+	public void testSeenImagesIsPopulatedArt() {
+		imageFiles.createRegistrationSet(1, listArt);
+		assertTrue("Seen images list should be greater than 0", imageFiles.getSeenImages().size() > 0);	
+		assertTrue("Seen images should not contain the alternative image", !imageFiles.getSeenImages().contains(listArt.get(0)));
+	}
+	
+	@Test
+	public void testSeenImagesIsPopulatedMikon() {
+		imageFiles.createRegistrationSet(1, listMikon);
 		assertTrue("Seen images list should be greater than 0", imageFiles.getSeenImages().size() > 0);
+		assertTrue("Seen images should not contain the alternative image", !imageFiles.getSeenImages().contains(listMikon.get(0)));
 		
 	}
 	
 	@Test
-	public void testUnseenImagesIsPopulated() {
-		imageFiles.createRegistrationSet(1);
-		assertTrue("Unseen images list should be greater than 0", imageFiles.getUnseenImages().size() > 0);
+	public void testSeenImagesIsPopulatedDoodle() {
+		imageFiles.createRegistrationSet(1, listDoodle);
+		assertTrue("Seen images list should be greater than 0", imageFiles.getSeenImages().size() > 0);
+		assertTrue("Seen images should not contain the alternative image", !imageFiles.getSeenImages().contains(listDoodle.get(0)));
+		
 	}
 	
-	@Test (expected = NullPointerException.class)
+	@Test
+	public void testUnseenImagesIsPopulatedArt() {
+		imageFiles.createRegistrationSet(1, listArt);
+		assertTrue("Unseen images list should be greater than 0", imageFiles.getUnseenImages().size() > 0);
+		assertTrue("Unseen images should contain the alternative image", imageFiles.getUnseenImages().contains(listArt.get(0)));
+	}
+	
+	@Test
+	public void testUnseenImagesIsPopulatedMikon() {
+		imageFiles.createRegistrationSet(1, listMikon);
+		assertTrue("Unseen images list should be greater than 0", imageFiles.getUnseenImages().size() > 0);
+		assertTrue("Unseen images should contain the alternative image", imageFiles.getUnseenImages().contains(listDoodle.get(0)));
+	}
+	
+	@Test
+	public void testUnseenImagesIsPopulatedDoodle() {
+		imageFiles.createRegistrationSet(1, listDoodle);
+		assertTrue("Unseen images list should be greater than 0", imageFiles.getUnseenImages().size() > 0);
+		assertTrue("Unseen images should contain the alternative image", imageFiles.getUnseenImages().contains(listDoodle.get(0)));
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
 	public void testSeenImagesShouldntBePopulated() {
-		imageFiles.createRegistrationSet(0);
+		imageFiles.createRegistrationSet(0, listArt);
 		assertTrue("Seen images list should be 0", imageFiles.getSeenImages().size() == 0);
 	}
 	
-	@Test (expected = NullPointerException.class)
+	@Test (expected = IllegalArgumentException.class)
 	public void testUnseenImagesShouldntBePopulated() {
-		imageFiles.createRegistrationSet(0);
+		imageFiles.createRegistrationSet(0, listArt);
 		assertTrue("Unseen images list should be 0", imageFiles.getUnseenImages().size() == 0);
 	}
 

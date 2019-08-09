@@ -63,7 +63,7 @@ public class UserLoginModelTest {
 		assertFalse("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
 		assertFalse("timeTaken emptied", model.getTimeTaken().size() == 0);
 		assertFalse("successOfPasswords emptied", model.getSuccessOfPasswords().size() == 0);
-		assertFalse("UserID cleared", model.getUserID() == 0);
+		assertFalse("UserID cleared", model.getUserID().equals(null));
 		assertFalse("Login Method cleared", model.getLoginMethod() == 0);
 		assertFalse("Login Attempt No cleared", model.getLoginAttempt() == 0);
 		assertFalse("Picture Set Selection cleared", model.getPictureSetSelection() == 0);
@@ -73,7 +73,7 @@ public class UserLoginModelTest {
 		assertTrue("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
 		assertTrue("timeTaken emptied", model.getTimeTaken().size() == 0);
 		assertTrue("successOfPasswords emptied", model.getSuccessOfPasswords().size() == 0);
-		assertTrue("UserID cleared", model.getUserID() == 0);
+		assertTrue("UserID cleared", model.getUserID().equals(null));
 		assertTrue("Login Method cleared", model.getLoginMethod() == 0);
 		assertTrue("Login Attempt No cleared", model.getLoginAttempt() == 0);
 		assertTrue("Picture Set Selection cleared", model.getPictureSetSelection() == 0);
@@ -82,7 +82,7 @@ public class UserLoginModelTest {
 	@Test
 	public void testGettingUserImagesSelection1() {
 		this.model.setLoginMethod(1);
-		this.model.setUserID(1);
+		this.model.setUserID("1");
 		this.model.setPictureSelection(1);
 		this.model.getUsersImages();
 		this.model.formPasswordPaths();
@@ -93,7 +93,7 @@ public class UserLoginModelTest {
 	@Test
 	public void testGettingUserImagesSelection2() {
 		this.model.setLoginMethod(2);
-		this.model.setUserID(1);
+		this.model.setUserID("1");
 		this.model.setPictureSelection(1);
 		this.model.getUsersImages();
 		this.model.formPasswordPaths();
@@ -147,7 +147,7 @@ public class UserLoginModelTest {
 		list1.add("file");
 		list1.add("elif");
 		this.model.setImages(list1);
-		this.model.setUserID(10);
+		this.model.setUserID("1");
 		this.model.setPictureSelection(2);
 		this.model.setLoginMethod(2);
 		this.model.setLoginAttempt();
@@ -177,7 +177,7 @@ public class UserLoginModelTest {
 	public void testAddSuccessOfPasswords() {
 		populateUserLoginModel();
 		this.model.getSuccessOfPasswords().clear();
-		List<Integer> success = new ArrayList();
+		List<Integer> success = new ArrayList<Integer>();
 		success.add(1);
 		success.add(1);
 		success.add(1);
@@ -336,7 +336,7 @@ public class UserLoginModelTest {
 	 * @return
 	 */
 	public User createUserDetails() {
-		this.user = new User(999999, "a", "b", "c", 1, 1);
+		this.user = new User("999999", "a", "b", "c", 1, 1, 0.0);
 		List<Double> time = new ArrayList<Double>();
 		time.add(0.0);
 		time.add(0.0);
@@ -360,7 +360,7 @@ public class UserLoginModelTest {
 		String command = "Delete From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = model.getDb().getConnection().prepareStatement(command);
-			st.setInt(1, 999999);
+			st.setString(1, "999999");
 			st.setInt(2, 1);
 			st.setInt(3, 1);
 			st.executeUpdate();
@@ -381,7 +381,7 @@ public class UserLoginModelTest {
 		this.successOfPasswords = createSuccess();
 		this.correctPassword = true;
 		this.loginAttemptNo = 1;
-		model.getDb().addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, successOfPasswords, correctPassword, loginAttemptNo);
+		model.getDb().addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, user.getOverallTimeTaken(), successOfPasswords, correctPassword, loginAttemptNo);
 	}
 	
 	public void deleteTestUserLoginAttempt() {
@@ -389,7 +389,7 @@ public class UserLoginModelTest {
 		String command = "Delete From AllLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = model.getDb().getConnection().prepareStatement(command);
-			st.setInt(1, 999999);
+			st.setString(1, "999999");
 			st.setInt(2, 1);
 			st.setInt(3, 1);
 			st.executeUpdate();

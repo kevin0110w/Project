@@ -48,14 +48,15 @@ public class UserLoginInstructionController {
 				try {
 					success = true;
 					String userId = userLoginCardsPanel.getInput().toUpperCase();
-					
+					String text = "Please enter your student ID here";
+					text = text.toUpperCase();
 //					if (userIdString.charAt(0) == '0') {
 //						userIdString = userIdString.substring(1);
 //					}
 //					int userID = Integer.parseInt(userIdString);
 					int pictureSelection = userLoginCardsPanel.getPictureSelection();
 					int loginSelection = userLoginCardsPanel.getSelection();
-					if (loginSelection == 0 || pictureSelection == 0) {
+					if (loginSelection == 0 || pictureSelection == 0 || userId.equals(text)) {
 						success = false;
 						throw new Exception(); // throw a dialog box if an invalid picture or login selection is chosen
 												// from the jcombo boxes

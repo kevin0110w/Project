@@ -54,7 +54,7 @@ public class UserRegistrationModelTest {
 	@Test
 	public void testAddUser() {
 		deleteTestUserRegistration();
-		this.model.getImageFiles().createRegistrationSet(user.getLoginMethod());
+		this.model.createRegistrationSet();
 		this.model.addUser();
 		User newUser = returnLatestAddedUserToDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
 		assertEquals(this.user, newUser);
@@ -63,7 +63,7 @@ public class UserRegistrationModelTest {
 	@Test
 	public void testIsUserAlreadyRegistered() {
 		boolean registered = model.isUserAlreadyRegistered();
-		assertTrue("Should fail as user has not been registered to db yet", registered);
+		assertFalse("Should fail as user has not been registered to db yet", registered);
 		this.model.createRegistrationSet();
 		model.addUser();
 		registered = model.isUserAlreadyRegistered();
@@ -74,10 +74,10 @@ public class UserRegistrationModelTest {
 	public void testCreateDecoyImageSet() {
 		User user = createUserDetails();
 		model.setUser(user);
-		assertEquals("User images set initially contains 3 password files", 3, model.getUser().getImageSetSize());
+		assertEquals("User images set initially contains 3 password files", 3, model.getUser().getImages().size());
 		this.model.createRegistrationSet();
 		this.model.createDecoyImageSet();
-		assertEquals("User image set now contains 20", 3, model.getUser().getImageSetSize());
+		assertEquals("User image set now contains 20", 20, model.getUser().getImages().size());
 	}
 	
 	@Test
@@ -86,7 +86,7 @@ public class UserRegistrationModelTest {
 		model.setInitialTime();
 		assertEquals("List with time taken initially zero", 0, model.getTimeTaken().size());
 		model.addTimeTaken();
-		assertEquals("List should not have one element", 0, model.getTimeTaken().size());
+		assertEquals("List should not have one element", 1, model.getTimeTaken().size());
 	}
 	
 	@Test
@@ -95,9 +95,9 @@ public class UserRegistrationModelTest {
 		assertEquals("List two should initially be 0", 0, model.getImageFiles().getListTwo().size());
 		assertEquals("List three should initially be 0", 0, model.getImageFiles().getListThree().size());
 		this.model.createRegistrationSet();
-		assertEquals("List one should now be 20", 0, model.getImageFiles().getListOne().size());
-		assertEquals("List two should now be 20", 0, model.getImageFiles().getListTwo().size());
-		assertEquals("List three should now be 20", 0, model.getImageFiles().getListThree().size());
+		assertEquals("List one should now be 20", 20, model.getImageFiles().getListOne().size());
+		assertEquals("List two should now be 20", 20, model.getImageFiles().getListTwo().size());
+		assertEquals("List three should now be 20", 20, model.getImageFiles().getListThree().size());
 	}
 	
 	@Test
@@ -107,10 +107,10 @@ public class UserRegistrationModelTest {
 		assertEquals("Password three set to 'c'", "c", model.getThirdSelectedImageFilePath());
 		assertEquals("Time list contains three elements", 3, model.getTimeTaken().size());
 		model.clear();
-		assertEquals("Password one set to null", "a", model.getFirstSelectedImageFilePath());
-		assertEquals("Password two set to null", "b", model.getSecondSelectedImageFilePath());
-		assertEquals("Password three set to null", "c", model.getThirdSelectedImageFilePath());
-		assertEquals("Time list contains 0 elements", 3, model.getTimeTaken().size());
+		assertEquals("Password one set to null", null, model.getFirstSelectedImageFilePath());
+		assertEquals("Password two set to null", null, model.getSecondSelectedImageFilePath());
+		assertEquals("Password three set to null", null, model.getThirdSelectedImageFilePath());
+		assertEquals("Time list contains 0 elements", 0, model.getTimeTaken().size());
 	}
 	
 	public void populateTheModel() {
@@ -128,20 +128,12 @@ public class UserRegistrationModelTest {
 	 * @return
 	 */
 	public User createUserDetails() {
-		this.user = new User(999999, "a", "b", "c", 1, 1);
+		this.user = new User("999999", "a", "b", "c", 1, 1, 0.0);
 		List<Double> time = new ArrayList<Double>();
 		time.add(0.0);
 		time.add(0.0);
 		time.add(0.0);
 		user.setTimeTaken(time);
-//		Set<String> images = new HashSet<String>();
-//		int n = 17;
-//		int counter = 1;
-//		while (images.size() < n) {
-//			images.add("password" + " " + counter);
-//			user.addImageToImageSet("password" + " " + counter);
-//			counter++;
-//		}
 		return user;
 	}
 	
@@ -153,7 +145,7 @@ public class UserRegistrationModelTest {
 		String command = "Delete From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = model.getDb().getConnection().prepareStatement(command);
-			st.setInt(1, 999999);
+			st.setString(1, "999999");
 			st.setInt(2, 1);
 			st.setInt(3, 1);
 			st.executeUpdate();
@@ -165,24 +157,25 @@ public class UserRegistrationModelTest {
 		}
 	}
 	
-	public User returnLatestAddedUserToDB(int userID, int pictureSet, int loginMethod) {
+	public User returnLatestAddedUserToDB(String userID, int pictureSet, int loginMethod) {
 		User user = null;
 		model.getDb().connectToDatabase();
 		String command = "Select * From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = model.getDb().getConnection().prepareStatement(command);
-			st.setInt(1, userID);
+			st.setString(1, userID);
 			st.setInt(2, pictureSet);
 			st.setInt(3, loginMethod);
 			ResultSet result = st.executeQuery();
 			while (result.next()) {
-				int UserID = result.getInt("UserID");
+				String UserID = result.getString("UserID");
 				int pictureSet1 = result.getInt("PictureSet");
 				String passwordOne = result.getString("PasswordOne");
 				String passwordTwo = result.getString("PasswordTwo");
 				String passwordThree = result.getString("PasswordThree");
 				int loginMethod1 = result.getInt("LoginMethod");
-				user = new User(UserID, passwordOne, passwordTwo, passwordThree, pictureSet1, loginMethod1);
+				double timetaken = result.getDouble("totalTimeTaken");
+				user = new User(UserID, passwordOne, passwordTwo, passwordThree, pictureSet1, loginMethod1, timetaken);
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
