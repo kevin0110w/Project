@@ -10,16 +10,15 @@ public class Main {
 		main.run(mw);
 		main.createLoginPanel(mw);
 		main.createRegistrationPanel(mw);
-//		mw.createCardLayout();
 		MainWindowController mainWindowController = new MainWindowController(mw);	
 	}
 	
 	public void createLoginPanel(MainWindow mw) {
 		UserLoginModel loginModel = new UserLoginModel();
-		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel();
+		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(mw);
 		UserLoginInstructionController UserLoginInstructionController  = new UserLoginInstructionController(mw, loginPanel, loginModel);
 		UserLoginCompleteController UserLoginCompleteController = new UserLoginCompleteController(mw, loginPanel, loginModel);
-		mw.getCardsPanel().add(loginPanel, "LOGIN");
+		mw.getCardsPanel().add(loginPanel, "Log in");
 	}
 	
 	public void createRegistrationPanel(MainWindow mw) {
@@ -27,7 +26,7 @@ public class Main {
 		UserRegistrationCardsPanel registrationPanel = new UserRegistrationCardsPanel(mw);
 		UserRegistrationInstructionController registrationController = new UserRegistrationInstructionController(mw,
 				registrationPanel, userRegistrationModel);
-		mw.getCardsPanel().add(registrationPanel, "REGISTRATION");
+		mw.getCardsPanel().add(registrationPanel, "Registration");
 	}
 	
 	public void run(MainWindow mw) {

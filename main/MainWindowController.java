@@ -18,16 +18,15 @@ public class MainWindowController {
 		public void actionPerformed(ActionEvent e) {
 			switch (e.getActionCommand()) {
 			case "REGISTER":
-				mainWindow.setLabelText("Registration"); 
+				mainWindow.setLabelRegistrationInstructions();
 				mainWindow.showRegistrationPage();
 				mainWindow.updateBigFrameSize();
-				mainWindow.setLabelRegistrationInstructions();
+			
 				break;
 			case "LOGIN":
-				mainWindow.setLabelText("Login");
+				mainWindow.setLabelLoginInstructions();
 				mainWindow.showLoginPage(); // show login page if user clicks login
 				mainWindow.updateBigFrameSize();
-				mainWindow.setLabelLoginInstructions();
 				break;
 			}
 		}

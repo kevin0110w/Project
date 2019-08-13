@@ -78,8 +78,7 @@ public class UserRegistrationInstructionController {
 				break;
 			case "NEXT":
 				int pictureSetSelection, loginSelection;
-				String id = null;
-				id = getUserID().toUpperCase();
+				String id = getUserID().toUpperCase();
 				pictureSetSelection = userRegistrationCardsPanel.getUserRegistrationInstructionPanel()
 						.getPicsSelection();
 				loginSelection = userRegistrationCardsPanel.getUserRegistrationInstructionPanel().getLoginMethod();
@@ -87,8 +86,6 @@ public class UserRegistrationInstructionController {
 					invalidSelection();
 					break;
 				}
-//					userID = Integer.parseInt(id); // capture inputted text
-
 				userRegistrationModel.setUserID(id); // set the userid field in the model
 				userRegistrationModel.setLoginMethod(loginSelection);
 				userRegistrationModel.setPictureSet(pictureSetSelection); // set the picture set field in the model
@@ -100,7 +97,7 @@ public class UserRegistrationInstructionController {
 					userRegistrationCardsPanel.showRegistrationPanel(); // show the registration page
 					userRegistrationModel.setInitialTime(); // start the clock to time user clicks
 					resetInputArea();
-					mainWindow.setLabelText("Password Selection");
+					mainWindow.setLabelSelectImages();
 				} else { // throw up a warning if a user already exists
 					JOptionPane.showMessageDialog(userRegistrationCardsPanel.getUserRegistrationInstructionPanel(),
 							"A User Already Exists With Those Details. Please Try Again", "User Registration Error",
@@ -113,9 +110,6 @@ public class UserRegistrationInstructionController {
 
 		private String getUserID() {
 			String userID = userRegistrationCardsPanel.getUserRegistrationInstructionPanel().getUserEntry();
-//			if (userID.charAt(0) == ('0')) {
-//				userID = userID.substring(1);
-//			}
 			return userID;
 		}
 

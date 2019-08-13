@@ -28,10 +28,10 @@ public class UserLoginController {
 	 * Set the action listeners in all the separate views
 	 */
 	public void setListeners() {
-		this.userLoginCardsPanel.setLoginInstructionPanel(new UserLoginListener());
+		this.userLoginCardsPanel.setLoginInstructionPanelListeners(new UserLoginListener());
 		this.userLoginCardsPanel.setLoginInstructionMouseListener(new UserLoginListener());
 
-		this.userLoginCardsPanel.setLoginSuccessPanel(new UserLoginSuccessListener());
+		this.userLoginCardsPanel.setLoginSuccessPanelListeners(new UserLoginSuccessListener());
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public class UserLoginController {
 	 */
 	public void setLoginSelectionPanelListeners() {
 		this.userLoginCardsPanel.setLoginSelectionPanel(new UserSelectionListener());
-		this.userLoginCardsPanel.setLoginSelectionMouseListener(new UserSelectionListener());
+		this.userLoginCardsPanel.addLoginSelectionMouseListener(new UserSelectionListener());
 	}
 	
 	/**
@@ -62,25 +62,9 @@ public class UserLoginController {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
-//				case "LOGINSELECTION":
-////					try {
-//						loginSelection = mainPanel.getSelection(); // set the login selection based on the selected index from the jcombo box
-////						if (selection == 0) {
-////							throw new Exception();
-////						}
-////					} catch (Exception exception) {
-////						JOptionPane.showMessageDialog(mainPanel, "Log-in Method has not been selected",
-////							    "Log In Warning",
-////							    JOptionPane.WARNING_MESSAGE);
-////					}
-//					
-//					break;
-//				case "PICTURESELECTION":
-//					pictureSelection = mainPanel.getPictureSelection(); // set the picture selection based on the selected index from the jcombo box
-//					break;
 				case "BACK":
+					mainWindow.setLabelLoginInstructions();
 					mainWindow.showMainPage();
-//					userLoginCardsPanel.showMainPage(); // show the main page
 					userLoginModel.clear(); // clear any locally stored data
 					userLoginCardsPanel.clearInstructionPanel(); // reset the instruction page view
 					break;
@@ -88,18 +72,18 @@ public class UserLoginController {
 					boolean success;
 					try {
 						success = true;
-					userIdString = userLoginCardsPanel.getInput(); 
+					userIdString = userLoginCardsPanel.getUseridInput(); 
 //					int userID = Integer.parseInt(userIdString); 
 					userLoginModel.setUserID(userIdString);// set the user id
 					pictureSelection = userLoginCardsPanel.getPictureSelection();
-					loginSelection = userLoginCardsPanel.getSelection();
+					loginSelection = userLoginCardsPanel.getLoginSelection();
 					if (loginSelection == 0 || pictureSelection == 0) {
 						success = false;
 						throw new Exception(); // throw a dialog box if an invalid picture or login selection is chosen from the jcombo boxes
 					}
 					userLoginModel.setLoginMethod(loginSelection); // set the model's field variable for login method
 					userLoginModel.setPictureSelection(pictureSelection); // set the model's field variable for picture set
-					userLoginModel.setLoginAttempt(); // set the model's field variable for login attempt by pulling the details from the database
+					userLoginModel.setLoginAttemptNoFromDB(); // set the model's field variable for login attempt by pulling the details from the database
 					} catch (Exception exception) {
 						JOptionPane.showMessageDialog(userLoginCardsPanel, "Warning - UserID is not entered, Log-in Method and/or Picture Set have not been selected",
 							    "Log In Warning",
@@ -107,7 +91,7 @@ public class UserLoginController {
 						success=false;
 					} 
 					// check that correct details have been inputted and that these are associated with a registered user
-					if (success && userLoginModel.returnIsValid()) {
+					if (success && userLoginModel.returnIsRegisteredUser()) {
 					userLoginModel.returnMostRecentLoginSuccess(); // check whether this user logged in successfully recently
 //					mainPanel.loginSelectionPanel.setSuccess(successfulPastLogin);
 					userLoginCardsPanel.getLoginSelectionPanel().getFilePaths(userLoginModel.getDecoyImages()); // pull the file paths into the view and set the buttons

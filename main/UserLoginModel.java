@@ -14,9 +14,8 @@ import javax.swing.JButton;
 public class UserLoginModel {
 	private String UserID;
 	private DBConnect db;
-	private List<String> images, passwordPaths, enteredPasswords; // 20 images to be displayed to user
+	private List<String> challengeSet, passwordPaths, enteredPasswords; // 20 images to be displayed to user
 	private final int NOOFPASSWORDS = 3;
-//	private int UserID, loginMethod, loginAttemptNo, pictureSetSelection;
 	private int loginMethod, loginAttemptNo, pictureSetSelection;
 	private List<Double> timeTaken; // a list of times takens to select an image
 	private double totalTimeTaken;
@@ -26,7 +25,7 @@ public class UserLoginModel {
 
 	public UserLoginModel() {
 		this.db = new DBConnect();
-		this.images = new ArrayList<String>();
+		this.challengeSet = new ArrayList<String>();
 		this.passwordPaths = new ArrayList<String>();
 		this.enteredPasswords = new ArrayList<String>();
 		this.timeTaken = new ArrayList<Double>();
@@ -137,21 +136,21 @@ public class UserLoginModel {
 	public void setUserID(String UserID) {
 		this.UserID = UserID;
 	}
-
-	/**
-	 * Set login method
-	 * @param loginMethod
-	 */
-	public void setLoginMethod(int loginMethod) {
-		this.loginMethod = loginMethod;
-	}
-
+	
 	/**
 	 * get a User Id
 	 * @return
 	 */
 	public String getUserID() {
 		return this.UserID;
+	}
+	
+	/**
+	 * Set login method
+	 * @param loginMethod
+	 */
+	public void setLoginMethod(int loginMethod) {
+		this.loginMethod = loginMethod;
 	}
 
 	/**
@@ -168,33 +167,21 @@ public class UserLoginModel {
 	 *
 	 */
 	public void getUsersImages() {
-		this.images.addAll(db.getDecoyImageSetFromDB(UserID, pictureSetSelection, loginMethod));
-		printImages();
-	}
-
-	private void printImages() {
-		if (lastLoginSuccesful) {
-			System.out.println("last login successful");
-		} else {
-			System.out.println("last login unsuccessful");
-		}
-		for (String s : this.images) {
-			System.out.println(s);
-		}
+		this.challengeSet.addAll(db.getDecoyImageSetFromDB(UserID, pictureSetSelection, loginMethod));
 	}
 
 	/**
 	 * @return the images
 	 */
-	public List<String> getImages() {
-		return images;
+	public List<String> getChallengeSet() {
+		return challengeSet;
 	}
 
 	/**
 	 * @param images the images to set
 	 */
-	public void setImages(List<String> images) {
-		this.images = images;
+	public void setChallengeSet(List<String> images) {
+		this.challengeSet = images;
 	}
 
 	/**
@@ -236,7 +223,7 @@ public class UserLoginModel {
 	 * @param filePaths the filePaths to set
 	 */
 	public void setDecoyImages(List<String> filePaths) {
-		this.images.addAll(filePaths);
+		this.challengeSet.addAll(filePaths);
 	}
 	
 	/**
@@ -294,7 +281,7 @@ public class UserLoginModel {
 		getUsersImages();
 		formPasswordPaths();
 		shuffleDecoyImages();
-		return images;
+		return challengeSet;
 	}
 
 	/**
@@ -324,7 +311,7 @@ public class UserLoginModel {
 		db.addLoginAttemptToDatabase(this.getUserID(), this.getLoginMethod(), this.pictureSetSelection, this.enteredPasswords, this.timeTaken, this.totalTimeTaken, this.successOfPasswords, this.correctPassword(), this.loginAttemptNo);
 		
 		if (!this.correctPassword()) {
-			db.updateUserFilePaths(this.UserID, this.loginMethod, this.pictureSetSelection, this.images);
+			db.updateUserFilePaths(this.UserID, this.loginMethod, this.pictureSetSelection, this.challengeSet);
 		}
 	}
 
@@ -354,7 +341,6 @@ public class UserLoginModel {
 		double seconds = milliseconds / 1000;
 		this.timeTaken.add(seconds);
 		this.totalTimeTaken += seconds;
-		System.out.println(totalTimeTaken);
 		setInitialTime();
 	}
 
@@ -362,7 +348,7 @@ public class UserLoginModel {
 	 * Get the recent login attempt from the database and increment it and set it to the field variable, so that when this is stored
 	 * in the database, it is up to date
 	 */
-	public void setLoginAttempt() {
+	public void setLoginAttemptNoFromDB() {
 		this.loginAttemptNo = db.getRecentLoginAttemptNo(UserID, loginMethod, pictureSetSelection);
 		this.loginAttemptNo = (this.loginAttemptNo == 0) ? 1 : ++this.loginAttemptNo;
 	}
@@ -389,7 +375,7 @@ public class UserLoginModel {
 	 */
 	public void shuffleDecoyImages() {
 		if (this.lastLoginSuccesful && !this.getShuffled() || this.loginAttemptNo == 1) {
-			Collections.shuffle(this.images);
+			Collections.shuffle(this.challengeSet);
 			this.setShuffled(true);
 		}
 	}
@@ -416,10 +402,9 @@ public class UserLoginModel {
 	 * Return whether the data entered into the instruction panel already belongs to a registered user.
 	 * @return true if already registered
 	 */
-	public boolean returnIsValid() {
-//		boolean isValid = db.returnIsRegistered(this.UserID, this.pictureSetSelection);
-		boolean isValid = db.returnIsRegistered(this.UserID, this.pictureSetSelection, this.loginMethod);
-		return isValid;
+	public boolean returnIsRegisteredUser() {
+		boolean isRegisteredUser = db.returnIsRegistered(this.UserID, this.pictureSetSelection, this.loginMethod);
+		return isRegisteredUser;
 	}
 	
 
@@ -427,7 +412,7 @@ public class UserLoginModel {
 	 * A reset method to clear all locally stored data and ensure there is no carry over with future logins.
 	 */
 	public void clear() {
-		images.clear();
+		challengeSet.clear();
 		passwordPaths.clear();
 		UserID = null;
 		loginMethod = 0;
@@ -440,9 +425,4 @@ public class UserLoginModel {
 		shuffled = false;
 		totalTimeTaken = 0.0;
 	}
-
-//	public boolean getSuccessfulAttempt() {
-//		// TODO Auto-generated method stub
-//		return this.successful;
-//	}
 }

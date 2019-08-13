@@ -21,8 +21,8 @@ public class UserLoginSelectionController {
 	}
 	
 	public void setListeners() {
-		this.userLoginCardsPanel.setLoginSelectionPanel(new UserSelectionListener());
-		this.userLoginCardsPanel.setLoginSelectionMouseListener(new UserSelectionListener());
+		this.userLoginCardsPanel.addUserSelectionListener(new UserSelectionListener());
+		this.userLoginCardsPanel.addLoginSelectionMouseListener(new UserSelectionListener());
 	}
 
 	public void setText() {
@@ -90,6 +90,7 @@ public class UserLoginSelectionController {
 					userLoginModel.clear();
 					break;
 				case "BACK":
+					userLoginCardsPanel.getMainPage().setLabelLoginInstructions();
 					userLoginCardsPanel.showInstructionPanel(); // show the instruction page
 					userLoginCardsPanel.clearInstructionPanel(); // show the instruction page
 					userLoginCardsPanel.getLoginSelectionPanel().clear(); // reset the selection panel view so that there is no crossover if user tries again with different details

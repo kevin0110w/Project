@@ -46,6 +46,7 @@ public class UserRegistrationController {
 				userRegistrationCardsPanel.getUserRegistrationPanel().showNext(); // show later image panel
 				break;
 			case "BACK":
+				userRegistrationCardsPanel.getMw().setLabelRegistrationInstructions();
 				userRegistrationCardsPanel.getUserRegistrationPanel().clear();
 				model.clear(); // clear the data in memory to stop any doubling of data (e.g. button/imagesets) if a user chooses a different picture set
 				userRegistrationCardsPanel.showInstructionPanel(); // go back to the instruction panel
@@ -86,15 +87,12 @@ public class UserRegistrationController {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (e.getSource() == userRegistrationCardsPanel.getUserRegistrationPanel().getPasswordButton()) {
-				userRegistrationCardsPanel.getUserRegistrationPanel().showSelectedImages();
-			}
+			// TODO Auto-generated method stub
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			userRegistrationCardsPanel.getUserRegistrationPanel().showShowMeButton();
-
+			// TODO Auto-generated method stub
 		}
 	}
 }

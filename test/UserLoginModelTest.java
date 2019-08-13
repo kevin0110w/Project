@@ -48,7 +48,7 @@ public class UserLoginModelTest {
 
 	@Test
 	public void testAllListVariablesAreInitiallyEmpty() {
-		assertTrue("imageFilePaths initially empty", model.getImages().size() == 0);
+		assertTrue("imageFilePaths initially empty", model.getChallengeSet().size() == 0);
 		assertTrue("passwordPaths initially empty", model.getPasswordPaths().size() == 0);
 		assertTrue("enteredPassword initially empty", model.getEnteredPasswords().size() == 0);
 		assertTrue("timeTaken initially empty", model.getTimeTaken().size() == 0);
@@ -58,7 +58,7 @@ public class UserLoginModelTest {
 	@Test
 	public void testClearMethod() {
 		populateUserLoginModel();
-		assertFalse("imageFilePaths emptied", model.getImages().size() == 0);
+		assertFalse("imageFilePaths emptied", model.getChallengeSet().size() == 0);
 		assertFalse("passwordPaths emptied", model.getPasswordPaths().size() == 0);
 		assertFalse("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
 		assertFalse("timeTaken emptied", model.getTimeTaken().size() == 0);
@@ -68,7 +68,7 @@ public class UserLoginModelTest {
 		assertFalse("Login Attempt No cleared", model.getLoginAttempt() == 0);
 		assertFalse("Picture Set Selection cleared", model.getPictureSetSelection() == 0);
 		this.model.clear();
-		assertTrue("imageFilePaths emptied", model.getImages().size() == 0);
+		assertTrue("imageFilePaths emptied", model.getChallengeSet().size() == 0);
 		assertTrue("passwordPaths emptied", model.getPasswordPaths().size() == 0);
 		assertTrue("enteredPassword emptied", model.getEnteredPasswords().size() == 0);
 		assertTrue("timeTaken emptied", model.getTimeTaken().size() == 0);
@@ -86,7 +86,7 @@ public class UserLoginModelTest {
 		this.model.setPictureSelection(1);
 		this.model.getUsersImages();
 		this.model.formPasswordPaths();
-		assertTrue("Image files populated and equals 20", this.model.getImages().size() == 20);
+		assertTrue("Image files populated and equals 20", this.model.getChallengeSet().size() == 20);
 		assertTrue("Password files populated and equals 3", this.model.getPasswordPaths().size() == 3);
 	}
 	
@@ -97,7 +97,7 @@ public class UserLoginModelTest {
 		this.model.setPictureSelection(1);
 		this.model.getUsersImages();
 		this.model.formPasswordPaths();
-		assertTrue("Image files populated and equals 20", this.model.getImages().size() == 20);
+		assertTrue("Image files populated and equals 20", this.model.getChallengeSet().size() == 20);
 		assertTrue("Password files populated and equals 3", this.model.getPasswordPaths().size() == 3);
 	}
 	
@@ -146,11 +146,11 @@ public class UserLoginModelTest {
 		List<String> list1 = new ArrayList<String>();
 		list1.add("file");
 		list1.add("elif");
-		this.model.setImages(list1);
+		this.model.setChallengeSet(list1);
 		this.model.setUserID("1");
 		this.model.setPictureSelection(2);
 		this.model.setLoginMethod(2);
-		this.model.setLoginAttempt();
+		this.model.setLoginAttemptNoFromDB();
 		this.model.setLastLoginSuccesful(true);
 		this.model.shuffleDecoyImages();
 		assertTrue("images shuffled", this.model.getShuffled());
@@ -168,7 +168,7 @@ public class UserLoginModelTest {
 		model.setPictureSelection(user.getPictureSet());
 		model.setLoginMethod(user.getLoginMethod());
 		model.getDb().addUserToDatabase(user);
-		boolean isValid = model.returnIsValid();
+		boolean isValid = model.returnIsRegisteredUser();
 		assertTrue(isValid);
 		deleteTestUserRegistration();
 	}
@@ -230,7 +230,7 @@ public class UserLoginModelTest {
 		addLoginAttemptToDatabase();
 		int loginAttemptNo = model.getDb().getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
 		assertEquals(1, loginAttemptNo);
-		model.setLoginAttempt();
+		model.setLoginAttemptNoFromDB();
 		loginAttemptNo = model.getLoginAttempt();
 		assertEquals("loginAttemptNo has been incremented via getLoginAttempt()", 1, loginAttemptNo);
 		deleteTestUserRegistration();
@@ -328,7 +328,7 @@ public class UserLoginModelTest {
 			imageFiles.add("UserImage " + counter);
 			counter++;
 		}
-		this.model.setImages(imageFiles);
+		this.model.setChallengeSet(imageFiles);
 	}
 	
 	/**

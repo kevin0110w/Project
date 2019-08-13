@@ -82,7 +82,6 @@ public class DBConnect {
 	public void addUserToDatabase(User user) {
 		this.connectToDatabase();
 		Iterator<Double> timeTakenIterator = user.getTimeTaken().iterator();
-//		String command = "INSERT INTO Registrations(UserID, LoginMethod, PasswordOne, PasswordTwo, PasswordThree, DecoyImageOne, DecoyImageTwo, DecoyImageThree, DecoyImageFour, DecoyImageFive, DecoyImageSix, DecoyImageSeven, DecoyImageEight, DecoyImageNine, DecoyImageTen, DecoyImageEleven, DecoyImageTwelve, DecoyImageThirteen, DecoyImageFourteen, DecoyImageFifteen, DecoyImageSixteen, DecoyImageSeventeen, PictureSet) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		String command = "INSERT INTO USERREGISTRATIONS(UserID, PictureSet, LoginMethod, PasswordOne, PasswordTwo, PasswordThree, TimeTakenToChoosePasswordOne, TimeTakenToChoosePasswordTwo, TimeTakenToChoosePasswordThree, totalTimeTaken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
@@ -100,11 +99,6 @@ public class DBConnect {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		} finally {
-//			if (user.getLoginMethod() == 1) {
-//			this.addUserSeenDecoyImagesToDatabase(user); // call the method that'll add the user's decoy image set of seen images to the database
-//			} else {
-//			this.addUserUnseenDecoyImagesToDatabase(user); // call the method that'll add the user's decoy image set of unseen images to the database
-//			}
 			this.addUserDecoyImageSetToDatabase(user);
 				this.closeConnection();
 		}
@@ -133,137 +127,6 @@ public class DBConnect {
 			e1.printStackTrace();
 		}
 	}
-
-	/**
-	 * This method will add a registered user's set of seen decoy images to the database
-	 * @param currentUser - user going through registration
-	 */
-//	public void addUserSeenDecoyImagesToDatabase(User currentUser) {
-//		Iterator<String> iterator = currentUser.getSeenDecoys().iterator();
-//		int counter = 3;
-//		String command = "INSERT INTO SEENDECOYIMAGESET(UserID, PictureSet, DecoyImageOne, DecoyImageTwo, DecoyImageThree, DecoyImageFour, DecoyImageFive, DecoyImageSix, DecoyImageSeven, DecoyImageEight, DecoyImageNine, DecoyImageTen, DecoyImageEleven, DecoyImageTwelve, DecoyImageThirteen, DecoyImageFourteen, DecoyImageFifteen, DecoyImageSixteen, DecoyImageSeventeen, Image18, Image19, Image20, LoginMethod) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-//		try {
-//			PreparedStatement st = getConnection().prepareStatement(command);
-//			st.setInt(1, currentUser.getUserid());
-//			st.setInt(2, currentUser.getPictureSet());
-//			while (iterator.hasNext()) {
-//				st.setString(counter, iterator.next());
-//				counter++;
-//			}
-//			st.setString(counter, currentUser.getPasswordOne());
-//			st.setString(++counter, currentUser.getPasswordTwo());
-//			st.setString(++counter, currentUser.getPasswordThree());
-//			st.setInt(++counter, currentUser.getLoginMethod());
-//			st.executeUpdate();
-//		} catch (SQLException e1) {
-//			e1.printStackTrace();
-//		}
-////		finally {
-////			try {
-////				connection.close();
-////			} catch (SQLException e) {
-////				
-////			}
-////		}
-//	}
-
-	/**
-	 * Method to add a user's decoy image set of unseen images to the database
-	 * @param currentUser - user undergoing registration
-	 */
-//	public void addUserUnseenDecoyImagesToDatabase(User currentUser) {
-//		Iterator<String> iterator = currentUser.getUnseenDecoys().iterator();
-//		int counter = 3;
-//		String command = "INSERT INTO UNSEENDECOYIMAGESET(UserID, PictureSet, DecoyImageOne, DecoyImageTwo, DecoyImageThree, DecoyImageFour, DecoyImageFive, DecoyImageSix, DecoyImageSeven, DecoyImageEight, DecoyImageNine, DecoyImageTen, DecoyImageEleven, DecoyImageTwelve, DecoyImageThirteen, DecoyImageFourteen, DecoyImageFifteen, DecoyImageSixteen, DecoyImageSeventeen, PasswordImageOne, PasswordImageTwo, PasswordImageThree, loginmethod) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-//		try {
-//			PreparedStatement st = getConnection().prepareStatement(command);
-//			st.setInt(1, currentUser.getUserid());
-//			st.setInt(2, currentUser.getPictureSet());
-//			while (iterator.hasNext()) {
-//				st.setString(counter, iterator.next());
-//				counter++;
-//			}
-//			st.setString(counter, currentUser.getPasswordOne());
-//			st.setString(++counter, currentUser.getPasswordTwo());
-//			st.setString(++counter, currentUser.getPasswordThree());
-//			st.setInt(++counter, currentUser.getLoginMethod());
-//			st.executeUpdate();
-//		} catch (SQLException e1) {
-//			e1.printStackTrace();
-//		}
-////		finally {
-////			try {
-////				connection.close();
-////			} catch (SQLException e) {
-////				
-////			}
-////		}
-//	}
-
-//	public List<String> getRegistrationsPasswordsFromDatabase(int UserID, int loginAttempt, int pictureSet) {
-//		connectToDatabase();
-//		List<String> passwordPaths = new ArrayList<String>();
-////		String commandTwo = "SELECT * FROM Registrations Where UserID = ? AND LoginMethod = ? AND PictureSet = ?";
-//		String commandTwo = "SELECT * FROM Registrations Where UserID = ? AND PictureSet = ?";
-//		String imagePath = "";
-//		try {
-//			PreparedStatement st = getConnection().prepareStatement(commandTwo);
-//			st.setInt(1, UserID);
-////			st.setInt(2, loginAttempt);
-//			st.setInt(2, pictureSet);
-//			ResultSet result = st.executeQuery();
-//			int n = 3;
-//			while (result.next()) {
-//				while (n < 6) {
-//					imagePath = result.getString(n);
-//					passwordPaths.add(imagePath);
-//					n++;
-//				}
-//			}
-//		} catch (SQLException e) {
-//			System.out.println("Connection failed");
-//			e.printStackTrace();
-//		}finally {
-//			try {
-//				connection.close();
-//			} catch (SQLException e) {
-//				
-//			}
-//		}
-//		return passwordPaths;
-//	}
-//	
-//	public List<String> getRegistrationsFilePathsFromDatabase(int UserID, int loginMethod, int pictureSet) {
-//		connectToDatabase();
-//		List<String> imagePaths = new ArrayList<String>();
-//		String commandTwo = "SELECT * FROM Registrations Where UserID = ? AND LoginMethod = ? AND PictureSet = ?";
-//		String imagePath = "";
-//		try {
-//			PreparedStatement st = getConnection().prepareStatement(commandTwo);
-//			st.setInt(1, UserID);
-//			st.setInt(2, loginMethod);
-//			st.setInt(3, pictureSet);
-//			ResultSet result = st.executeQuery();
-//			int n = 3;
-//			while (result.next()) {
-//			while (n <= result.getMetaData().getColumnCount()) {
-//				imagePath = result.getString(n);
-//				imagePaths.add(imagePath);
-//				n++;
-//			}
-//			}
-//		} catch (SQLException e) {
-//			System.out.println("Connection failed");
-//			e.printStackTrace();
-//		}finally {
-//			try {
-//				connection.close();
-//			} catch (SQLException e) {
-//				
-//			}
-//		}
-//		return imagePaths;
-//	}
 	
 	/**
 	 * Get user passwords from the UserRegistrations Table
@@ -339,97 +202,7 @@ public class DBConnect {
 		}
 		return imagePaths;
 	}
-	/**
-	 * Get a list of the 20 images associated with a user (17 unseen decoy image and the 3 seen password images) 
-	 * @param UserID - userid for the user
-	 * @param pictureSet - picture set to be checked
-	 * @return list of 20 image file paths
 	
-	public List<String> getUnseenDecoyImageSetFilePathsFromDatabase(String UserID, int pictureSet) {
-		connectToDatabase();
-		List<String> imagePaths = new ArrayList<String>();
-		String commandTwo = "SELECT * FROM UNSEENDECOYIMAGESET Where UserID = ? AND PictureSet = ?";
-		String imagePath = "";
-		try {
-			PreparedStatement st = getConnection().prepareStatement(commandTwo);
-			st.setString(1, UserID);
-			st.setInt(2, pictureSet);
-			ResultSet result = st.executeQuery();
-			int n = 3;
-			while (result.next()) {
-				while (n <= result.getMetaData().getColumnCount()-1) {
-					imagePath = result.getString(n);
-					imagePaths.add(imagePath);
-					n++;
-				}
-			}
-		} catch (SQLException e) {
-			System.out.println("Connection failed");
-			e.printStackTrace();
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-
-			}
-		}
-		return imagePaths;
-	} */
-	
-//
-//	public int returnLatestAddedUserID() {
-//		String commandTwo = "SELECT * FROM Registrations Order By UserID DESC LIMIT 1 ";
-//		int UserID = 0;
-//		ResultSet result;	
-//		try {
-//			result = getStatement().executeQuery(commandTwo);
-//			while (result.next()) {
-//				UserID = result.getInt("UserID");
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}finally {
-//	try {
-//		connection.close();
-//	} catch (SQLException e) {
-//		
-//	}
-//}
-//		return UserID;
-//	}
-	
-//	public void addLoginAttemptToDB(int userID, int loginMethod, List<String> enteredPassword, List<Double> timeTaken,
-//			boolean correctPassword, int loginAttemptNo, int pictureSet) {
-//		connectToDatabase();
-//		Iterator<String> passwordIterator = enteredPassword.iterator();
-//		Iterator<Double> timeTakenIterator = timeTaken.iterator();
-//		int correctPasswordInt = (correctPassword) ? 1 : 0;
-//		String command = "INSERT INTO LOGINATTEMPTS(UserID, LoginMethod, SelectedImageOne, SelectedImageTwo, SelectedImageThree, TimeTakenToChooseOne, TimeTakenToChooseTwo, TimeTakenToChooseThree, Successful, AttemptNumber, PictureSet) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-//		try {
-//			PreparedStatement st = getConnection().prepareStatement(command);
-//			st.setInt(1, userID);
-//			st.setInt(2, loginMethod);
-//			st.setString(3, passwordIterator.next());
-//			st.setString(4, passwordIterator.next());
-//			st.setString(5, passwordIterator.next());
-//			st.setDouble(6, timeTakenIterator.next());
-//			st.setDouble(7, timeTakenIterator.next());
-//			st.setDouble(8, timeTakenIterator.next());
-//			st.setInt(9, correctPasswordInt);
-//			st.setInt(10, loginAttemptNo);
-//			st.setInt(11, pictureSet);
-//			st.executeUpdate();
-//		} catch (SQLException e1) {
-//			e1.printStackTrace();
-//		}finally {
-//			try {
-//				connection.close();
-//			} catch (SQLException e) {
-//				
-//			}
-//		}
-//	}
-
 	/**
 	 * Get the latest login attempt number
 	 * @param userID - id of a user
@@ -439,7 +212,6 @@ public class DBConnect {
 	 */
 	public int getRecentLoginAttemptNo(String userID, int loginMethod, int pictureSet) {
 		this.connectToDatabase();
-//		String command = "SELECT ATTEMPTNUMBER FROM LOGINATTEMPTS Where UserID = ? AND LoginMethod = ? AND PictureSet = ?";
 		String command = "SELECT ATTEMPTNUMBER FROM AllLOGINATTEMPTS Where UserID = ? AND LoginMethod = ? AND PictureSet = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
 		int loginAttemptNo = 0;
 		try {
@@ -663,7 +435,7 @@ public class DBConnect {
 			st.setInt(2, pictureSet);
 			st.setInt(3, loginMethod);
 			ResultSet result = st.executeQuery();
-			int n = 3;
+			int n = 4;
 			while (result.next()) {
 				while (n <= result.getMetaData().getColumnCount()) {
 					imagePath = result.getString(n);
@@ -683,65 +455,5 @@ public class DBConnect {
 			}
 		}
 		return images;
-	}
-	
-	public static void main(String[] args) {
-		UserLoginModel m = new UserLoginModel();
-		DBConnect db = new DBConnect();
-		List<String> s = new ArrayList<String>();
-		List<String> t = new ArrayList<String>();
-		
-		s.addAll(db.getUserSeenImages("1", 1, 1));
-		t.addAll(db.getUserSeenImages("1", 1, 2));
-//		
-
-		List<String> enteredPassword = new ArrayList<String>();
-		enteredPassword.add("C:\\Users\\woohoo\\eclipse-workspace\\project\\art\\image (419).jpg");
-		enteredPassword.add("C:\\Users\\woohoo\\eclipse-workspace\\project\\art\\image (33).jpg");
-		enteredPassword.add("C:\\Users\\woohoo\\eclipse-workspace\\project\\art\\image (308).jpg");
-		List<Double> timeTaken = new ArrayList<Double>();
-		timeTaken.add(0.5);
-		timeTaken.add(0.5);
-		timeTaken.add(0.5);
-		double overallTimeTaken = 1.5;
-		List<Integer> successOfPasswords = new ArrayList<Integer>();
-		successOfPasswords.add(1);
-		successOfPasswords.add(1);
-		successOfPasswords.add(1);
-		boolean correctPassword = true;
-		int loginAttemptNo = 20;
-		db.addLoginAttemptToDatabase("1", 1, 1, enteredPassword, timeTaken, overallTimeTaken, successOfPasswords, correctPassword, loginAttemptNo);
-//		System.out.println("User 1, Picture Set 1, Login Method 1 - Seen Images");
-//		for (String p : s) {
-//			System.out.println(p);
-//		}
-//		System.out.println("User 1, Picture Set 1, Login Method 2 - Seen Images");
-//		for (String p : t) {
-//			System.out.println(p);
-//		}
-//		t.clear();
-//		t.addAll(db.getDecoyImageSetFromDB("1", 1, 1));
-//		System.out.println("User 1, Picture Set 1, Login Method 1 - Decoy Images");
-//		for (String p : t) {
-//			System.out.println(p);
-//		}
-//		t.clear();
-//		t.addAll(db.getUserPasswordFilePathsFromDatabase("1", 1, 1));
-//		System.out.println("User 1, Picture Set 1, Login Method 1 - Password");
-//		for (String p : t) {
-//			System.out.println(p);
-//		}
-//		t.clear();
-//		t.addAll(db.getDecoyImageSetFromDB("1", 1, 2));
-//		System.out.println("User 1, Picture Set 1, Login Method 2 - Decoy Images");
-//		for (String p : t) {
-//			System.out.println(p);
-//		}
-//		t.clear();
-//		t.addAll(db.getUserPasswordFilePathsFromDatabase("1", 1, 2));
-//		System.out.println("User 1, Picture Set 1, Login Method 2 - Password");
-//		for (String p : t) {
-//			System.out.println(p);
-//		}
 	}
 }

@@ -12,17 +12,18 @@ import main.UserLoginController.UserSelectionListener;
  * and allow these views to be scrolled
  */
 public class UserLoginCardsPanel extends JPanel {
-	private CardLayout cl;
-//	private MainWindow mw;
+	private CardLayout cardLayout;
+	private MainWindow mainWindow;
 	private UserLoginInstructionPanel loginInstructionPanel;
 	private UserLoginSelectionPanel loginSelectionPanel;
 	private UserLoginCompletePanel userLoginCompletePanel;
-	private static final String LOGININSTRUCTIONS ="LOGININSTRUCTIONS", LOGIN = "LOGIN", LOGINCOMPLETE = "LOGINCOMPLETE";
+	private static final String LOGIN_INSTRUCTIONS ="LOGININSTRUCTIONS"; 
+	private static final String LOGIN = "LOGIN";
+	private static final String LOGIN_COMPLETE = "LOGINCOMPLETE";
 
 	
-//	public UserLoginCardsPanel(MainWindow mw) {
-	public UserLoginCardsPanel() {
-//		this.setMainWindow(mw);
+	public UserLoginCardsPanel(MainWindow mw) {
+		this.mainWindow = mw;
 		this.setLayout(new CardLayout()); // make this view have a card layout view so that other image panels added to it can be scrolled
 		setupCards();
 	}
@@ -31,28 +32,28 @@ public class UserLoginCardsPanel extends JPanel {
 	 * Show the login page
 	 */
 	public void showLoginPanel() {
-		this.cl.show(this, LOGIN);
+		this.cardLayout.show(this, LOGIN);
 	}
 
 	/**
 	 * Show the login complete page
 	 */
 	public void showLoginCompletePage() {	
-		this.cl.show(this, LOGINCOMPLETE);
+		this.cardLayout.show(this, LOGIN_COMPLETE);
 	}
 	
-//	/**
-//	 * Show the main page
-//	 */
-//	public void showMainPage() {
-//		this.getMainWindow().showMainPage();
-//	}
+	/**
+	 * Show the main page
+	 */
+	public MainWindow getMainPage() {
+		return this.mainWindow;
+	}
 	
 	/**
 	 * Get the login method selection from the login instruction panel
 	 * @return an index
 	 */
-	public int getSelection() {
+	public int getLoginSelection() {
 		return this.getLoginInstructionPanel().getSelection();
 	}
 
@@ -60,7 +61,7 @@ public class UserLoginCardsPanel extends JPanel {
 	 * Get the text input from the login instruction panel
 	 * @return string user id
 	 */
-	public String getInput() {
+	public String getUseridInput() {
 		return this.getLoginInstructionPanel().getInput();
 	}
 	
@@ -76,7 +77,7 @@ public class UserLoginCardsPanel extends JPanel {
 	 * Set the buttons with action listeners in the instruction panel
 	 * @param listener
 	 */
-	public void setLoginInstructionPanel(ActionListener listener) {
+	public void setLoginInstructionPanelListeners(ActionListener listener) {
 		this.loginInstructionPanel.addUserLoginListener(listener);
 	}
 	
@@ -108,14 +109,14 @@ public class UserLoginCardsPanel extends JPanel {
 	 * Show the login instruction page
 	 */
 	public void showInstructionPanel() {
-		this.cl.show(this, LOGININSTRUCTIONS);
+		this.cardLayout.show(this, LOGIN_INSTRUCTIONS);
 	}
 
 	/**
 	 * Set the action listeners in the log complete page
 	 * @param userLoginSuccessListener
 	 */
-	public void setLoginSuccessPanel(ActionListener userLoginSuccessListener) {
+	public void setLoginSuccessPanelListeners(ActionListener userLoginSuccessListener) {
 		this.getUserLoginSuccessPanel().addListeners(userLoginSuccessListener);
 	}
 
@@ -125,13 +126,13 @@ public class UserLoginCardsPanel extends JPanel {
 	public void setupCards() {
 		this.setLoginInstructionPanel(new UserLoginInstructionPanel());
 		this.setLoginSelectionPanel(new UserLoginSelectionPanel());
-		this.setUserLoginSuccessPanel(new UserLoginCompletePanel());
-		this.add(getLoginInstructionPanel(), LOGININSTRUCTIONS);
+		this.setUserLoginCompletePanel(new UserLoginCompletePanel());
+		this.add(getLoginInstructionPanel(), LOGIN_INSTRUCTIONS);
 		this.add(getLoginSelectionPanel(), LOGIN);
-		this.add(getUserLoginSuccessPanel(), LOGINCOMPLETE);
-		this.cl = (CardLayout) this.getLayout();
+		this.add(getUserLoginSuccessPanel(), LOGIN_COMPLETE);
+		this.cardLayout = (CardLayout) this.getLayout();
 		this.setVisible(true);
-		this.cl.show(this, LOGININSTRUCTIONS);	
+		this.cardLayout.show(this, LOGIN_INSTRUCTIONS);	
 	}
 
 	/**
@@ -155,14 +156,6 @@ public class UserLoginCardsPanel extends JPanel {
 	public void setLoginSelectionPanel(UserLoginSelectionPanel loginSelectionPanel) {
 		this.loginSelectionPanel = loginSelectionPanel;
 	}
-//
-//	public MainWindow getMainWindow() {
-//		return mw;
-//	}
-//
-//	public void setMainWindow(MainWindow mw) {
-//		this.mw = mw;
-//	}
 
 	public UserLoginInstructionPanel getLoginInstructionPanel() {
 		return loginInstructionPanel;
@@ -176,21 +169,16 @@ public class UserLoginCardsPanel extends JPanel {
 		return userLoginCompletePanel;
 	}
 
-	public void setUserLoginSuccessPanel(UserLoginCompletePanel userLoginCompletePanel) {
+	public void setUserLoginCompletePanel(UserLoginCompletePanel userLoginCompletePanel) {
 		this.userLoginCompletePanel = userLoginCompletePanel;
 	}
 
-	public void setLoginSelectionMouseListener(MouseListener userSelectionListener) {
-		this.getLoginSelectionPanel().addMouseListeners(userSelectionListener);
+	public void addLoginSelectionMouseListener(MouseListener userSelectionListener) {
+		loginSelectionPanel.addMouseListeners(userSelectionListener);
 		
 	}
 
 	public void addUserSelectionListener(ActionListener userSelectionListener) {
-		loginSelectionPanel.addUserSelectionListener(userSelectionListener);
-		
-	}
-
-	public void setLoginSelectionPanel(ActionListener userSelectionListener) {
 		loginSelectionPanel.addUserSelectionListener(userSelectionListener);
 		
 	}

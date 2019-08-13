@@ -28,7 +28,7 @@ public class UserLoginInstructionController {
 	 * Set the action listeners in all the separate views
 	 */
 	public void setListeners() {
-		this.userLoginCardsPanel.setLoginInstructionPanel(new UserLoginInstructionListener());
+		this.userLoginCardsPanel.setLoginInstructionPanelListeners(new UserLoginInstructionListener());
 		this.userLoginCardsPanel.setLoginInstructionMouseListener(new UserLoginInstructionListener());
 	}
 	
@@ -47,7 +47,7 @@ public class UserLoginInstructionController {
 			case "NEXT":
 				try {
 					success = true;
-					String userId = userLoginCardsPanel.getInput().toUpperCase();
+					String userId = userLoginCardsPanel.getUseridInput().toUpperCase();
 					String text = "Please enter your student ID here";
 					text = text.toUpperCase();
 //					if (userIdString.charAt(0) == '0') {
@@ -55,7 +55,7 @@ public class UserLoginInstructionController {
 //					}
 //					int userID = Integer.parseInt(userIdString);
 					int pictureSelection = userLoginCardsPanel.getPictureSelection();
-					int loginSelection = userLoginCardsPanel.getSelection();
+					int loginSelection = userLoginCardsPanel.getLoginSelection();
 					if (loginSelection == 0 || pictureSelection == 0 || userId.equals(text)) {
 						success = false;
 						throw new Exception(); // throw a dialog box if an invalid picture or login selection is chosen
@@ -64,7 +64,7 @@ public class UserLoginInstructionController {
 					userLoginModel.setUserID(userId); // set the user id
 					userLoginModel.setLoginMethod(loginSelection); // set the model's field variable for login method
 					userLoginModel.setPictureSelection(pictureSelection); // set the model's field variable for picture set
-					userLoginModel.setLoginAttempt(); // set the model's field variable for login attempt by pulling the details from the database
+					userLoginModel.setLoginAttemptNoFromDB(); // set the model's field variable for login attempt by pulling the details from the database
 				} catch (Exception exception) {
 					JOptionPane.showMessageDialog(userLoginCardsPanel,
 							"Warning - Log-in Method and/or Picture Set have not been selected", "Log In Warning",
@@ -74,7 +74,7 @@ public class UserLoginInstructionController {
 				}
 				// check that correct details have been inputted and that these are associated
 				// with a registered user
-				if (success && userLoginModel.returnIsValid()) {
+				if (success && userLoginModel.returnIsRegisteredUser()) {
 					userLoginModel.returnMostRecentLoginSuccess(); // check whether this user logged in successfully recently
 					userLoginCardsPanel.getLoginSelectionPanel().getFilePaths(userLoginModel.getDecoyImages()); // pull the file paths into the view and set the buttons
 //					setLoginSelectionPanelListeners(); // set the action listeners in the selection panel now that buttons have been set
