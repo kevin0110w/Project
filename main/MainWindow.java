@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * This class is the main window that'll contain the main page and references to the registration and login panels
+ */
 public class MainWindow extends JFrame {
 	private static final String MAIN_MENU = "Main Menu";
 	private static final String REGISTRATION = "Registration";
@@ -22,9 +25,12 @@ public class MainWindow extends JFrame {
 
 	
 	public MainWindow() {
-//		run();
 	}
 
+	/**
+	 * Set up label, main page and buttons.
+	 * @param container
+	 */
 	public void setUp(Container container) {
 		labelPanel = new JPanel();
 		headerLabel = new JLabel();
@@ -50,6 +56,9 @@ public class MainWindow extends JFrame {
 		this.cardsPanel.setVisible(true);
 	}
 
+	/**
+	 * Set the welcome text welcoming a user to the system.
+	 */
 	private void setWelcomeText() {
 		JPanel textPanel = new JPanel();
 		JTextArea textArea = new JTextArea();
@@ -65,17 +74,16 @@ public class MainWindow extends JFrame {
 		mainPanel.add(textPanel, BorderLayout.CENTER);	
 	}
 
-	public void createCardLayout() {
-		this.cardLayout = (CardLayout) (cardsPanel.getLayout());
-		this.cardsPanel.setVisible(true);
-	}
-
+	/**
+	 * Return the JFrame
+	 * @return
+	 */
 	public JFrame getFrame() {
 		return aFrame;
 	}
 
 	/**
-	 * Create a show the gui
+	 * Create and show the gui
 	 */
 	public void createMainWindow() {
 		aFrame = new JFrame();
@@ -98,7 +106,7 @@ public class MainWindow extends JFrame {
 	 * Show the home page
 	 */
 	public void showMainPage() {
-		this.headerLabel.setText(MAIN_MENU);
+		setLabelMainMenu();
 		cardLayout.show(cardsPanel, MAIN_MENU);
 	}
 	
@@ -106,6 +114,7 @@ public class MainWindow extends JFrame {
 	 * show the registration page
 	 */
 	public void showRegistrationPage() {
+		setLabelRegistrationInstructions();
 		cardLayout.show(cardsPanel, REGISTRATION);
 	}
 	
@@ -113,35 +122,55 @@ public class MainWindow extends JFrame {
 	 * Show the login page
 	 */
 	public void showLoginPage() {
-		this.headerLabel.setText(LOGIN_INSTRUCTIONS);
+		setLabelLoginInstructions();
 		cardLayout.show(cardsPanel, LOGIN);
 	}
 	
+	/**
+	 * Set the label with an successful login message
+	 */
 	public void setLabelLoginSuccessful() {
 		this.headerLabel.setText(LOGIN_SUCCESSFUL_MESSAGE);
 	}
 	
+	/**
+	 * Set the label with an unsuccessful login message
+	 */
 	public void setLabelLoginUnsuccessful() {
 		this.headerLabel.setText(LOGIN_UNSUCCESSFUL_MESSAGE);
 	}
 	
+	/**
+	 * Set the label to read select 3 images
+	 */
 	public void setLabelSelectImages() {
 		this.headerLabel.setText(SELECT_THREE_IMAGES);
 	}
 	
+	/**
+	 * Set the label to read registration instructions
+	 */
 	public void setLabelRegistrationInstructions() {
 		this.headerLabel.setText(REGISTRATION_INSTRUCTIONS);
 	}
-	
+	/**
+	 * Set the label to read login instructions
+	 */
 	public void setLabelLoginInstructions() {
 		this.headerLabel.setText(LOGIN_INSTRUCTIONS);
 	}
 	
+	/**
+	 * Set the label to read main menu
+	 */
 	public void setLabelMainMenu() {
 		this.headerLabel.setText(MAIN_MENU);
 		
 	}
 	
+	/**
+	 * Set the label to read registration complete
+	 */
 	public void setLabelRegistrationComplete() {
 		this.headerLabel.setText(REGISTRATION_COMPLETE);
 	}
@@ -155,10 +184,17 @@ public class MainWindow extends JFrame {
 		this.loginButton.addActionListener(listener);
 	}
 
+	/**
+	 * Get the cards panel containing the main page, registration panel and login panel.
+	 * @return
+	 */
 	public JPanel getCardsPanel() {
 		return this.cardsPanel;
 	}
 	
+	/**
+	 * Resize the window to a bigger predefined size
+	 */
 	public void updateBigFrameSize() {
 		aFrame.setPreferredSize(new Dimension(695, 695));		
 		aFrame.revalidate();
@@ -166,6 +202,9 @@ public class MainWindow extends JFrame {
 		aFrame.pack();
 	}
 	
+	/**
+	 * Resize the window to a smaller predefined size
+	 */
 	public void updateSmallFrameSize() {
 		aFrame.setPreferredSize(new Dimension(300, 300));		
 		aFrame.revalidate();

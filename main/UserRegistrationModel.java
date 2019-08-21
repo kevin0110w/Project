@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * This class is responsible for storing all the data recorded during the registration phase and then passing all the data to the dbconnect class to be recorded
- * on the database
+ * This class is responsible for storing all the data recorded during the registration phase, the dbconnect object will send sql commands to the database
  *
  */
 public class UserRegistrationModel {
@@ -26,8 +25,10 @@ public class UserRegistrationModel {
 	
 	
 	/**
-	 * Create a new DBConnect object for database modifying purposes, FileNames2 object for generating string for images and decoys
-	 * this.timeTaken is an indexed list to store the time taken to make an image selection
+	 * Create a new DBConnect object for database modifying purposes
+	 * ImageFiles object for creating a registration set of 60 images and the challenge set of 20 images
+	 * timeTaken is an indexed list to store the time taken to select each image
+	 * alternativeRegistrationSeenImages is an indexed list to store the images that a user may have seen had they registered before for the same picture set with a different login method
 	 */
 	public UserRegistrationModel() {
 		this.db = new DBConnect();
@@ -37,21 +38,21 @@ public class UserRegistrationModel {
 	}
 	
 	/**
-	 * @return the db
+	 * @return the dbconnect object
 	 */
 	public DBConnect getDb() {
 		return db;
 	}
 
 	/**
-	 * @param db the db to set
+	 * @param set the dbconnect object
 	 */
 	public void setDb(DBConnect db) {
 		this.db = db;
 	}
 
 	/**
-	 * @return the timeTaken
+	 * @return the timeTaken list
 	 */
 	public List<Double> getTimeTaken() {
 		return timeTaken;
@@ -71,7 +72,7 @@ public class UserRegistrationModel {
 		return pictureSet;
 	}
 
-	/*
+	/**
 	 * Method to set the pictureset field variable
 	 * @Param selection from the instruction panel drop down box
 	 */
@@ -109,14 +110,14 @@ public class UserRegistrationModel {
 	}
 
 	/**
-	 * @return the fnt
+	 * @return the imageFiles
 	 */
 	public ImageFiles getImageFiles() {
 		return imageFiles;
 	}
 
 	/**
-	 * @param imageFiles the fnt to set
+	 * @param imageFiles the imageFiles
 	 */
 	public void setImageFiles(ImageFiles imageFiles) {
 		this.imageFiles = imageFiles;
@@ -165,8 +166,10 @@ public class UserRegistrationModel {
 	}
 	
 	/**
-	 * Clear all local stored data associated with this registration for another user to be able to register, once the data has been stored on the 
-	 * database
+	 * First create a user object, create the user's decoy set, set the user's time taken
+	 * Add the user to the database
+	 * Add the user's seen images to the database
+	 * Clear the data associated with a user
 	 */
 	public void addUser() {
 		this.currentUser = new User(this.getUserID(), this.getFirstSelectedImageFilePath(), this.getSecondSelectedImageFilePath(), this.getThirdSelectedImageFilePath(), this.pictureSet, this.loginMethod, this.overallTimeTaken);
@@ -177,8 +180,21 @@ public class UserRegistrationModel {
 		this.clear(); // clear all locally stored data from a recent registration
 	}
 	
-	/*
-	 * Creates the registration set of 60 images that'll be viewed by the user in the registration panels
+	/**
+	 * Store the list of images that a user has seen during the registration phase to the
+	 * database 
+	 */
+	private void addUserSeenImagestoDB() {
+		List<String> images = new ArrayList<String>();
+		images.addAll(this.imageFiles.getListOne());
+		images.addAll(this.imageFiles.getListTwo());
+		images.addAll(this.imageFiles.getListThree());
+		db.addUsersSeenImagestoDatabase(this.userID, this.pictureSet, this.loginMethod, images);
+	}
+	
+	/**
+	 * Creates the registration set of 60 images that'll be viewed by the user in the registration panels, accounting for any previously seen images in a previous registration using a different
+	 * login method
 	 */
 	public void createRegistrationSet() {
 		this.setAlternativeLoginImages();
@@ -186,16 +202,15 @@ public class UserRegistrationModel {
 	}
 	
 	/**
-	 * Check whether the user has already registered using a different login method of
-	 * the same picture set
-	 * Set that to a list variable in this class so that we can create a new, completely different list of registration images.
+	 * Check whether the user has already registered using a different login method of 	the same picture set
+	 * If such a user exists, this method will set a list variable containing all previously seen images so that we can create a new, completely different list of registration images.
 	 */
 	private void setAlternativeLoginImages() {
 		this.alternativeRegistrationSeenImages.addAll(this.db.getUserSeenImages(this.userID, this.pictureSet, this.alternativeLogin));
 	}
 
 	/**
-	 * Set the alternative login method to check if a user might have registered previously.
+	 * Set the alternative login method variable which will be used to check if a user might have registered previously.
 	 */
 	private void setAlternativeLogin() {
 		switch (loginMethod) {
@@ -208,17 +223,6 @@ public class UserRegistrationModel {
 		}
 	}
 
-	/**
-	 * Store the list of images that a user has seen during the registration phase to the
-	 * database 
-	 */
-	private void addUserSeenImagestoDB() {
-		List<String> images = new ArrayList<String>();
-		images.addAll(this.imageFiles.getListOne());
-		images.addAll(this.imageFiles.getListTwo());
-		images.addAll(this.imageFiles.getListThree());
-		db.addUsersSeenImagestoDatabase(this.userID, this.pictureSet, this.loginMethod, images);
-	}
 
 	/**
 	 * Create a decoy image set for a registered user
@@ -231,28 +235,25 @@ public class UserRegistrationModel {
 		while (this.currentUser.getImages().size() < TOTALNUMBEROFDECOYIMAGES) {
 				if (this.getLoginMethod() == LOGINMETHODONE) {
 					n = random.nextInt(this.imageFiles.getSeenImages().size());
-					this.currentUser.addImageToImageSet(this.imageFiles.getSeenImages().get(n));
+					String randomSeenImage = this.imageFiles.getSeenImages().get(n);
+					this.currentUser.addImageToImageSet(randomSeenImage);
 				} else if (this.getLoginMethod() == LOGINMETHODTWO) {
 					n = random.nextInt(this.imageFiles.getUnseenImages().size());
-					String image = this.imageFiles.getUnseenImages().get(n);
-					if (!(alternativeRegistrationSeenImages.contains(image))) {
-					this.currentUser.addImageToImageSet(image);
-					}
+					String randomUnseenImage = this.imageFiles.getUnseenImages().get(n);
+					this.currentUser.addImageToImageSet(randomUnseenImage);
 				}
 		}
-//		p.setHiddenImages(decoys);
-		
 	}
 	
-	/*
+	/**
 	 * Set the initial time to start when the user first sees the images
 	 */
 	public void setInitialTime() {
 		this.initialTime = LocalDateTime.now();
 	}
 	
-	/*
-	 * Find the difference between clicks and add it to the arraylist of timeTaken 
+	/**
+	 * Find the difference between clicks and add it to the list of times Taken 
 	 * Resets the localdatetime object
 	 */
 	public void addTimeTaken() {
@@ -266,29 +267,37 @@ public class UserRegistrationModel {
 	}
 	
 
-	/*
+	/**
 	 * Clears any local data associated with any user who's clicked back after not fully completing registered
 	 */
 	public void clear() {
 		this.firstSelectedImageFilePath = null;
 		this.secondSelectedImageFilePath = null;
 		this.thirdSelectedImageFilePath = null;
+		this.alternativeRegistrationSeenImages.clear();
 		this.timeTaken.clear();								
 		this.imageFiles = new ImageFiles();
 		this.overallTimeTaken = 0;
 	}
 
-	/*
+	/**
 	 * Returns whether a user associated a specific userid and pictureset has already been registered
 	 */
 	public boolean isUserAlreadyRegistered() {
 		return db.returnIsRegistered(userID, pictureSet, loginMethod);
 	}
-
+	
+	/**
+	 * @return a current user
+	 */
 	public User getUser() {
 		return this.currentUser;
 	}
 
+	/** 
+	 * set a user
+	 * @param user
+	 */
 	public void setUser(User user) {
 		this.currentUser = user;
 		

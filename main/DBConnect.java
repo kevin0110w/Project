@@ -75,14 +75,14 @@ public class DBConnect {
 
 	}
 
-	/*
+	/**
 	 * Add user registration details to the registration table
 	 * Then add the images to the seenimageset and unseenimageset tables
 	 */
 	public void addUserToDatabase(User user) {
 		this.connectToDatabase();
 		Iterator<Double> timeTakenIterator = user.getTimeTaken().iterator();
-		String command = "INSERT INTO USERREGISTRATIONS(UserID, PictureSet, LoginMethod, PasswordOne, PasswordTwo, PasswordThree, TimeTakenToChoosePasswordOne, TimeTakenToChoosePasswordTwo, TimeTakenToChoosePasswordThree, totalTimeTaken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String command = "INSERT INTO UserRegistrations(UserID, PictureSet, LoginMethod, PasswordOne, PasswordTwo, PasswordThree, TimeTakenToChoosePasswordOne, TimeTakenToChoosePasswordTwo, TimeTakenToChoosePasswordThree, totalTimeTaken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
 			st.setString(1, user.getUserid());
@@ -111,7 +111,7 @@ public class DBConnect {
 	private void addUserDecoyImageSetToDatabase(User user) {
 		Iterator<String> iterator = user.getImages().iterator();
 		int counter = 4;
-		String command = "INSERT INTO DecoyImageSets(UserID, PictureSet, LoginMethod, ImageOne, ImageTwo, ImageThree, ImageFour, ImageFive, ImageSix, ImageSeven, ImageEight, ImageNine, ImageTen, ImageEleven, ImageTwelve, ImageThirteen, ImageFourteen, ImageFifteen, ImageSixteen, ImageSeventeen, ImageEighteen, ImageNineteen, ImageTwenty) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String command = "INSERT INTO UserChallengeSets(UserID, PictureSet, LoginMethod, ImageOne, ImageTwo, ImageThree, ImageFour, ImageFive, ImageSix, ImageSeven, ImageEight, ImageNine, ImageTen, ImageEleven, ImageTwelve, ImageThirteen, ImageFourteen, ImageFifteen, ImageSixteen, ImageSeventeen, ImageEighteen, ImageNineteen, ImageTwenty) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
 			st.setString(1, user.getUserid());
@@ -174,7 +174,7 @@ public class DBConnect {
 	public List<String> getDecoyImageSetFromDB(String UserID, int pictureSet, int loginMethod) {
 		this.connectToDatabase(); // connect to the database
 		List<String> imagePaths = new ArrayList<String>();
-		String commandTwo = "SELECT * FROM DecoyImageSets Where UserID = ? AND PictureSet = ? And LoginMethod = ?";
+		String commandTwo = "SELECT * FROM UserChallengeSets Where UserID = ? AND PictureSet = ? And LoginMethod = ?";
 		String imagePath = "";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(commandTwo);
@@ -212,7 +212,7 @@ public class DBConnect {
 	 */
 	public int getRecentLoginAttemptNo(String userID, int loginMethod, int pictureSet) {
 		this.connectToDatabase();
-		String command = "SELECT ATTEMPTNUMBER FROM AllLOGINATTEMPTS Where UserID = ? AND LoginMethod = ? AND PictureSet = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
+		String command = "SELECT ATTEMPTNUMBER FROM UserLoginAttempts Where UserID = ? AND LoginMethod = ? AND PictureSet = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
 		int loginAttemptNo = 0;
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
@@ -246,7 +246,7 @@ public class DBConnect {
 	public int getRecentLoginSuccess(String userID, int loginMethod, int pictureSet) {
 		this.connectToDatabase();
 //		String command = "Select Successful From  Where UserID = ? AND LoginMethod = ? And PictureSet = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
-		String command = "Select OverallSuccessful From AllLoginAttempts Where UserID = ? And PictureSet = ? AND LoginMethod = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
+		String command = "Select OverallSuccessful From USERLOGINATTEMPTS Where UserID = ? And PictureSet = ? AND LoginMethod = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
 		int successful = 0;
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
@@ -287,7 +287,7 @@ public class DBConnect {
 		Iterator<Double> timeTakenIterator = timeTaken.iterator();
 		Iterator<Integer> successIterator = successOfPasswords.iterator();
 		int correctPasswordInt = (correctPassword) ? 1 : 0; // convert true to 1 and false to 0
-		String command = "INSERT INTO ALLLOGINATTEMPTS(UserID, PictureSet, LoginMethod,  SelectedImageOne, SelectedImageTwo, SelectedImageThree, TimeTakenToChooseImageOne, TimeTakenToChooseImageTwo, TimeTakenToChooseImageThree, OverallTime, successfulImageOne, successfulImageTwo, successfulImageThree, OverallSuccessful, AttemptNumber) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String command = "INSERT INTO USERLOGINATTEMPTS(UserID, PictureSet, LoginMethod,  SelectedImageOne, SelectedImageTwo, SelectedImageThree, TimeTakenToChooseImageOne, TimeTakenToChooseImageTwo, TimeTakenToChooseImageThree, OverallTime, successfulImageOne, successfulImageTwo, successfulImageThree, OverallSuccessful, AttemptNumber) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
 			st.setString(1, userID);
@@ -326,7 +326,7 @@ public class DBConnect {
 		this.connectToDatabase();
 		Iterator<String> imagePaths = decoyImages.iterator();
 		int n = 1;
-		String command = "Update DecoyImageSets Set ImageOne = ?, ImageTwo = ?, ImageThree = ?, ImageFour = ?, ImageFive = ?, ImageSix = ?, ImageSeven = ?, ImageEight = ?, ImageNine = ?, ImageTen = ?, ImageEleven = ?, ImageTwelve = ?, ImageThirteen = ?, ImageFourteen = ?, ImageFifteen = ?, ImageSixteen = ?, ImageSeventeen = ?, ImageEighteen = ?, ImageNineteen = ?, ImageTwenty = ? Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
+		String command = "Update UserChallengeSets Set ImageOne = ?, ImageTwo = ?, ImageThree = ?, ImageFour = ?, ImageFive = ?, ImageSix = ?, ImageSeven = ?, ImageEight = ?, ImageNine = ?, ImageTen = ?, ImageEleven = ?, ImageTwelve = ?, ImageThirteen = ?, ImageFourteen = ?, ImageFifteen = ?, ImageSixteen = ?, ImageSeventeen = ?, ImageEighteen = ?, ImageNineteen = ?, ImageTwenty = ? Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
 			while (imagePaths.hasNext()) {
@@ -393,7 +393,7 @@ public class DBConnect {
 	public void addUsersSeenImagestoDatabase(String userID, int pictureSet, int loginMethod, List<String> images) {
 		int counter = 4;
 		connectToDatabase();
-		String command = "Insert into SeenImages(UserID, PictureSet, LoginMethod, ImageOne, ImageTwo, ImageThree, ImageFour, ImageFive, ImageSix, ImageSeven, ImageEight, ImageNine, ImageTen, ImageEleven, ImageTwelve, ImageThirteen, ImageFourteen, ImageFifteen, ImageSixteen, ImageSeventeen, ImageEighteen, ImageNineteen, ImageTwenty, ImageTwentyOne, ImageTwentyTwo, ImageTwentyThree, ImageTwentyFour, ImageTwentyFive, ImageTwentySix, ImageTwentySeven, ImageTwentyEight, ImageTwentyNine, ImageThirty, ImageThirtyOne, ImageThirtyTwo, ImageThirtyThree, ImageThirtyFour, ImageThirtyFive, ImageThirtySix, ImageThirtySeven, ImageThirtyEight, ImageThirtyNine, ImageFourty, ImageFourtyOne, ImageFourtyTwo, ImageFourtyThree, ImageFourtyFour, ImageFourtyFive, ImageFourtySix, ImageFourtySeven, ImageFourtyEight, ImageFourtyNine, ImageFifty, ImageFiftyOne, ImageFiftyTwo, ImageFiftyThree, ImageFiftyFour, ImageFiftyFive, ImageFiftySix, ImageFiftySeven, ImageFiftyEight, ImageFiftyNine, ImageSixty) Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		String command = "Insert into UserSeenImages(UserID, PictureSet, LoginMethod, ImageOne, ImageTwo, ImageThree, ImageFour, ImageFive, ImageSix, ImageSeven, ImageEight, ImageNine, ImageTen, ImageEleven, ImageTwelve, ImageThirteen, ImageFourteen, ImageFifteen, ImageSixteen, ImageSeventeen, ImageEighteen, ImageNineteen, ImageTwenty, ImageTwentyOne, ImageTwentyTwo, ImageTwentyThree, ImageTwentyFour, ImageTwentyFive, ImageTwentySix, ImageTwentySeven, ImageTwentyEight, ImageTwentyNine, ImageThirty, ImageThirtyOne, ImageThirtyTwo, ImageThirtyThree, ImageThirtyFour, ImageThirtyFive, ImageThirtySix, ImageThirtySeven, ImageThirtyEight, ImageThirtyNine, ImageFourty, ImageFourtyOne, ImageFourtyTwo, ImageFourtyThree, ImageFourtyFour, ImageFourtyFive, ImageFourtySix, ImageFourtySeven, ImageFourtyEight, ImageFourtyNine, ImageFifty, ImageFiftyOne, ImageFiftyTwo, ImageFiftyThree, ImageFiftyFour, ImageFiftyFive, ImageFiftySix, ImageFiftySeven, ImageFiftyEight, ImageFiftyNine, ImageSixty) Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		try {
 			PreparedStatement st = getConnection().prepareStatement(command);
 			st.setString(1, userID);
@@ -426,7 +426,7 @@ public class DBConnect {
 	 */
 	public List<String> getUserSeenImages(String userid, int pictureSet, int loginMethod) {
 		List<String> images = new ArrayList<String>();
-		String command = "Select * from SeenImages where UserID = ? AND pictureSet = ? and loginmethod = ?";
+		String command = "Select * from UserSeenImages where UserID = ? AND pictureSet = ? and loginmethod = ?";
 		connectToDatabase();
 		String imagePath = null;
 		try {

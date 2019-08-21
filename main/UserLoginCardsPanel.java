@@ -5,15 +5,12 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
-import main.UserLoginController.UserSelectionListener;
-
-/*
- * This class is responsible for containing the views for the instructions, image selection panel and complete panel in one card layout panel
+/**
+ * This class is responsible for holding the views for the instructions, image selection panel and complete panel in one card layout panel
  * and allow these views to be scrolled
  */
 public class UserLoginCardsPanel extends JPanel {
 	private CardLayout cardLayout;
-	private MainWindow mainWindow;
 	private UserLoginInstructionPanel loginInstructionPanel;
 	private UserLoginSelectionPanel loginSelectionPanel;
 	private UserLoginCompletePanel userLoginCompletePanel;
@@ -22,8 +19,7 @@ public class UserLoginCardsPanel extends JPanel {
 	private static final String LOGIN_COMPLETE = "LOGINCOMPLETE";
 
 	
-	public UserLoginCardsPanel(MainWindow mw) {
-		this.mainWindow = mw;
+	public UserLoginCardsPanel() {
 		this.setLayout(new CardLayout()); // make this view have a card layout view so that other image panels added to it can be scrolled
 		setupCards();
 	}
@@ -43,18 +39,11 @@ public class UserLoginCardsPanel extends JPanel {
 	}
 	
 	/**
-	 * Show the main page
-	 */
-	public MainWindow getMainPage() {
-		return this.mainWindow;
-	}
-	
-	/**
 	 * Get the login method selection from the login instruction panel
 	 * @return an index
 	 */
 	public int getLoginSelection() {
-		return this.getLoginInstructionPanel().getSelection();
+		return this.getLoginInstructionPanel().getLoginSelection();
 	}
 
 	/**
@@ -88,21 +77,13 @@ public class UserLoginCardsPanel extends JPanel {
 	public void setLoginInstructionMouseListener(MouseListener l) {
 		this.getLoginInstructionPanel().addUserLoginMouseListener(l);
 	}
-	
-//	/**
-//	 * set the action listeners in the login selection panel
-//	 * @param listener
-//	 */
-//	public void setLoginSelectionPanel(ActionListener listener) {
-//		this.loginSelectionPanel.addListener(listener);	
-//	}
 
 	/**
 	 * call the method that will select a chosen image to the panel in the selection panel
 	 * @param source
 	 */
-	public void setImage(Object source) {
-		this.getLoginSelectionPanel().setImage(source);
+	public void setImage(String filePath) {
+		this.getLoginSelectionPanel().setImage(filePath);
 	}
 
 	/**
@@ -117,7 +98,7 @@ public class UserLoginCardsPanel extends JPanel {
 	 * @param userLoginSuccessListener
 	 */
 	public void setLoginSuccessPanelListeners(ActionListener userLoginSuccessListener) {
-		this.getUserLoginSuccessPanel().addListeners(userLoginSuccessListener);
+		this.userLoginCompletePanel.addListeners(userLoginSuccessListener);
 	}
 
 	/**
@@ -129,7 +110,7 @@ public class UserLoginCardsPanel extends JPanel {
 		this.setUserLoginCompletePanel(new UserLoginCompletePanel());
 		this.add(getLoginInstructionPanel(), LOGIN_INSTRUCTIONS);
 		this.add(getLoginSelectionPanel(), LOGIN);
-		this.add(getUserLoginSuccessPanel(), LOGIN_COMPLETE);
+		this.add(getUserLoginCompletePanel(), LOGIN_COMPLETE);
 		this.cardLayout = (CardLayout) this.getLayout();
 		this.setVisible(true);
 		this.cardLayout.show(this, LOGIN_INSTRUCTIONS);	
@@ -149,44 +130,72 @@ public class UserLoginCardsPanel extends JPanel {
 		this.getLoginSelectionPanel().clear();
 	}
 
+	/**
+	 * @Return the login selection panel - i.e. the panel with the 20 clickable images
+	 */
 	public UserLoginSelectionPanel getLoginSelectionPanel() {
 		return loginSelectionPanel;
 	}
 
+	/**
+	 * Set the login selection panel
+	 * @param loginSelectionPanel
+	 */
 	public void setLoginSelectionPanel(UserLoginSelectionPanel loginSelectionPanel) {
 		this.loginSelectionPanel = loginSelectionPanel;
 	}
 
+	/**
+	 * @return the login instruction panel
+	 */
 	public UserLoginInstructionPanel getLoginInstructionPanel() {
 		return loginInstructionPanel;
 	}
 
+	/**
+	 * Set the login instruction panel
+	 * @param loginInstructionPanel
+	 */
 	public void setLoginInstructionPanel(UserLoginInstructionPanel loginInstructionPanel) {
 		this.loginInstructionPanel = loginInstructionPanel;
 	}
 
-	public UserLoginCompletePanel getUserLoginSuccessPanel() {
+	/**
+	 * @return the login complete panel 
+	 */
+	public UserLoginCompletePanel getUserLoginCompletePanel() {
 		return userLoginCompletePanel;
 	}
 
+	/**
+	 * Set the user login complete panel
+	 * @param userLoginCompletePanel
+	 */
 	public void setUserLoginCompletePanel(UserLoginCompletePanel userLoginCompletePanel) {
 		this.userLoginCompletePanel = userLoginCompletePanel;
 	}
 
-	public void addLoginSelectionMouseListener(MouseListener userSelectionListener) {
-		loginSelectionPanel.addMouseListeners(userSelectionListener);
-		
-	}
-
+	/**
+	 * Add listeners to the interactive buttons in the login selection panel
+	 * @param userSelectionListener
+	 */
 	public void addUserSelectionListener(ActionListener userSelectionListener) {
 		loginSelectionPanel.addUserSelectionListener(userSelectionListener);
 		
 	}
 
+	/**
+	 * Set the text in the login complete panel detailing whether a login attempt was successful or unsuccessful
+	 * @param text
+	 */
 	public void setLoginCompletePanelText(String text) {
 		userLoginCompletePanel.setTextArea(text);	
 	}
 	
+	/**
+	 * Get the user selection panel
+	 * @return
+	 */
 	public UserLoginSelectionPanel getUserLoginSelectionPanel() {
 		return this.loginSelectionPanel;
 	}

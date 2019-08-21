@@ -12,6 +12,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+/**
+ * This class is responsible for setting up the panel that'll contain the 20 images that can be selected by the user
+ * @author woohoo
+ *
+ */
 public class UserRegistrationImagePanel extends JPanel {
 	private JPanel imagePanel;
 	private List<JButton> buttons;
@@ -20,7 +25,7 @@ public class UserRegistrationImagePanel extends JPanel {
 	
 	/**
 	 * Each UserRegistrationImagePanel will display a different imageSet containing the 20 filepath strings of the images
-	 * A reference of the userregistrationpanel object is passed as a parameter so that it can set the images in the selection panel
+	 * A reference of the userregistrationpanel object is passed as a parameter so that it can set the images in the registration panel
 	 * @param urp - the panel that is holding all three separate image panels.
 	 * @param imageSet - the 20 strings of the images to be displayed on a panel.
 	 */
@@ -32,7 +37,7 @@ public class UserRegistrationImagePanel extends JPanel {
 	}
 	
 	/***
-	 * Set up the buttons on the panel, create a new button, set an icon for it in an enabled & disabled state, set the margins to make it bigger and associate
+	 * Set up the clickable images on the panel, create a new button, set an icon for both it's enabled & disabled state, add minor cosmetic detail, set the margins to make it bigger and associate
 	 * each button with an action command for easy linking with the controller class
 	 */
 	private void setUp() {
@@ -42,20 +47,25 @@ public class UserRegistrationImagePanel extends JPanel {
 		Iterator<String> it = this.imageSet.iterator();
 		while (it.hasNext()) {
 			String imageFilePath = it.next();
-			buttons.add(new JButton());
-			buttons.get(counter).setSize(new Dimension(100, 100));
-			buttons.get(counter).setIcon(new ImageIcon(imageFilePath));
-			buttons.get(counter).setDisabledIcon(new ImageIcon(imageFilePath));
-			buttons.get(counter).setOpaque(false);
-			buttons.get(counter).setContentAreaFilled(false);
-			buttons.get(counter).setMargin(new Insets(0, 0, 0, 0));
-			buttons.get(counter).setActionCommand("" + counter);
+			this.buttons.add(new JButton());
+			this.buttons.get(counter).setSize(new Dimension(100, 100));
+			this.buttons.get(counter).setIcon(new ImageIcon(imageFilePath));
+			this.buttons.get(counter).setDisabledIcon(new ImageIcon(imageFilePath));
+			this.buttons.get(counter).setOpaque(false);
+			this.buttons.get(counter).setBorderPainted(true);
+			this.buttons.get(counter).setContentAreaFilled(false);
+			this.buttons.get(counter).setMargin(new Insets(0, 0, 0, 0));
+			this.buttons.get(counter).setActionCommand("" + counter);
 			this.imagePanel.add(this.buttons.get(counter));
 			counter++;
 		}
 		this.add(imagePanel);
 	}
 	
+	/**
+	 * Add action listeners to each of the clickable images
+	 * @param alistener - an instance of the user registration image controller class
+	 */
 	public void addListener(ActionListener alistener) {
 		for (int i = 0; i < this.buttons.size(); i++) {
 			buttons.get(i).addActionListener(alistener);
@@ -72,8 +82,8 @@ public class UserRegistrationImagePanel extends JPanel {
 		this.urp.setImage(filePath, n);
 	}
 	
-	/*
-	 * Disable a button if it's been selected before.
+	/**
+	 * Disable an image if it's been selected before.
 	 * @Param - the action command associated with a clicked button
 	 */
 	public void disableButton(String actionCommand) {
@@ -84,7 +94,7 @@ public class UserRegistrationImagePanel extends JPanel {
 		}
 	}
 
-	/*
+	/**
 	 * Disable all buttons once 3 clicks are registered.
 	 */
 	public void disableAllImageButtons() {

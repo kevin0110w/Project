@@ -5,23 +5,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.Icon;
-import javax.swing.JButton;
-
 /**
- * This class is responsible for storing the data during the login phase and coordinating this with the DBConnect class for that data to be persistently stored
+ * This class is responsible for storing the data during the login phase and coordinating this with the DBConnect class for that data to recorded on the database.
  */
 public class UserLoginModel {
 	private String UserID;
 	private DBConnect db;
-	private List<String> challengeSet, passwordPaths, enteredPasswords; // 20 images to be displayed to user
+	private List<String> challengeSet, passwordPaths, enteredPasswords;
 	private final int NOOFPASSWORDS = 3;
 	private int loginMethod, loginAttemptNo, pictureSetSelection;
-	private List<Double> timeTaken; // a list of times takens to select an image
+	private List<Double> timeTaken;
 	private double totalTimeTaken;
-	private LocalDateTime initialTime; // an initial time which is reset after every click
-	private List<Integer> successOfPasswords; // a list of 1s and 0s to show whether a selection is correct
-	private boolean lastLoginSuccesful, shuffled; // whether the most recent log in was successful
+	private LocalDateTime initialTime;
+	private List<Integer> successOfPasswords; 
+	private boolean lastLoginSuccesful, shuffled;
 
 	public UserLoginModel() {
 		this.db = new DBConnect();
@@ -34,13 +31,6 @@ public class UserLoginModel {
 	}
 
 	/**
-	 * @return the successOfPasswords
-	 */
-	public List<Integer> getSuccessOfPasswords() {
-		return successOfPasswords;
-	}
-
-	/**
 	 * @return the pictureSetSelection
 	 */
 	public int getPictureSetSelection() {
@@ -48,14 +38,14 @@ public class UserLoginModel {
 	}
 
 	/**
-	 * @param pictureSetSelection the pictureSetSelection to set
+	 * @param pictureSetSelection - the pictureSetSelection chosen from the JCombo box in the user login instructions panel.
 	 */
 	public void setPictureSetSelection(int pictureSetSelection) {
 		this.pictureSetSelection = pictureSetSelection;
 	}
 
 	/**
-	 * @return the enteredPassword
+	 * @return the enteredPassword.
 	 */
 	public List<String> getEnteredPassword() {
 		return enteredPasswords;
@@ -66,6 +56,14 @@ public class UserLoginModel {
 	 */
 	public void setEnteredPassword(List<String> enteredPassword) {
 		this.enteredPasswords = enteredPassword;
+	}
+	
+	/**
+	 * Get list of enetered passwords
+	 * @return
+	 */
+	public List<String> getEnteredPasswords() {
+		return this.enteredPasswords;
 	}
 
 	/**
@@ -120,13 +118,14 @@ public class UserLoginModel {
 	public void setSuccessOfPasswords(List<Integer> successOfPasswords) {
 		this.successOfPasswords = successOfPasswords;
 	}
-
+	
 	/**
-	 * Get list of enetered passwords
-	 * @return
+	 * @return the successOfPasswords
+	 * if an image is correct, an index's element will be 1, if an image is correct but in the wrong order, the index's element will display 2. If the image is not in the password, the
+	 * index's element will display 0;
 	 */
-	public List<String> getEnteredPasswords() {
-		return this.enteredPasswords;
+	public List<Integer> getSuccessOfPasswords() {
+		return successOfPasswords;
 	}
 
 	/**
@@ -146,8 +145,8 @@ public class UserLoginModel {
 	}
 	
 	/**
-	 * Set login method
-	 * @param loginMethod
+	 * Set login method 
+	 * @param loginMethod chosen from the login instruction view.
 	 */
 	public void setLoginMethod(int loginMethod) {
 		this.loginMethod = loginMethod;
@@ -160,16 +159,7 @@ public class UserLoginModel {
 	public int getLoginMethod() {
 		return this.loginMethod;
 	}
-
-	/**
-	 * Get a users images
-	 * A particular set will be retrieved from the database because the user will have chosen in the drop down box in the instruction panel
-	 *
-	 */
-	public void getUsersImages() {
-		this.challengeSet.addAll(db.getDecoyImageSetFromDB(UserID, pictureSetSelection, loginMethod));
-	}
-
+	
 	/**
 	 * @return the images
 	 */
@@ -198,13 +188,45 @@ public class UserLoginModel {
 		this.timeTaken = timeTaken;
 	}
 
+	
 	/**
-	 * Form an indexed list of password image file paths
+	 * First get a user's challenge set them from the database
+	 * Next shuffle them if the most recent login was successful
+	 * @return the challenge set
 	 */
-	public void formPasswordPaths() {
-		this.passwordPaths.addAll(db.getUserPasswordFilePathsFromDatabase(UserID, pictureSetSelection, loginMethod));
+	public List<String> getUsersImages() {
+		getUsersChallengeSet();
+		formPasswordPaths();
+		shuffleDecoyImages();
+		return challengeSet;
+	}
+	
+	/**
+	 * Get a user's challenge set
+	 * A particular set will be retrieved from the database based on the userid, pictureset, login method combination chosen the in login instruction view.
+	 *
+	 */
+	public void getUsersChallengeSet() {
+		setChallengeSet(db.getDecoyImageSetFromDB(UserID, pictureSetSelection, loginMethod));
 	}
 
+	/**
+	 * Form an indexed list of a user's password image file paths
+	 */
+	public void formPasswordPaths() {
+		setPasswordPaths(db.getUserPasswordFilePathsFromDatabase(UserID, pictureSetSelection, loginMethod));
+	}
+
+	/**
+	 * If the most recent log in was successful or if this is the first attempt, then make sure the images are shuffled
+	 */
+	public void shuffleDecoyImages() {
+		if (this.lastLoginSuccesful && !this.getShuffled() || this.loginAttemptNo == 1) {
+			Collections.shuffle(this.challengeSet);
+			this.setShuffled(true);
+		}
+	}
+	
 	/**
 	 * @return the db
 	 */
@@ -219,21 +241,6 @@ public class UserLoginModel {
 		this.db = db;
 	}
 	
-	/**
-	 * @param filePaths the filePaths to set
-	 */
-	public void setDecoyImages(List<String> filePaths) {
-		this.challengeSet.addAll(filePaths);
-	}
-	
-	/**
-	 * Set the picture Selection
-	 * @param pictureSelection
-	 */
-	public void setPictureSelection(int pictureSelection) {
-		this.pictureSetSelection = pictureSelection;
-	}
-
 	/**
 	 * @return the passwordPaths
 	 */
@@ -255,46 +262,33 @@ public class UserLoginModel {
 		return NOOFPASSWORDS;
 	}
 
+	/**
+	 * Set whether the image set has been shuffled or not.
+	 * @param b
+	 */
 	public void setShuffled(boolean b) {
 		this.shuffled = b;
 		
 	}
 
-	public boolean getShuffled() {
-		return this.shuffled;
-	}
-	
 	/**
-	 * get the login attempt number
+	 * Return whether a challenge set has been shuffled
 	 * @return
 	 */
-	public int getLoginAttempt() {
-		return this.loginAttemptNo;
-	}
-	
-	/**
-	 * First get them from the database
-	 * Next shuffle them if the most recent login was successful
-	 * @return the filePaths
-	 */
-	public List<String> getDecoyImages() {
-		getUsersImages();
-		formPasswordPaths();
-		shuffleDecoyImages();
-		return challengeSet;
+	public boolean getShuffled() {
+		return this.shuffled;
 	}
 
 	/**
 	 * Store a selected image's filepath to the list of entered passwords
 	 * @param source
 	 */
-	public void addImage(Object source) {
-		Icon imageIcon = ((JButton) source).getIcon();
-		this.enteredPasswords.add(imageIcon.toString());
+	public void addImage(String filePath) {
+		this.enteredPasswords.add(filePath);
 	}
 
 	/**
-	 * Check whether the list of entered passwords is the same as the actual user's password
+	 * Check whether the list of entered passwords is the same as the actual user's passwords
 	 * @return
 	 */
 	public boolean correctPassword() {
@@ -302,21 +296,19 @@ public class UserLoginModel {
 	}
 
 	/**
-	 * Pass the data to the DBConnect class to add an attmempt to the database
-	 * If this login attempt wasn't successful, also pass data for the images to be stored in it's current order.
+	 * Add a user's login attempt by passing the data to the DBConnect class which will execute the appropriate SQL update query
+	 * If this login attempt wasn't successful, also pass data for the images to be stored in it's current order via the DB Connect class.
 	 */
 	public void addLoginAttempt() {
 		addSuccessOfPasswords();
-//		db.addLoginAttemptToDB(this.getUserID(), this.getLoginMethod(), this.enteredPassword, this.timeTaken, this.correctPassword(), this.successOfPasswords, this.loginAttemptNo, this.pictureSetSelection);
 		db.addLoginAttemptToDatabase(this.getUserID(), this.getLoginMethod(), this.pictureSetSelection, this.enteredPasswords, this.timeTaken, this.totalTimeTaken, this.successOfPasswords, this.correctPassword(), this.loginAttemptNo);
-		
 		if (!this.correctPassword()) {
 			db.updateUserFilePaths(this.UserID, this.loginMethod, this.pictureSetSelection, this.challengeSet);
 		}
 	}
 
 	/**
-	 * Add time taken for a click to the indexed list
+	 * Add time taken for an image to be clicked to the indexed list
 	 * @param time
 	 */
 	public void addTimeTakenPerPassword(Double time) {
@@ -345,8 +337,8 @@ public class UserLoginModel {
 	}
 
 	/**
-	 * Get the recent login attempt from the database and increment it and set it to the field variable, so that when this is stored
-	 * in the database, it is up to date
+	 * Get the recent login attempt number from the database and increment it and set it to the field variable, so that when this is stored
+	 * in the database, it is up to date. If there is prior login attempts, set this login attempt number variable to 1.
 	 */
 	public void setLoginAttemptNoFromDB() {
 		this.loginAttemptNo = db.getRecentLoginAttemptNo(UserID, loginMethod, pictureSetSelection);
@@ -355,7 +347,7 @@ public class UserLoginModel {
 
 	/**
 	 * Get the integer associated with the recent login success rate
-	 * @return
+	 * @return 1 = successful or 0 = unsuccessful
 	 */
 	public int getMostRecentLoginSuccess() {
 		int getLoginSuccessful = db.getRecentLoginSuccess(this.UserID, this.loginMethod, this.pictureSetSelection);
@@ -363,23 +355,12 @@ public class UserLoginModel {
 	}
 
 	/**
-	 * Convert the recent login success rate to a boolean
+	 * Convert the recent login success rate to a boolean. If the number is greater than 0, then they were successful.
 	 */
 	public void returnMostRecentLoginSuccess() {
 		int successful = getMostRecentLoginSuccess();
 		this.lastLoginSuccesful = (successful > 0) ? true : false;
 	}
-
-	/**
-	 * If the most recent log in was successful or if this is the first attempt, then make sure the images are shuffled
-	 */
-	public void shuffleDecoyImages() {
-		if (this.lastLoginSuccesful && !this.getShuffled() || this.loginAttemptNo == 1) {
-			Collections.shuffle(this.challengeSet);
-			this.setShuffled(true);
-		}
-	}
-
 
 	/**
 	 * Checks whether each element in the entered password is the same as the password list and add it to the list named successOfPasswords
@@ -399,7 +380,7 @@ public class UserLoginModel {
 
 
 	/**
-	 * Return whether the data entered into the instruction panel already belongs to a registered user.
+	 * Checks whether the userid, picture set choice and login method choice is already associated with a registered user - the dbconnect object will check the database.
 	 * @return true if already registered
 	 */
 	public boolean returnIsRegisteredUser() {
@@ -409,7 +390,7 @@ public class UserLoginModel {
 	
 
 	/**
-	 * A reset method to clear all locally stored data and ensure there is no carry over with future logins.
+	 * A reset method to clear all locally stored data and ensure there is no carry over with any future logins.
 	 */
 	public void clear() {
 		challengeSet.clear();

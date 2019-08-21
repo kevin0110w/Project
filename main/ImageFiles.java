@@ -8,20 +8,19 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * This class is responsible for creating a list of 60 images, split into three
- * lists long with the decoy images for a user doing the registration process.
+ * This class is responsible for creating a list of 60 images, split into three lists.
+ * There are separate lists for holding seen and unseen image file paths that will be used to create the rest of a user's challenge set.
  *
  */
 public class ImageFiles {
 	private static final int NUMBEROFREGISTRATIONIMAGES = 60;
 	private List<String> listOne, listTwo, listThree, seenImages, unseenImages;
 
-	/*
-	 * Each separate list should contain 20 images for each panel in the
-	 * registration selection phase Screen images will contain the 60 images that
-	 * the user has seen The Unseen images will contain the remainder from the
-	 * directory that the user hasn't seen Depending on the login method, either
-	 * Seen or Unseen images will be used to create the decoy set
+	/**
+	 * Lists one, two and three will contain 20 image paths each, for each panel in the  registration panel. 
+	 * The seen images will also contains these 60 images.
+	 * The Unseen images will contain only unseen images. Images from previous registrations attempts will also be removed from this list.
+	 * Depending on the login method, either images from the seen or unseen images lists will be used to create the rest of the challenge set
 	 */
 	public ImageFiles() {
 		this.listOne = new ArrayList<String>();
@@ -108,10 +107,9 @@ public class ImageFiles {
 		return NUMBEROFREGISTRATIONIMAGES;
 	}
 
-	/*
-	 * This method will return the file paths of the images from computer memory,
-	 * depending on which selection is chosen in the GUI
-	 * It'll store the list of files in a particular folder as an array of strings before checking that each one is valid and then adding it to a list
+	/**
+	 * This method will return the file paths of the images from computer memory, depending on which selection is chosen in the GUI
+	 * It'll store the list of files from a particular folder as an array of strings before checking that each one is valid and then adding it to a list that'll contain all the paths
 	 * @Return List<String> - a list of all file paths of images in a particular folder
 	 */
 	private List<String> returnFiles(int selection) {
@@ -151,7 +149,7 @@ public class ImageFiles {
 	}
 
 	/**
-	 * Check that a file is valid if it ends in the correct extension
+	 * This method will check that a file is valid if it ends in the correct extension
 	 * @param file in the file directory
 	 * @return whether is a file or not
 	 */
@@ -161,22 +159,27 @@ public class ImageFiles {
 	}
 
 	/**
-	 * This method will create a set of registration images and return it to the model.
-	 * It'll also add images to a list of seen images and remove the image from an unseen list as these will be used to create the decoy sets
-	 * @param pictureSet
-	 * @param alternativeLoginSeenImages
+	 * This method will create a set of registration images and return it to the model. 
+	 * The unseen list will initially be populated with all the images. As each image path is added to either lists one, two or three, that image path will be removed from the list of unseen
+	 * images.
+	 * If the user has registered before, the image paths that made up the registration screen for that registration will also be removed from the unseen list.
+	 * This will ensure that the unseen list will definitely contain completely unseen images and be no duplicates.
+	 * A random number is generated to select the index of a list to be used as a registration image, a set is used to hold these chosen indexes to ensure no duplicates.
+	 * @param pictureSet - the picture set chosen for this registration
+	 * @param alternativeLoginSeenImages - a list of images if this particular user has registered before
 	 */
 	public void createRegistrationSet(int pictureSet, List<String> alternativeLoginSeenImages) {
 		List<String> allImages = new ArrayList<String>();
 		allImages = returnFiles(pictureSet);
-		this.unseenImages.addAll(allImages); // add all images to the unseen list and remove the seen ones from this
-												// list
+		allImages.removeAll(alternativeLoginSeenImages);
+	
+		this.unseenImages.addAll(allImages);
 		int counter = 0;
 		Random random = new Random();
-		Set<Integer> decidedNumbers = new HashSet<Integer>(); // to ensure no duplication
+		Set<Integer> chosenNumbers = new HashSet<Integer>(); // to ensure no duplication
 		while (counter < getNumberofregistrationimages()) {
 			int index = random.nextInt(allImages.size());
-			if (decidedNumbers.add(index) && !alternativeLoginSeenImages.contains(allImages.get(index))) {
+			if (chosenNumbers.add(index)) {
 				if (counter <= 19) {
 					this.listOne.add(allImages.get(index));
 				} else if (counter >= 20 && counter <= 39) {
@@ -189,6 +192,5 @@ public class ImageFiles {
 				counter++;
 			}
 		}
-		this.unseenImages.removeAll(alternativeLoginSeenImages);
 	}
 }

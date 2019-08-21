@@ -7,19 +7,22 @@ import javax.swing.JPanel;
  *
  */
 public class UserRegistrationCardsPanel extends JPanel {
-	private MainWindow theMainWindow;
 	private UserRegistrationInstructionPanel userRegistrationInstructionPanel;
 	private UserRegistrationCompletePanel userRegistrationCompletePanel;
 	private UserRegistrationPanel userRegistrationPanel;
-	private CardLayout cl;
-	private static final String INSTRUCTIONS = "INSTRUCTION", REGISTRATION = "REGISTRATION", COMPLETE = "COMPLETE";
+	private CardLayout cardLayout;
+	private static final String INSTRUCTIONS = "Instructions"; 
+	private static final String REGISTRATION = "Registration";
+	private static final String COMPLETE = "Complete";
 	
-	public UserRegistrationCardsPanel(MainWindow mw) {
-		this.theMainWindow = mw;
+	public UserRegistrationCardsPanel() {
 		this.setLayout(new CardLayout()); // make this view have a card layout view so that other image panels added to it can be scrolled
 		setupCards();
 	}
 
+	/**
+	 * Set up this panel to contain an instruction panel, a registration panel that'll contain three different image panels and a complete panel.
+	 */
 	private void setupCards() {
 		this.setUserRegistrationInstructionPanel(new UserRegistrationInstructionPanel());
 		this.setUserRegistrationPanel(new UserRegistrationPanel());
@@ -27,9 +30,9 @@ public class UserRegistrationCardsPanel extends JPanel {
 		this.add(getUserRegistrationInstructionPanel(), INSTRUCTIONS);
 		this.add(getUserRegistrationPanel(), REGISTRATION);
 		this.add(getUserRegistrationCompletePanel(), COMPLETE);
-		this.cl = (CardLayout) this.getLayout();
+		this.cardLayout = (CardLayout) this.getLayout();
 		this.setVisible(true);
-		this.cl.show(this, INSTRUCTIONS);	
+		this.cardLayout.show(this, INSTRUCTIONS);	
 	}
 
 	/**
@@ -77,41 +80,26 @@ public class UserRegistrationCardsPanel extends JPanel {
 	/**
 	 * @return the cl
 	 */
-	public CardLayout getCl() {
-		return cl;
+	public CardLayout getCardLayout() {
+		return cardLayout;
 	}
 
 	/**
 	 * @param cl the cl to set
 	 */
-	public void setCl(CardLayout cl) {
-		this.cl = cl;
+	public void setCardLayout(CardLayout cl) {
+		this.cardLayout = cl;
 	}
 	
 	public void showInstructionPanel() {
-		this.cl.show(this, INSTRUCTIONS);
+		this.cardLayout.show(this, INSTRUCTIONS);
 	}
 	
 	public void showRegistrationPanel() {
-		this.cl.show(this, REGISTRATION);
+		this.cardLayout.show(this, REGISTRATION);
 	}
 	
 	public void showCompletePanel() {
-		this.cl.show(this, COMPLETE);
+		this.cardLayout.show(this, COMPLETE);
 	}
-	
-	/**
-	 * @return the mw
-	 */
-	public MainWindow getMw() {
-		return theMainWindow;
-	}
-
-	/**
-	 * @param mw the mw to set
-	 */
-	public void setMw(MainWindow mw) {
-		this.theMainWindow = mw;
-	}
-
 }

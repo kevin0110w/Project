@@ -1,4 +1,5 @@
 package main;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,10 +25,12 @@ public class UserLoginInstructionPanel extends JPanel {
 	private JButton back, next;
 	private JTextArea textArea;
 	private JComboBox loginSelection, pictureSelection;
-	private static final String LOGINSELECTION = "LOGINSELECTION", NEXT = "NEXT", BACK = "BACK", PICTURESELECTION = "PICTURESELECTION";
-	
+	private static final String NEXT = "NEXT", BACK = "BACK";
+	private Font aFont;
+	private JPanel inputPanel;
+
 	public UserLoginInstructionPanel() {
-		this.setLayout(new GridLayout(2,0));
+		this.setLayout(new GridLayout(2, 0));
 		setupTextArea();
 		setupInputArea();
 	}
@@ -57,60 +60,89 @@ public class UserLoginInstructionPanel extends JPanel {
 	 * Set up the login input area
 	 */
 	private void setupInputArea() {
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
-		JPanel inputPanel = new JPanel(new GridLayout(4,0));
-		// add the textfield where the user will type in their userid
+		this.aFont = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+		this.inputPanel = new JPanel(new GridLayout(4, 0));
+		setupTextInputPanel();
+		setupLoginSelectionPanel();
+		setupPictureSelectionPanel();
+		setupBackNext();
+		this.add(inputPanel);
+	}
+
+	/**
+	 * Set up and populate a jcombo box for the login method and add it to a panel
+	 */
+	private void setupLoginSelectionPanel() {
+		JPanel loginSelectionPanel = new JPanel();
+		JLabel loginSelectionLabel = new JLabel();
+		loginSelectionLabel.setText(" Login Method: ");
+		loginSelectionLabel.setFont(aFont);
+		String[] loginChoice = new String[3];
+		loginChoice = setLoginChoice(loginChoice);
+		this.loginSelection = new JComboBox(loginChoice);
+		loginSelectionPanel.add(loginSelectionLabel);
+		loginSelectionPanel.add(loginSelection);
+		inputPanel.add(loginSelectionPanel);
+
+	}
+
+	/**
+	 * Set up and populate a jcombo box for the picture set selections and add it to a panel
+	 */
+	private void setupPictureSelectionPanel() {
+		JPanel pictureSetSelection = new JPanel();
+		JLabel pictureSetSelectionLabel = new JLabel();
+		pictureSetSelectionLabel.setText(" Picture Set: ");
+		pictureSetSelectionLabel.setFont(aFont);
+		String[] pictureSetChoice = new String[4];
+		pictureSetChoice = setPictureChoice(pictureSetChoice);
+		this.pictureSelection = new JComboBox(pictureSetChoice);
+		pictureSetSelection.add(pictureSetSelectionLabel);
+		pictureSetSelection.add(pictureSelection);
+		inputPanel.add(pictureSetSelection);
+	}
+
+	/**
+	 * Set up a text input panel for the user to enter their userid
+	 */
+	private void setupTextInputPanel() {
 		JPanel textInputPanel = new JPanel();
 		JLabel textInputLabel = new JLabel();
 		textInputLabel.setText("                      User ID: ");
-		textInputLabel.setFont(font);
+		textInputLabel.setFont(aFont);
 		this.input = new JTextField(20);
 		this.setDefaultText();
 		textInputPanel.add(textInputLabel);
 		textInputPanel.add(this.input);
-		
-		
-		// add the jcombo box that houses the options to select a login method
-		JPanel loginSelectionPanel = new JPanel();
-		JLabel loginSelectionLabel = new JLabel();
-		loginSelectionLabel.setText(" Login Method: ");
-		loginSelectionLabel.setFont(font);
-		String[] loginChoice = new String[3];
-		loginChoice = setChoice(loginChoice);
-		this.loginSelection = new JComboBox(loginChoice);
-		loginSelectionPanel.add(loginSelectionLabel);
-		loginSelectionPanel.add(loginSelection);
-		
-		// add a jcombo box that houses the options to select a picture set
-		JPanel pictureSetSelection = new JPanel();
-		JLabel pictureSetSelectionLabel = new JLabel();
-		pictureSetSelectionLabel.setText(" Picture Set: ");
-		pictureSetSelectionLabel.setFont(font);
-		String[] pictureSetChoice = new String[4];
-		pictureSetChoice = setPictureChoice(pictureSetChoice);
-		this.pictureSelection = new JComboBox(pictureSetChoice);
-		pictureSelection.setMaximumSize(new Dimension(loginSelection.getSize()));
-		pictureSetSelection.add(pictureSetSelectionLabel);
-		pictureSetSelection.add(pictureSelection);
-		
 		inputPanel.add(textInputPanel);
-		inputPanel.add(loginSelectionPanel);
-		inputPanel.add(pictureSetSelection);
-		inputPanel.add(setupBackNext());
-		this.add(inputPanel);
 	}
 	
 	/**
+	 * Set up the panel that'll hold the back and next buttons
+	 */
+	private void setupBackNext() {
+		JPanel buttonPanel = new JPanel();
+		this.back = new JButton("Back");
+		this.back.setActionCommand(BACK);
+		this.next = new JButton("Next");
+		this.next.setActionCommand(NEXT);
+		buttonPanel.add(back);
+		buttonPanel.add(next);
+		inputPanel.add(buttonPanel);
+	}
+
+	/**
 	 * Set the default text in the JTextField
 	 */
-	void setDefaultText() {
+	public void setDefaultText() {
 		this.input.setBackground(new Color(0, 0, 0, 0));
 		this.input.setText("Please enter your unique UserID here");
 		this.input.setOpaque(false);
 	}
-	
+
 	/**
-	 *  populate the array that'll be displayed in the jcombox box for picture choices
+	 * populate the array that'll be displayed in the jcombox box for picture
+	 * choices
 	 */
 	private String[] setPictureChoice(String[] pictureSetChoice) {
 		pictureSetChoice[0] = "Please choose a picture set";
@@ -119,61 +151,44 @@ public class UserLoginInstructionPanel extends JPanel {
 		pictureSetChoice[3] = "Doodle";
 		return pictureSetChoice;
 	}
-	
+
 	/**
-	 *  populate the array that'll be displayed in the jcombox box for login choices
+	 * populate the array that'll be displayed in the jcombox box for login choices
 	 */
-	private String[] setChoice(String[] choice) {
+	private String[] setLoginChoice(String[] choice) {
 		choice[0] = "Please choose a login method";
 		choice[1] = "1";
 		choice[2] = "2";
 		return choice;
 	}
-	
-	/**
-	 * Set up the panel that'll hold the back and next buttons
-	 * @return the JPanel
-	 */
-	private JPanel setupBackNext() {
-		JPanel buttonPanel = new JPanel();
-		this.back = new JButton("Back");
-		this.back.setActionCommand(BACK);
-		this.next = new JButton("Next");
-		this.next.setActionCommand(NEXT);
-		buttonPanel.add(back);
-		buttonPanel.add(next);
-		return buttonPanel;
-	}
-	
+
 	/**
 	 * Add action listeners to all interactive buttons
 	 * @param userLoginListener
 	 */
 	public void addUserLoginListener(ActionListener userLoginListener) {
 		this.input.addActionListener(userLoginListener);
-//		this.loginSelection.addActionListener(userLoginListener);
 		this.back.addActionListener(userLoginListener);
 		this.next.addActionListener(userLoginListener);
-//		this.pictureSelection.addActionListener(userLoginListener);
 	}
-	
+
 	/**
 	 * Add a mouse listener to the JTextField
 	 * @param mouselistener l
 	 */
-	public void addUserLoginMouseListener(MouseListener l) {
-		this.input.addMouseListener(l);
-		
+	public void addUserLoginMouseListener(MouseListener listener) {
+		this.input.addMouseListener(listener);
+
 	}
 
 	/**
 	 * Get the login selection from the jcombobox
 	 * @return
 	 */
-	public int getSelection() {
+	public int getLoginSelection() {
 		return this.loginSelection.getSelectedIndex();
 	}
-	
+
 	/**
 	 * Get the picture selection from the Jcombobox
 	 * @return
@@ -184,7 +199,7 @@ public class UserLoginInstructionPanel extends JPanel {
 
 	/**
 	 * Get the text input into the JTextField
-	 * @return - inputted text
+	 * @return - entered text in the jtextfield
 	 */
 	public String getInput() {
 		String textInput = this.input.getText();
@@ -195,21 +210,20 @@ public class UserLoginInstructionPanel extends JPanel {
 	 * Set text to the JTextField
 	 * @param string
 	 */
-	public void setTextToInput(String string) {
+	public void setInputToTextfield(String string) {
 		this.input.setText(string);
 		this.input.setBackground(Color.WHITE);
-		this.input.setOpaque(true);	
+		this.input.setOpaque(true);
 	}
-	
+
 	/**
 	 * Get JTextField
 	 * @return
 	 */
 	public JTextField getInputArea() {
-		// TODO Auto-generated method stub
 		return this.input;
 	}
-	
+
 	/**
 	 * A method to reset the view
 	 */

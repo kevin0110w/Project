@@ -7,6 +7,10 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JOptionPane;
 
+/**
+ * This class is responsible for controlling the actions from the user entering the their details to the instruction panel and checking whether these are associated with a registered user
+ *
+ */
 public class UserLoginInstructionController {
 	private MainWindow mainWindow;
 	private UserLoginCardsPanel userLoginCardsPanel;
@@ -19,9 +23,11 @@ public class UserLoginInstructionController {
 		setListeners(); // set the listeners in all the separate view classes
 	}
 	
+	/**
+	 * Create a controller that'll handle the interactions on the login selection image panel
+	 */
 	public void createUserLoginSelectionController() {
 		UserLoginSelectionController userLoginSelectionController = new UserLoginSelectionController(mainWindow, userLoginCardsPanel, userLoginModel);
-		userLoginSelectionController.setListeners();
 	}
 	
 	/**
@@ -33,54 +39,69 @@ public class UserLoginInstructionController {
 	}
 	
 	class UserLoginInstructionListener implements ActionListener, MouseListener {
-		boolean successfulPastLogin, success;
+		
+		private String getUserID() {
+			String userId = userLoginCardsPanel.getUseridInput().toUpperCase();
+			return userId;
+		}
+		
+		private boolean invalidInput(int pictureSetSelection, int loginSelection, String userID) {
+			String text = "Please enter your unique UserID here";
+			text = text.toUpperCase();
+			return pictureSetSelection == 0 || loginSelection == 0 || userID.equals(text);
+		}
+		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
+			/**
+			 * If the user clicks on the back button, display the main page, clear everything from the model, clear any choices or inputs from the instruction view.
+			 */
 				case "BACK":
 					mainWindow.showMainPage(); // show the main page
 					userLoginModel.clear(); // clear any locally stored data
 					userLoginCardsPanel.clearInstructionPanel(); // reset the instruction page view
 					mainWindow.updateSmallFrameSize();
-					mainWindow.setLabelMainMenu();
 					break;
-			case "NEXT":
+			/**
+			 * If a user clicks on next, get the user id input, picture set choice,, login choice, and set these in the model. If the userid is empty, or zeroth index
+			 * for either of the jcombo boxes is chosen, throw an exception.
+			 * Set an updated login attempt number by getting the most recent one and incrementing it.
+			 * 
+			 */
+				case "NEXT":
+				boolean success = true;
 				try {
-					success = true;
-					String userId = userLoginCardsPanel.getUseridInput().toUpperCase();
-					String text = "Please enter your student ID here";
-					text = text.toUpperCase();
-//					if (userIdString.charAt(0) == '0') {
-//						userIdString = userIdString.substring(1);
-//					}
-//					int userID = Integer.parseInt(userIdString);
+					String userId = getUserID();
 					int pictureSelection = userLoginCardsPanel.getPictureSelection();
 					int loginSelection = userLoginCardsPanel.getLoginSelection();
-					if (loginSelection == 0 || pictureSelection == 0 || userId.equals(text)) {
-						success = false;
-						throw new Exception(); // throw a dialog box if an invalid picture or login selection is chosen
-												// from the jcombo boxes
+					if (invalidInput(pictureSelection, loginSelection, userId)) {
+						throw new Exception();
 					}
 					userLoginModel.setUserID(userId); // set the user id
 					userLoginModel.setLoginMethod(loginSelection); // set the model's field variable for login method
-					userLoginModel.setPictureSelection(pictureSelection); // set the model's field variable for picture set
+					userLoginModel.setPictureSetSelection(pictureSelection); // set the model's field variable for picture set
 					userLoginModel.setLoginAttemptNoFromDB(); // set the model's field variable for login attempt by pulling the details from the database
 				} catch (Exception exception) {
 					JOptionPane.showMessageDialog(userLoginCardsPanel,
-							"Warning - Log-in Method and/or Picture Set have not been selected", "Log In Warning",
+							"Warning - Invalid Login Details", "Log In Warning",
 							JOptionPane.WARNING_MESSAGE);
 					success = false;
 					break;
 				}
-				// check that correct details have been inputted and that these are associated
-				// with a registered user
+				/**
+				 * Check that a valid data has been inputted and that these are associated with a valid user according to the database
+				 * if so, check whether their most recent login attempt was successful, get the challenge set associated with the user and use these to create the image
+				 * buttons in the selection panel
+				 * Then display the login panel and start the timer
+				 * otherwise display a dialog box
+				 */
 				if (success && userLoginModel.returnIsRegisteredUser()) {
-					userLoginModel.returnMostRecentLoginSuccess(); // check whether this user logged in successfully recently
-					userLoginCardsPanel.getLoginSelectionPanel().getFilePaths(userLoginModel.getDecoyImages()); // pull the file paths into the view and set the buttons
-//					setLoginSelectionPanelListeners(); // set the action listeners in the selection panel now that buttons have been set
+					userLoginModel.returnMostRecentLoginSuccess();
+					userLoginCardsPanel.getLoginSelectionPanel().getFilePaths(userLoginModel.getUsersImages());
 					createUserLoginSelectionController();
-					userLoginCardsPanel.showLoginPanel(); // show the selection page
-					userLoginModel.setInitialTime(); // start the clock
+					userLoginCardsPanel.showLoginPanel();
+					userLoginModel.setInitialTime();
 					mainWindow.setLabelSelectImages();
 				} else {
 					JOptionPane.showMessageDialog(userLoginCardsPanel, "Warning - Not a valid User ", "Log In Warning",
@@ -93,25 +114,28 @@ public class UserLoginInstructionController {
 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
+			/**
+			 * Clears the textfield if it's clicked on
+			 */
 			if (arg0.getSource() == userLoginCardsPanel.getLoginInstructionPanel().getInputArea()) {
-				userLoginCardsPanel.getLoginInstructionPanel().setTextToInput(""); // set text field to "" when it is selected
+				userLoginCardsPanel.getLoginInstructionPanel().setInputToTextfield(""); 
 			}
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent arg0) {
-//			if (arg0.getSource() == userLoginCardsPanel.getLoginInstructionPanel().getInputArea()) {
-//				userLoginCardsPanel.getLoginInstructionPanel().setTextToInput(""); // set text field to "" when it is selected
-//			}
-//			
+		public void mouseEntered(MouseEvent arg0) {		
+			
 		}
 
 		@Override
 		public void mouseExited(MouseEvent arg0) {
+			/**
+			 * If the mouse is moved away from the Jtextfield and nothing's been entered, then reset the placeholder text
+			 */
 			String input = userLoginCardsPanel.getLoginInstructionPanel().getInput();
 			if (arg0.getSource() == userLoginCardsPanel.getLoginInstructionPanel().getInputArea()) {
 				if (!(input.length() > 0)) { 
-				userLoginCardsPanel.getLoginInstructionPanel().setDefaultText(); // set text field to "" when it is selected
+				userLoginCardsPanel.getLoginInstructionPanel().setDefaultText(); 
 				}
 			}
 		}

@@ -3,7 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * This class is responsible for listening to the jbuttons in the mainwindow view firing.
+ * This class is responsible for co'ordinating the user's interaction with the main Window screen view
  *
  */
 public class MainWindowController {
@@ -14,18 +14,19 @@ public class MainWindowController {
 		this.mainWindow.addListeners(new MainWindowListener()); // add action listeners to the buttons in the view
 	}
 
+	
 	class MainWindowListener implements ActionListener {
+		/**
+		 * This method will set the label with the correct text and show the relevant panel depending on the button pressed.
+		 */
 		public void actionPerformed(ActionEvent e) {
 			switch (e.getActionCommand()) {
 			case "REGISTER":
-				mainWindow.setLabelRegistrationInstructions();
 				mainWindow.showRegistrationPage();
 				mainWindow.updateBigFrameSize();
-			
 				break;
 			case "LOGIN":
-				mainWindow.setLabelLoginInstructions();
-				mainWindow.showLoginPage(); // show login page if user clicks login
+				mainWindow.showLoginPage();
 				mainWindow.updateBigFrameSize();
 				break;
 			}

@@ -6,8 +6,6 @@ import java.util.Set;
 
 /**
  * This class is responsible for storing all the data that is associated with a user during the registration phase.
- * @author woohoo
- *
  */
 public class User {
 	private String userid, passwordOne, passwordTwo, passwordThree;
@@ -171,14 +169,14 @@ public class User {
 	}
 
 	/**
-	 * @param images the images to set
+	 * @param images - the images to set
 	 */
 	public void setImages(Set<String> images) {
 		this.images = images;
 	}
 	
 	/**
-	 * A  method to compare that two registered users are equal
+	 * A  method to compare whether two registered users are equal
 	 * for testing purposes.
 	 */
 	@Override

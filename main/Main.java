@@ -15,17 +15,17 @@ public class Main {
 	
 	public void createLoginPanel(MainWindow mw) {
 		UserLoginModel loginModel = new UserLoginModel();
-		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel(mw);
+		UserLoginCardsPanel loginPanel = new UserLoginCardsPanel();
 		UserLoginInstructionController UserLoginInstructionController  = new UserLoginInstructionController(mw, loginPanel, loginModel);
-		UserLoginCompleteController UserLoginCompleteController = new UserLoginCompleteController(mw, loginPanel, loginModel);
+		UserLoginCompleteController UserLoginCompleteController = new UserLoginCompleteController(mw, loginPanel);
 		mw.getCardsPanel().add(loginPanel, "Log in");
 	}
 	
 	public void createRegistrationPanel(MainWindow mw) {
 		UserRegistrationModel userRegistrationModel = new UserRegistrationModel();
-		UserRegistrationCardsPanel registrationPanel = new UserRegistrationCardsPanel(mw);
-		UserRegistrationInstructionController registrationController = new UserRegistrationInstructionController(mw,
-				registrationPanel, userRegistrationModel);
+		UserRegistrationCardsPanel registrationPanel = new UserRegistrationCardsPanel();
+		UserRegistrationInstructionController registrationController = new UserRegistrationInstructionController(mw, registrationPanel, userRegistrationModel);
+		UserRegistrationCompleteController userRegistrationCompleteController = new UserRegistrationCompleteController(registrationPanel, mw);
 		mw.getCardsPanel().add(registrationPanel, "Registration");
 	}
 	

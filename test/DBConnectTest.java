@@ -47,8 +47,6 @@ public class DBConnectTest {
 	
 	@After
 	public void tearDown() throws Exception {
-//		deleteTestUserRegistration();
-//		deleteTestUserLoginAttempt();
 	}
 	
 	/**
@@ -95,7 +93,7 @@ public class DBConnectTest {
 	
 	public void deleteTestUserLoginAttempt() {
 		db.connectToDatabase();
-		String command = "Delete From AllLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
+		String command = "Delete From UserLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
 			st.setString(1, "999999");
@@ -239,7 +237,7 @@ public class DBConnectTest {
 		addLoginAttemptToDatabase();
 		db.connectToDatabase();
 		
-		String command = "Select * From Allloginattempts where UserID = ? and PictureSet = ? and LoginMethod = ?";
+		String command = "Select * From Userloginattempts where UserID = ? and PictureSet = ? and LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
 			st.setString(1, user.getUserid());

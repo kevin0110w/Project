@@ -41,19 +41,6 @@ public class ImageFilesTest {
 	}
 	
 	@Test
-	public void testIsCorrectFileMethod() {
-		File file = new File("C:\\Users\\woohoo\\eclipse-workspace\\project\\mikons1\\1.gif");
-		boolean isValidFile = this.imageFiles.isCorrectFile(file);
-		assertTrue(isValidFile);
-		file = new File("C:\\Users\\woohoo\\eclipse-workspace\\project\\art\\1.jpg");
-		isValidFile = this.imageFiles.isCorrectFile(file);
-		assertTrue(isValidFile);
-		file = new File("C:\\Users\\woohoo\\eclipse-workspace\\project\\mikons1\\.gitignore");
-		isValidFile = this.imageFiles.isCorrectFile(file);
-		assertTrue(isValidFile);
-	}
-	
-	@Test
 	public void testEachListHasTwentyImages() {
 		imageFiles.createRegistrationSet(1, listArt);
 		int listOneSize = imageFiles.getListOne().size();
@@ -71,28 +58,6 @@ public class ImageFilesTest {
 		assertEquals("List Three should initially be empty", 0, imageFiles.getListThree().size());
 		assertEquals("Seen Images list should initially be empty", 0, imageFiles.getSeenImages().size());
 		assertEquals("Unseen Images list should initially be empty", 0, imageFiles.getUnseenImages().size());
-	}
-	
-	@Test
-	public void testValidSelection() {
-		List<String> allImages = new ArrayList<String>();
-		assertEquals("Inital list size is 0", 0, allImages.size());
-		allImages.addAll(imageFiles.returnFiles(1));
-		assertTrue("allImages populated as valid selection", allImages.size() > 0);
-		allImages.clear();
-		allImages.addAll(imageFiles.returnFiles(2));
-		assertTrue("allImages populated as valid selection", allImages.size() > 0);
-		allImages.clear();
-		allImages.addAll(imageFiles.returnFiles(3));
-		assertTrue("allImages populated as valid selection", allImages.size() > 0);
-		allImages.clear();
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testInvalidSelection() {
-		List<String> allImages = new ArrayList<String>();
-		allImages.addAll(imageFiles.returnFiles(4));
-		allImages.addAll(imageFiles.returnFiles(0));
 	}
 	
 	@Test

@@ -10,16 +10,12 @@ import java.awt.event.ActionListener;
  */
 public class UserRegistrationCompleteController {
 	private UserRegistrationCardsPanel userRegistrationCardsPanel;
-//	private UserRegistrationCompletePanel panel;
-//	private MainWindow mw;
+	private MainWindow mw;
 
-//	public UserRegistrationCompleteController(UserRegistrationCompletePanel panel, MainWindow mw) {
-	public UserRegistrationCompleteController(UserRegistrationCardsPanel panel) {
-//		this.panel = panel;
-//		this.mw = mw;
-		this.userRegistrationCardsPanel = panel;
-		this.userRegistrationCardsPanel.getUserRegistrationCompletePanel()
-				.addActionListener(new UserRegistrationCompleteListener());
+	public UserRegistrationCompleteController(UserRegistrationCardsPanel userRegistrationCardsPanel, MainWindow mw) {
+		this.mw = mw;
+		this.userRegistrationCardsPanel = userRegistrationCardsPanel;
+		this.userRegistrationCardsPanel.getUserRegistrationCompletePanel().addActionListener(new UserRegistrationCompleteListener());
 	}
 
 	class UserRegistrationCompleteListener implements ActionListener {
@@ -27,10 +23,13 @@ public class UserRegistrationCompleteController {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			switch (arg0.getActionCommand()) {
+			/**
+			 * If a user clicks the home button, the user registration cards panel will reset to the instruction panel for the next registration, the main window will display the main page.
+			 */
 			case "HOME":
 				userRegistrationCardsPanel.showInstructionPanel();
-				userRegistrationCardsPanel.getMw().showMainPage();
-				userRegistrationCardsPanel.getMw().updateSmallFrameSize();
+				mw.showMainPage();
+				mw.updateSmallFrameSize();
 				break;
 			}
 
