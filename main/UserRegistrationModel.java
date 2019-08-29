@@ -2,8 +2,10 @@ package main;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * This class is responsible for storing all the data recorded during the registration phase, the dbconnect object will send sql commands to the database
@@ -21,20 +23,21 @@ public class UserRegistrationModel {
 	private DBConnect db;
 	private static final int LOGINMETHODONE = 1;
 	private static final int LOGINMETHODTWO = 2;
-	private List<String> alternativeRegistrationSeenImages; // an arraylist to store the images that a user may have seen from a previous registration
+	private Set<String> alternativeRegistrationSeenImages; // an arraylist to store the images that a user may have seen from a previous registration
 	
 	
 	/**
 	 * Create a new DBConnect object for database modifying purposes
 	 * ImageFiles object for creating a registration set of 60 images and the challenge set of 20 images
 	 * timeTaken is an indexed list to store the time taken to select each image
-	 * alternativeRegistrationSeenImages is an indexed list to store the images that a user may have seen had they registered before for the same picture set with a different login method
+	 * alternativeRegistrationSeenImages is an set to store the images that a user may have seen or may belong to their challenge set 
+	 * had they registered before using the same picture set but with a different login method
 	 */
 	public UserRegistrationModel() {
 		this.db = new DBConnect();
 		this.imageFiles = new ImageFiles();
 		this.timeTaken = new ArrayList<Double>();
-		this.alternativeRegistrationSeenImages = new ArrayList<String>();
+		this.alternativeRegistrationSeenImages = new HashSet<String>();
 	}
 	
 	/**
@@ -177,9 +180,10 @@ public class UserRegistrationModel {
 		this.currentUser.setTimeTaken(timeTaken);
 		this.db.addUserToDatabase(this.currentUser);
 		this.addUserSeenImagestoDB();
-		this.clear(); // clear all locally stored data from a recent registration
+		this.clear();
 	}
-	
+
+
 	/**
 	 * Store the list of images that a user has seen during the registration phase to the
 	 * database 
@@ -191,7 +195,7 @@ public class UserRegistrationModel {
 		images.addAll(this.imageFiles.getListThree());
 		db.addUsersSeenImagestoDatabase(this.userID, this.pictureSet, this.loginMethod, images);
 	}
-	
+
 	/**
 	 * Creates the registration set of 60 images that'll be viewed by the user in the registration panels, accounting for any previously seen images in a previous registration using a different
 	 * login method
@@ -202,11 +206,16 @@ public class UserRegistrationModel {
 	}
 	
 	/**
-	 * Check whether the user has already registered using a different login method of 	the same picture set
-	 * If such a user exists, this method will set a list variable containing all previously seen images so that we can create a new, completely different list of registration images.
+	 * Checks whether the user has already registered using a different login method of 	the same picture set
+	 * If such a user exists, this method will call two methods that will retrieve all image paths relating to the prior login and store the contents in a set.
+	 * It will add all images that the user may have seen from the prior registration (i.e. the 60)
+	 * It will then add all images belonging to that prior registration's challenge set.
+	 * This is necessary in case the user registers using method 2 before method 1. A set is used to avoid storing duplicates which will occur when retrieving user details relating to a prior
+	 * registration involving login method one as the challenge set will contain 20 elements from the seen images list.
 	 */
 	private void setAlternativeLoginImages() {
 		this.alternativeRegistrationSeenImages.addAll(this.db.getUserSeenImages(this.userID, this.pictureSet, this.alternativeLogin));
+		this.alternativeRegistrationSeenImages.addAll(this.db.getUserChallengeSetFromDB(this.userID, this.pictureSet, this.alternativeLogin));
 	}
 
 	/**
@@ -243,6 +252,7 @@ public class UserRegistrationModel {
 					this.currentUser.addImageToImageSet(randomUnseenImage);
 				}
 		}
+		
 	}
 	
 	/**

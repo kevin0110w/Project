@@ -150,8 +150,8 @@ public class UserRegistrationInstructionPanel extends JPanel {
 	private void setPicsChoices() {
 		picsChoices[0] = "Please choose a picture set";
 		picsChoices[1] = "Art";
-		picsChoices[2] = "Mikon";
-		picsChoices[3] = "Doodle";
+		picsChoices[2] = "Mikon (Greyscale)";
+		picsChoices[3] = "Mikon (Colour)";
 	}
 	
 	/**

@@ -147,8 +147,8 @@ public class UserLoginInstructionPanel extends JPanel {
 	private String[] setPictureChoice(String[] pictureSetChoice) {
 		pictureSetChoice[0] = "Please choose a picture set";
 		pictureSetChoice[1] = "Art";
-		pictureSetChoice[2] = "Mikon";
-		pictureSetChoice[3] = "Doodle";
+		pictureSetChoice[2] = "Mikon (Greyscale)";
+		pictureSetChoice[3] = "Mikon (Colour)";
 		return pictureSetChoice;
 	}
 

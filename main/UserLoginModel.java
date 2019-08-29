@@ -187,45 +187,6 @@ public class UserLoginModel {
 	public void setTimeTaken(List<Double> timeTaken) {
 		this.timeTaken = timeTaken;
 	}
-
-	
-	/**
-	 * First get a user's challenge set them from the database
-	 * Next shuffle them if the most recent login was successful
-	 * @return the challenge set
-	 */
-	public List<String> getUsersImages() {
-		getUsersChallengeSet();
-		formPasswordPaths();
-		shuffleDecoyImages();
-		return challengeSet;
-	}
-	
-	/**
-	 * Get a user's challenge set
-	 * A particular set will be retrieved from the database based on the userid, pictureset, login method combination chosen the in login instruction view.
-	 *
-	 */
-	public void getUsersChallengeSet() {
-		setChallengeSet(db.getDecoyImageSetFromDB(UserID, pictureSetSelection, loginMethod));
-	}
-
-	/**
-	 * Form an indexed list of a user's password image file paths
-	 */
-	public void formPasswordPaths() {
-		setPasswordPaths(db.getUserPasswordFilePathsFromDatabase(UserID, pictureSetSelection, loginMethod));
-	}
-
-	/**
-	 * If the most recent log in was successful or if this is the first attempt, then make sure the images are shuffled
-	 */
-	public void shuffleDecoyImages() {
-		if (this.lastLoginSuccesful && !this.getShuffled() || this.loginAttemptNo == 1) {
-			Collections.shuffle(this.challengeSet);
-			this.setShuffled(true);
-		}
-	}
 	
 	/**
 	 * @return the db
@@ -279,6 +240,46 @@ public class UserLoginModel {
 		return this.shuffled;
 	}
 
+
+	
+	/**
+	 * First get a user's challenge set them from the database
+	 * Next shuffle them if the most recent login was successful
+	 * @return the challenge set
+	 */
+	public List<String> getUsersImages() {
+		getUsersChallengeSet();
+		formPasswordPaths();
+		shuffleDecoyImages();
+		return challengeSet;
+	}
+	
+	/**
+	 * Get a user's challenge set
+	 * A particular set will be retrieved from the database based on the userid, pictureset, login method combination chosen the in login instruction view.
+	 *
+	 */
+	private void getUsersChallengeSet() {
+		setChallengeSet(db.getUserChallengeSetFromDB(UserID, pictureSetSelection, loginMethod));
+	}
+
+	/**
+	 * Form an indexed list of a user's password image file paths
+	 */
+	private void formPasswordPaths() {
+		setPasswordPaths(db.getUserPasswordFilePathsFromDatabase(UserID, pictureSetSelection, loginMethod));
+	}
+
+	/**
+	 * If the most recent log in was successful or if this is the first attempt, then make sure the images are shuffled
+	 */
+	private void shuffleDecoyImages() {
+		if (this.lastLoginSuccesful && !this.getShuffled() || this.loginAttemptNo == 1) {
+			Collections.shuffle(this.challengeSet);
+			this.setShuffled(true);
+		}
+	}
+	
 	/**
 	 * Store a selected image's filepath to the list of entered passwords
 	 * @param source
@@ -377,7 +378,6 @@ public class UserLoginModel {
 			}
 		}
 	}
-
 
 	/**
 	 * Checks whether the userid, picture set choice and login method choice is already associated with a registered user - the dbconnect object will check the database.

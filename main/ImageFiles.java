@@ -116,7 +116,6 @@ public class ImageFiles {
 		String path = System.getProperty("user.dir");
 		List<String> allImages = new ArrayList<String>();
 		path += this.setFolderPath(selection);
-		
 		File[] files = new File(path).listFiles();
 
 		for (File file : files) {
@@ -139,10 +138,10 @@ public class ImageFiles {
 			directory = "\\art";
 			break;
 		case 2:
-			directory = "\\mikons";
+			directory = "\\mikons_1";
 			break;
 		case 3:
-			directory = "\\doodle";
+			directory = "\\mikons_2";
 			break;
 		}
 		return directory;
@@ -160,7 +159,8 @@ public class ImageFiles {
 
 	/**
 	 * This method will create a set of registration images and return it to the model. 
-	 * The unseen list will initially be populated with all the images. As each image path is added to either lists one, two or three, that image path will be removed from the list of unseen
+	 * The unseen list will initially be popul
+	 * ated with all the images. As each image path is added to either lists one, two or three, that image path will be removed from the list of unseen
 	 * images.
 	 * If the user has registered before, the image paths that made up the registration screen for that registration will also be removed from the unseen list.
 	 * This will ensure that the unseen list will definitely contain completely unseen images and be no duplicates.
@@ -168,11 +168,10 @@ public class ImageFiles {
 	 * @param pictureSet - the picture set chosen for this registration
 	 * @param alternativeLoginSeenImages - a list of images if this particular user has registered before
 	 */
-	public void createRegistrationSet(int pictureSet, List<String> alternativeLoginSeenImages) {
+	public void createRegistrationSet(int pictureSet, Set<String> alternativeLoginSeenImages) {
 		List<String> allImages = new ArrayList<String>();
 		allImages = returnFiles(pictureSet);
 		allImages.removeAll(alternativeLoginSeenImages);
-	
 		this.unseenImages.addAll(allImages);
 		int counter = 0;
 		Random random = new Random();

@@ -18,7 +18,11 @@ import org.junit.Test;
 
 import main.User;
 import main.UserRegistrationModel;
-
+/**
+ * This test class will run junit tests on the public methods within the user registration model class
+ * @author woohoo
+ *
+ */
 public class UserRegistrationModelTest {
 	private User user;
 	private UserRegistrationModel model;
@@ -45,12 +49,20 @@ public class UserRegistrationModelTest {
 		model.clear();
 	}
 	
+	/**
+	 * Test that the list containing all the times taken so far is initially empty.
+	 * This unit test passes if it asserts True
+	 */
 	@Test
 	public void testTimeTakenInitiallyEmpty() {
 		model.clear();
 		assertTrue("List to record time taken initially set to zero", this.model.getTimeTaken().size() == 0); 
 	}
 	
+	/**
+	 * A test to check that the add user within the model actually calls the add user method in the db connect class
+	 * The test passes if it asserts equal that user that is created and sent to the database is equal to the user that is brought back from the user registration table
+	 */
 	@Test
 	public void testAddUser() {
 		deleteTestUserRegistration();
@@ -60,16 +72,26 @@ public class UserRegistrationModelTest {
 		assertEquals(this.user, newUser);
 	}
 	
+	/**
+	 * Test to check the isUserAlreadyRegistered Method in the model class.
+	 * This method checks whether a user's account is found in the user registrations table.
+	 * 
+	 */
 	@Test
 	public void testIsUserAlreadyRegistered() {
 		boolean registered = model.isUserAlreadyRegistered();
-		assertFalse("Should fail as user has not been registered to db yet", registered);
+		assertFalse("Should be false as user has not been registered to db yet", registered);
 		this.model.createRegistrationSet();
 		model.addUser();
 		registered = model.isUserAlreadyRegistered();
-		assertTrue("Should pass as user has now been registered to db", registered);
+		assertTrue("Should be true as user has now been registered to db", registered);
 	}
 	
+	/**
+	 * This test checks createDecoyImageSet() method within the model class
+	 * Before it is called, the images field in the user class should only be 3.
+	 * This test passes if the assert equals shows that the images size is 20 after the createDecoyImageSet method is called.
+	 */
 	@Test
 	public void testCreateDecoyImageSet() {
 		User user = createUserDetails();
@@ -80,6 +102,11 @@ public class UserRegistrationModelTest {
 		assertEquals("User image set now contains 20", 20, model.getUser().getImages().size());
 	}
 	
+	/**
+	 * This test will check that the addTimeTaken method in the model class adds a time to the list of times.
+	 * Initially the list of times should have 0 elements.. When the method is called, the size will increment by one
+	 * This test passes if it asserts that the size of the list of times is 1, i.e it has been incremented, after the add time taken method is called once.
+	 */
 	@Test
 	public void addTimeTaken() {
 		model.getTimeTaken().clear();
@@ -89,6 +116,10 @@ public class UserRegistrationModelTest {
 		assertEquals("List should not have one element", 1, model.getTimeTaken().size());
 	}
 	
+	/**
+	 * This test will check that the createRegistrationSet method within the model class populates each list with 20 images
+	 * This test passes if it asserts that each list has 20 elements.
+	 */
 	@Test
 	public void testCreateRegistrationSet() {
 		assertEquals("List one should initially be 0", 0, model.getImageFiles().getListOne().size());
@@ -100,6 +131,10 @@ public class UserRegistrationModelTest {
 		assertEquals("List three should now be 20", 20, model.getImageFiles().getListThree().size());
 	}
 	
+	/**
+	 * This test checks the clear method
+	 * The test passes if it asserts that the passwords are null or time taken list is 0.
+	 */
 	@Test
 	public void testClear() {
 		assertEquals("Password one set to 'a'", "a", model.getFirstSelectedImageFilePath());
@@ -113,6 +148,9 @@ public class UserRegistrationModelTest {
 		assertEquals("Time list contains 0 elements", 0, model.getTimeTaken().size());
 	}
 	
+	/**
+	 * A helper method to populate the model with fake data for the user id, picture set, login method, file paths of selected images
+	 */
 	public void populateTheModel() {
 		model.setUserID(user.getUserid());
 		model.setFirstSelectedImageFilePath(user.getPasswordOne());
@@ -125,7 +163,7 @@ public class UserRegistrationModelTest {
 	
 	/**
 	 * Helper method to creating a new user
-	 * @return
+	 * @return a User
 	 */
 	public User createUserDetails() {
 		this.user = new User("999999", "a", "b", "c", 1, 1, 0.0);
@@ -137,7 +175,7 @@ public class UserRegistrationModelTest {
 		return user;
 	}
 	
-	/*
+	/**
 	 * Helper method to delete a user from a database and avoid any primary key exceptions
 	 */
 	public void deleteTestUserRegistration() {
@@ -157,6 +195,13 @@ public class UserRegistrationModelTest {
 		}
 	}
 	
+	/**
+	 * A helper method to return the latest add user from the database
+	 * @param userID - the id for an account
+	 * @param pictureSet - the picture set of an account
+	 * @param loginMethod - the login method of an account
+	 * @return a user
+	 */
 	public User returnLatestAddedUserToDB(String userID, int pictureSet, int loginMethod) {
 		User user = null;
 		model.getDb().connectToDatabase();

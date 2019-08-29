@@ -171,7 +171,7 @@ public class DBConnect {
 	 * @param pictureSet - picture set to be checked
 	 * @return list of 20 image file paths
 	 */
-	public List<String> getDecoyImageSetFromDB(String UserID, int pictureSet, int loginMethod) {
+	public List<String> getUserChallengeSetFromDB(String UserID, int pictureSet, int loginMethod) {
 		this.connectToDatabase(); // connect to the database
 		List<String> imagePaths = new ArrayList<String>();
 		String commandTwo = "SELECT * FROM UserChallengeSets Where UserID = ? AND PictureSet = ? And LoginMethod = ?";
@@ -245,7 +245,6 @@ public class DBConnect {
 	 */
 	public int getRecentLoginSuccess(String userID, int loginMethod, int pictureSet) {
 		this.connectToDatabase();
-//		String command = "Select Successful From  Where UserID = ? AND LoginMethod = ? And PictureSet = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
 		String command = "Select OverallSuccessful From USERLOGINATTEMPTS Where UserID = ? And PictureSet = ? AND LoginMethod = ? ORDER BY ATTEMPTNUMBER DESC LIMIT 1";
 		int successful = 0;
 		try {
@@ -419,9 +418,9 @@ public class DBConnect {
 
 	/**
 	 * Method to return all images that were seen during the registration method
-	 * @param userid
-	 * @param pictureSet
-	 * @param loginMethod
+	 * @param userid - the id of a user trying to register an account
+	 * @param pictureSet - the picture set that a user has chosen to register an account
+	 * @param loginMethod - the other login choice that the one currently selected and trying to register an account for
 	 * @return
 	 */
 	public List<String> getUserSeenImages(String userid, int pictureSet, int loginMethod) {

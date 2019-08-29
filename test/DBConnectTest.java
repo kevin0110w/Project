@@ -27,7 +27,7 @@ public class DBConnectTest {
 	private List<Integer> successOfPasswords;
 	private boolean correctPassword;
 	private int loginAttemptNo;
-	private boolean recentlySuccessful = true;
+	private boolean recentLoginAttemptSuccessful = true;
 	private double overallTimeTaken;
 	
 	@BeforeClass
@@ -47,11 +47,13 @@ public class DBConnectTest {
 	
 	@After
 	public void tearDown() throws Exception {
+		deleteTestUserRegistration();
+		deleteTestUserLoginAttempt();
 	}
 	
 	/**
-	 * Helper method to creating a new user
-	 * @return
+	 * Helper method to create a new user
+	 * @return a newly created user
 	 */
 	public User createUserDetails() {
 		this.user = new User("999999", "a", "b", "c", 1, 1, 0);
@@ -71,8 +73,8 @@ public class DBConnectTest {
 		return user;
 	}
 
-	/*
-	 * Helper method to delete a user from a database and avoid any primary key exceptions
+	/**
+	 * Helper method to delete an user registrations from a database and avoid any primary key / foreign key exceptions
 	 */
 	public void deleteTestUserRegistration() {
 		db.connectToDatabase();
@@ -91,6 +93,9 @@ public class DBConnectTest {
 		}
 	}
 	
+	/**
+	 * Helper method to delete an user login attempt from a database and avoid any primary key / foreign key exceptions
+	 */
 	public void deleteTestUserLoginAttempt() {
 		db.connectToDatabase();
 		String command = "Delete From UserLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
@@ -108,6 +113,9 @@ public class DBConnectTest {
 		}
 	}
 
+	/**
+	 * Test the connection is valid
+	 */
 	@Test
 	public void testConnection() {
 		db.connectToDatabase();
@@ -118,6 +126,9 @@ public class DBConnectTest {
 		}
 	}
 
+	/**
+	 * Test the connection is closed
+	 */
 	@Test
 	public void testClosed() {
 		db.connectToDatabase();
@@ -129,6 +140,10 @@ public class DBConnectTest {
 		}
 	}
 
+	/**
+	 * Test that the method to add a user account to the database is valid.
+	 * Identify the correct user is returned by checking the userid, picture set choice and login method choice
+	 */
 	@Test
 	public void testAddUserToDatabase() {
 		User user = createUserDetails();
@@ -139,6 +154,10 @@ public class DBConnectTest {
 		assertEquals(1, user.getLoginMethod());
 	}
 	
+	/**
+	 * Test that the correct password files are returned from the database
+	 * An indexed list containing the password strings returned from the database should match a local copy of the list containing password strings
+	 */
 	@Test
 	public void testPasswordFilesReturned() {
 		User user = createUserDetails();
@@ -151,22 +170,31 @@ public class DBConnectTest {
 		assertEquals(passwordsLocal, passwordsFromDB);
 	}
 	
+	/**
+	 * A test to check that the correct challenge set is returned from the database
+	 * Checks for equality between a set containing the password string from the db matches the a local set containing a users images from their challenge set
+	 */
 	@Test
-	public void returnUserDecoyImageSetFromDatabase() {
+	public void testGetUserChallengeSetFromDB() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
 		Set<String> set = new HashSet<String>();
-		List<String> list = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		List<String> list = db.getUserChallengeSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
 		set.addAll(list);
 		assertEquals(user.getImages(), set);
 	}
 	
 	
+	/**
+	 * Test the update file paths method in the db connect class
+	 * If the update files method is working, the retrieved list of images from the challenge set from the database after the update method is called,
+	 * shouldn't match the list before the update method was called.
+	 */
 	@Test
 	public void testUpdateFilePaths() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
-		List<String> decoyImagesBeforeUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		List<String> decoyImagesBeforeUpdate = db.getUserChallengeSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
 		decoyImagesBeforeUpdate.add(user.getPasswordOne());
 		decoyImagesBeforeUpdate.add(user.getPasswordTwo());
 		decoyImagesBeforeUpdate.add(user.getPasswordThree());
@@ -181,10 +209,17 @@ public class DBConnectTest {
 		updatedImages.add(user.getPasswordTwo());
 		updatedImages.add(user.getPasswordThree());
 		db.updateUserFilePaths(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), updatedImages);
-		List<String> decoyImagesImagesAfterUpdate = db.getDecoyImageSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
-		assertNotEquals(decoyImagesBeforeUpdate, decoyImagesImagesAfterUpdate);
+		List<String> decoyImagesImagesAfterUpdate = db.getUserChallengeSetFromDB(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
+		assertNotEquals("Challenge Set before and after update should not match", decoyImagesBeforeUpdate, decoyImagesImagesAfterUpdate);
 	}
 	
+	/**
+	 * Helper method to return a user from teh database
+	 * @param userID - userid for a user registration
+	 * @param pictureSet - picture set chosen for a registration
+	 * @param loginMethod - login method choice for a registration
+	 * @return
+	 */
 	public User returnRegisteredUser(String userID, int pictureSet, int loginMethod) {
 		User user = null;
 		db.connectToDatabase();
@@ -212,6 +247,9 @@ public class DBConnectTest {
 		return user;
 	}
 	
+	/**
+	 * Helper method to add a fake login attempt to the database
+	 */
 	public void addLoginAttemptToDatabase() {
 		this.enteredPassword = new ArrayList<String>();
 		this.enteredPassword = createEnteredPasswords();
@@ -219,12 +257,15 @@ public class DBConnectTest {
 		this.timeTaken = createTimeTaken();
 		this.successOfPasswords = new ArrayList<Integer>();
 		this.successOfPasswords = createSuccess();
-		this.correctPassword = true;
 		this.loginAttemptNo = 1;
 		this.overallTimeTaken = 1.0;
 		db.addLoginAttemptToDatabase(user.getUserid(), user.getLoginMethod(), user.getPictureSet(), enteredPassword, timeTaken, overallTimeTaken, successOfPasswords, correctPassword, loginAttemptNo);
 	}
 	
+	/**
+	 * A method to test that a login attempt was successfully added to the database
+	 * It tests for equality between the variables that are added to the database with the locally held onse of the same name
+	 */
 	@Test
 	public void testAddLoginAttemptToDatabase() {
 		String selectedImageOne = null, selectedImageTwo = null, selectedImageThree = null, userid = null;
@@ -234,6 +275,7 @@ public class DBConnectTest {
 		
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
+		setCorrectPassword(true);
 		addLoginAttemptToDatabase();
 		db.connectToDatabase();
 		
@@ -281,6 +323,11 @@ public class DBConnectTest {
 		assertEquals(this.correctPassword, overallSuccessful);
 	}
 	
+	/**
+	 * Test that a user has been registered on the database
+	 * If a user is registered, the boolean isRegistered will be set as true
+	 * The test is valid if the test asserts True
+	 */
 	@Test
 	public void testReturnIsRegistered() {
 		User user = createUserDetails();
@@ -289,25 +336,71 @@ public class DBConnectTest {
 		assertTrue(isRegistered);
 	}
 	
+	/**
+	 * Test that the method to get a recent login attempt number from the database is valid
+	 * If a update query has executed correctly, the retrieved login attempt no should equal the local variable, loginAttemptNo.
+	 * The test passes if the assertEquals passes.
+	 */
 	@Test
 	public void testGetRecentLoginAttemptNumber() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
+		setCorrectPassword(true);
 		addLoginAttemptToDatabase();
 		int loginAttempt = db.getRecentLoginAttemptNo(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
 		assertEquals(this.loginAttemptNo, loginAttempt);
 	}
 	
+	/**
+	 * Helper method to set the correct password boolean field
+	 * @param b
+	 */
+	private void setCorrectPassword(boolean b) {
+		this.correctPassword = b;
+		
+	}
+
+	/**
+	 * Test that the method to retrieve whether the most recent login attempt for a user was successful
+	 * a login attempt that was recently successful will be sent to the database. The database stores successful login as 1 and unsuccessful as 0
+	 * This knowledge will be used to set a boolean variable which should be true.
+	 * This test should assert True to show that the method retrieves the correct value from the database
+	 */
 	@Test
-	public void testGetRecentLoginSuccess() {
+	public void testGetRecentLoginSuccessThatWasSuccessful() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
+		setCorrectPassword(true);
 		addLoginAttemptToDatabase();
 		int recentlySuccessful = db.getRecentLoginSuccess(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
 		boolean rsuccessful = (recentlySuccessful == 1) ? true : false;
-		assertEquals(this.recentlySuccessful, rsuccessful);
+		assertTrue(rsuccessful);
 	}
-
+	
+	/**
+	 * Test that the method to retrieve whether the most recent login attempt for a user was unsuccessful
+	 * a login attempt that was recently unsuccessful will be sent to the database. The database stores successful login as 1 and unsuccessful as 0
+	 * This knowledge will be used to set a boolean variable which should be set to false.
+	 * This test passes if it asserts False to show that the method retrieves the correct value from the database
+	 */
+	@Test
+	public void testGetRecentLoginSuccessThatWasUnsuccessful() {
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		setCorrectPassword(false);
+		addLoginAttemptToDatabase();
+		int recentlySuccessful = db.getRecentLoginSuccess(user.getUserid(), user.getLoginMethod(), user.getPictureSet());
+		boolean rsuccessful = (recentlySuccessful == 1) ? true : false;
+		assertFalse(rsuccessful);
+	}
+	
+	/**
+	 * A helper method to create a list variable and add a list of integer to represent successful image selection
+	 * @param successfulImageOne
+	 * @param successfulImageTwo
+	 * @param successfulImageThree
+	 * @return
+	 */
 	private List<Integer> createSuccessfulImages(int successfulImageOne, int successfulImageTwo,
 			int successfulImageThree) {
 		List<Integer> alist = new ArrayList<Integer>();
@@ -317,6 +410,13 @@ public class DBConnectTest {
 		return alist;
 	}
 
+	/**
+	 * A helper method to create a list variable to mimic time taken to select images.
+	 * @param timeTakenToChooseImageOne
+	 * @param timeTakenToChooseImageTwo
+	 * @param timeTakenToChooseImageThree
+	 * @return
+	 */
 	private List<Double> createTimeTaken(double timeTakenToChooseImageOne, double timeTakenToChooseImageTwo,
 			double timeTakenToChooseImageThree) {
 		List<Double> alist = new ArrayList<Double>();
@@ -326,6 +426,13 @@ public class DBConnectTest {
 		return alist;
 	}
 
+	/**
+	 * A helper method to create a list variable to mimic selected images.
+	 * @param selectedImageOne
+	 * @param selectedImageTwo
+	 * @param selectedImageThree
+	 * @return
+	 */
 	private List<String> createSelectedImages(String selectedImageOne, String selectedImageTwo,
 			String selectedImageThree) {
 		List<String> alist = new ArrayList<String>();
@@ -335,6 +442,10 @@ public class DBConnectTest {
 		return alist;
 	}
 
+	/**
+	 * A helper method to create a list of integers to mimic that images were selected correctly.
+	 * @return
+	 */
 	private List<Integer> createSuccess() {
 		List<Integer> successOfPasswords = new ArrayList<Integer>();
 		successOfPasswords.add(1);
@@ -343,6 +454,10 @@ public class DBConnectTest {
 		return successOfPasswords;
 	}
 
+	/**
+	 * A helper method to create a list of double to mimic the time to select each of the 3 password images
+	 * @return
+	 */
 	private List<Double> createTimeTaken() {
 		List<Double> timeTaken = new ArrayList<Double>();
 		timeTaken.add(0.05);
@@ -351,6 +466,10 @@ public class DBConnectTest {
 		return timeTaken;
 	}
 
+	/**
+	 * A helper method to create a list of string to mimic each password
+	 * @return
+	 */
 	private List<String> createEnteredPasswords() {
 		List<String> enteredPasswords = new ArrayList<String>();
 		enteredPasswords.add("a");
