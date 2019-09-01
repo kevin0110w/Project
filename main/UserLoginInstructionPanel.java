@@ -46,8 +46,8 @@ public class UserLoginInstructionPanel extends JPanel {
 		text += "Please enter your UserID in the text field. Next, select a login method and picture set choice using the drop-down boxes.\n\n";
 		text += "On the next screen, you'll be presented with the 20 image icons associated with your userID - 17 \ndistractor/decoy images and the 3 images that were chosen as the password \n\n";
 		text += "You have to select your password images, one by one and in the correct order, to successfully \nlog in. Once an image has been selected, it can NOT be deleted.\n\n";
-		text += "Your login success rate and login time will both be recorded.";
-		text += "You will be attempt to log in 4 times per picture set - 24 logins in total";
+		text += "Your login success rate and login time will both be recorded.\n\n";
+		text += "You will be logging in 4 times for each login method per picture set - 24 logins in total";
 		this.textArea.setText(text);
 		this.textArea.setMargin(new Insets(5, 5, 5, 5));
 		this.textArea.setLineWrap(true);
