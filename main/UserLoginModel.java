@@ -1,4 +1,4 @@
-package main;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class UserLoginModel {
 	private List<Double> timeTaken;
 	private double totalTimeTaken;
 	private LocalDateTime initialTime;
-	private List<Integer> successOfPasswords; 
+	private List<Integer> successOfPasswords;
 	private boolean lastLoginSuccesful, shuffled;
 
 	public UserLoginModel() {
@@ -57,7 +57,7 @@ public class UserLoginModel {
 	public void setEnteredPassword(List<String> enteredPassword) {
 		this.enteredPasswords = enteredPassword;
 	}
-	
+
 	/**
 	 * Get list of enetered passwords
 	 * @return
@@ -100,7 +100,7 @@ public class UserLoginModel {
 	public int getNOOFPASSWORDS() {
 		return NOOFPASSWORDS;
 	}
-	
+
 	public void setLoginAttemptNo(int number) {
 		this.loginAttemptNo = number;
 	}
@@ -118,7 +118,7 @@ public class UserLoginModel {
 	public void setSuccessOfPasswords(List<Integer> successOfPasswords) {
 		this.successOfPasswords = successOfPasswords;
 	}
-	
+
 	/**
 	 * @return the successOfPasswords
 	 * if an image is correct, an index's element will be 1, if an image is correct but in the wrong order, the index's element will display 2. If the image is not in the password, the
@@ -135,7 +135,7 @@ public class UserLoginModel {
 	public void setUserID(String UserID) {
 		this.UserID = UserID;
 	}
-	
+
 	/**
 	 * get a User Id
 	 * @return
@@ -143,9 +143,9 @@ public class UserLoginModel {
 	public String getUserID() {
 		return this.UserID;
 	}
-	
+
 	/**
-	 * Set login method 
+	 * Set login method
 	 * @param loginMethod chosen from the login instruction view.
 	 */
 	public void setLoginMethod(int loginMethod) {
@@ -159,7 +159,7 @@ public class UserLoginModel {
 	public int getLoginMethod() {
 		return this.loginMethod;
 	}
-	
+
 	/**
 	 * @return the images
 	 */
@@ -187,7 +187,7 @@ public class UserLoginModel {
 	public void setTimeTaken(List<Double> timeTaken) {
 		this.timeTaken = timeTaken;
 	}
-	
+
 	/**
 	 * @return the db
 	 */
@@ -201,7 +201,7 @@ public class UserLoginModel {
 	public void setDb(DBConnect db) {
 		this.db = db;
 	}
-	
+
 	/**
 	 * @return the passwordPaths
 	 */
@@ -229,7 +229,7 @@ public class UserLoginModel {
 	 */
 	public void setShuffled(boolean b) {
 		this.shuffled = b;
-		
+
 	}
 
 	/**
@@ -241,7 +241,7 @@ public class UserLoginModel {
 	}
 
 
-	
+
 	/**
 	 * First get a user's challenge set them from the database
 	 * Next shuffle them if the most recent login was successful
@@ -253,7 +253,7 @@ public class UserLoginModel {
 		shuffleDecoyImages();
 		return challengeSet;
 	}
-	
+
 	/**
 	 * Get a user's challenge set
 	 * A particular set will be retrieved from the database based on the userid, pictureset, login method combination chosen the in login instruction view.
@@ -279,7 +279,7 @@ public class UserLoginModel {
 			this.setShuffled(true);
 		}
 	}
-	
+
 	/**
 	 * Store a selected image's filepath to the list of entered passwords
 	 * @param source
@@ -314,7 +314,7 @@ public class UserLoginModel {
 	 */
 	public void addTimeTakenPerPassword(Double time) {
 		this.timeTaken.add(time);
-		
+
 	}
 
 	/**
@@ -387,7 +387,7 @@ public class UserLoginModel {
 		boolean isRegisteredUser = db.returnIsRegistered(this.UserID, this.pictureSetSelection, this.loginMethod);
 		return isRegisteredUser;
 	}
-	
+
 
 	/**
 	 * A reset method to clear all locally stored data and ensure there is no carry over with any future logins.

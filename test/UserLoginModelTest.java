@@ -20,7 +20,7 @@ import main.User;
 import main.UserLoginModel;
 /**
  * This class will test all publicly accessible methods in the user login model class
- *
+ *author 0808148w
  */
 public class UserLoginModelTest {
 	
@@ -44,6 +44,10 @@ public class UserLoginModelTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
+	/**
+	 * Create a model, user and add user to db
+	 * @throws Exception
+	 */
 	@Before
 	public void setUp() throws Exception {
 		this.model = new UserLoginModel();
@@ -51,6 +55,10 @@ public class UserLoginModelTest {
 		this.model.getDb().addUserToDatabase(user);
 	}
 
+	/**
+	 * Delete the test user, any login attempts and clear the model from any fictitious data
+	 * @throws Exception
+	 */
 	@After
 	public void tearDown() throws Exception {
 		deleteTestUserRegistration();

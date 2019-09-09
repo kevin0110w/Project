@@ -19,6 +19,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * This class contains a set of test methods to test publicly availables methods in the dbconnect class
+ * @author 0808148w
+ *
+ */
 public class DBConnectTest {
 	private DBConnect db;
 	private User user;
@@ -29,7 +34,10 @@ public class DBConnectTest {
 	private int loginAttemptNo;
 	private boolean recentLoginAttemptSuccessful = true;
 	private double overallTimeTaken;
-	
+	private String userid = "999999", passwordOne = "a", passwordTwo = "b", passwordThree = "c";
+	private int loginmethod = 1, pictureset = 1;
+	private ArrayList<String> seenImages;
+			
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -41,10 +49,12 @@ public class DBConnectTest {
 	@Before
 	public void setUp() throws Exception {
 		db = new DBConnect();
-		deleteTestUserRegistration();
-		deleteTestUserLoginAttempt();
 	}
 	
+	/**
+	 * Delete a test user registration and login attempt
+	 * @throws Exception
+	 */
 	@After
 	public void tearDown() throws Exception {
 		deleteTestUserRegistration();
@@ -56,7 +66,7 @@ public class DBConnectTest {
 	 * @return a newly created user
 	 */
 	public User createUserDetails() {
-		this.user = new User("999999", "a", "b", "c", 1, 1, 0);
+		this.user = new User(userid, passwordOne, passwordTwo, passwordThree, pictureset, loginmethod, 0);
 		List<Double> time = new ArrayList<Double>();
 		time.add(0.0);
 		time.add(0.0);
@@ -81,9 +91,9 @@ public class DBConnectTest {
 		String command = "Delete From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setString(1, "999999");
-			st.setInt(2, 1);
-			st.setInt(3, 1);
+			st.setString(1, userid);
+			st.setInt(2, pictureset);
+			st.setInt(3, loginmethod);
 			st.executeUpdate();
 			st.close();
 		} catch (SQLException e1) {
@@ -101,9 +111,9 @@ public class DBConnectTest {
 		String command = "Delete From UserLoginAttempts Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setString(1, "999999");
-			st.setInt(2, 1);
-			st.setInt(3, 1);
+			st.setString(1, userid);
+			st.setInt(2, pictureset);
+			st.setInt(3, loginmethod);
 			st.executeUpdate();
 			st.close();
 		} catch (SQLException e1) {
@@ -115,9 +125,11 @@ public class DBConnectTest {
 
 	/**
 	 * Test the connection is valid
+	 * It tests the connect to database method in the dbconnect class
+	 * It passes if asserts false that the db connection is closed.
 	 */
 	@Test
-	public void testConnection() {
+	public void testConnectionToDatabase() {
 		db.connectToDatabase();
 		try {
 			assertFalse(db.getConnection().isClosed());
@@ -128,9 +140,11 @@ public class DBConnectTest {
 
 	/**
 	 * Test the connection is closed
+	 * It tests the connect closeConnection method in the dbconnect class
+	 * It passes if asserts true that the db connection is false.
 	 */
 	@Test
-	public void testClosed() {
+	public void testCloseConnection() {
 		db.connectToDatabase();
 		db.closeConnection();
 		try {
@@ -142,14 +156,14 @@ public class DBConnectTest {
 
 	/**
 	 * Test that the method to add a user account to the database is valid.
-	 * Identify the correct user is returned by checking the userid, picture set choice and login method choice
+	 * Identify the correct user is returned by the helper method by comparing the userid, picture set choice and login method choice
 	 */
 	@Test
 	public void testAddUserToDatabase() {
 		User user = createUserDetails();
 		db.addUserToDatabase(user);
-		user = returnRegisteredUser("999999", 1, 1);
-		assertEquals("999999", user.getUserid());
+		user = returnRegisteredUser(userid, pictureset, loginmethod);
+		assertEquals(userid, user.getUserid());
 		assertEquals(1, user.getPictureSet());
 		assertEquals(1, user.getLoginMethod());
 	}
@@ -157,6 +171,7 @@ public class DBConnectTest {
 	/**
 	 * Test that the correct password files are returned from the database
 	 * An indexed list containing the password strings returned from the database should match a local copy of the list containing password strings
+	 * This test passes if it asserts true that the returned password files is equal to the local one that was sent to it in the first place.
 	 */
 	@Test
 	public void testPasswordFilesReturned() {
@@ -164,15 +179,16 @@ public class DBConnectTest {
 		db.addUserToDatabase(user);
 		List<String> passwordsFromDB = db.getUserPasswordFilePathsFromDatabase(user.getUserid(), user.getPictureSet(), user.getLoginMethod());
 		List<String> passwordsLocal = new ArrayList<String>();
-		passwordsLocal.add("a");
-		passwordsLocal.add("b");
-		passwordsLocal.add("c");
+		passwordsLocal.add(user.getPasswordOne());
+		passwordsLocal.add(user.getPasswordTwo());
+		passwordsLocal.add(user.getPasswordThree());
 		assertEquals(passwordsLocal, passwordsFromDB);
 	}
 	
 	/**
 	 * A test to check that the correct challenge set is returned from the database
 	 * Checks for equality between a set containing the password string from the db matches the a local set containing a users images from their challenge set
+	 * This test passes if it asserts true that the returned challenge set from the database is equal to the local one that was sent to it.
 	 */
 	@Test
 	public void testGetUserChallengeSetFromDB() {
@@ -189,6 +205,7 @@ public class DBConnectTest {
 	 * Test the update file paths method in the db connect class
 	 * If the update files method is working, the retrieved list of images from the challenge set from the database after the update method is called,
 	 * shouldn't match the list before the update method was called.
+	 * this test password if it asserts that the local and database versions of the file paths are not equal
 	 */
 	@Test
 	public void testUpdateFilePaths() {
@@ -218,7 +235,7 @@ public class DBConnectTest {
 	 * @param userID - userid for a user registration
 	 * @param pictureSet - picture set chosen for a registration
 	 * @param loginMethod - login method choice for a registration
-	 * @return
+	 * @return a user
 	 */
 	public User returnRegisteredUser(String userID, int pictureSet, int loginMethod) {
 		User user = null;
@@ -226,7 +243,7 @@ public class DBConnectTest {
 		String command = "Select * From UserRegistrations Where UserID = ? AND PictureSet = ? AND LoginMethod = ?";
 		try {
 			PreparedStatement st = db.getConnection().prepareStatement(command);
-			st.setString(1, "999999");
+			st.setString(1, userid);
 			st.setInt(2, pictureSet);
 			st.setInt(3, loginMethod);
 			ResultSet result = st.executeQuery();
@@ -264,7 +281,8 @@ public class DBConnectTest {
 	
 	/**
 	 * A method to test that a login attempt was successfully added to the database
-	 * It tests for equality between the variables that are added to the database with the locally held onse of the same name
+	 * It tests for equality between the variables that are added to the database with the locally held ones of the same name
+	 * This test passes if it asserts that the local variables is equal to those that are sent up to the database
 	 */
 	@Test
 	public void testAddLoginAttemptToDatabase() {
@@ -326,7 +344,7 @@ public class DBConnectTest {
 	/**
 	 * Test that a user has been registered on the database
 	 * If a user is registered, the boolean isRegistered will be set as true
-	 * The test is valid if the test asserts True
+	 * The test is valid if the test asserts True, that the user has been registered
 	 */
 	@Test
 	public void testReturnIsRegistered() {
@@ -339,7 +357,7 @@ public class DBConnectTest {
 	/**
 	 * Test that the method to get a recent login attempt number from the database is valid
 	 * If a update query has executed correctly, the retrieved login attempt no should equal the local variable, loginAttemptNo.
-	 * The test passes if the assertEquals passes.
+	 * The test passes if the assertEquals passes showing that the login attempt number matches the local one.
 	 */
 	@Test
 	public void testGetRecentLoginAttemptNumber() {
@@ -353,7 +371,7 @@ public class DBConnectTest {
 	
 	/**
 	 * Helper method to set the correct password boolean field
-	 * @param b
+	 * @param b = boolean
 	 */
 	private void setCorrectPassword(boolean b) {
 		this.correctPassword = b;
@@ -472,10 +490,38 @@ public class DBConnectTest {
 	 */
 	private List<String> createEnteredPasswords() {
 		List<String> enteredPasswords = new ArrayList<String>();
-		enteredPasswords.add("a");
-		enteredPasswords.add("b");
-		enteredPasswords.add("c");
+		enteredPasswords.add(passwordOne);
+		enteredPasswords.add(passwordTwo);
+		enteredPasswords.add(passwordThree);
 		return enteredPasswords;
+	}
+	
+	/**
+	 * A helper method to create a list containing 60 strings representing each image that is seen during registration
+	 */
+	private void createSeenImages() {
+		this.seenImages = new ArrayList<String>();
+		int n = 1;
+		while (n<=60) {
+			this.seenImages.add("image" + n);
+			n++;
+		}
+	}
+	
+	/**
+	 * This test checks both the addUserSeenImagesToDB and getUserSeenImages in the dbconnect class.
+	 * First we add a user to a database, create an fiction list holding 60 fiction file paths and send it up to the db. we then return a list from the db.
+	 * This test passes if it asserts that the lists sent to and from the db are equal.
+	 */
+	@Test
+	public void testAddUserSeenImagesToDatabase() {
+		createSeenImages();
+		User user = createUserDetails();
+		db.addUserToDatabase(user);
+		db.addUsersSeenImagestoDatabase(userid, pictureset, loginmethod, seenImages);
+		List<String> dbSeenImages = new ArrayList<String>();
+		dbSeenImages.addAll(db.getUserSeenImages(userid, pictureset, loginmethod));
+		assertEquals("If this passes, it asserts that the list sent to the db is the same one sent back from db", seenImages, dbSeenImages);
 	}
 }
 

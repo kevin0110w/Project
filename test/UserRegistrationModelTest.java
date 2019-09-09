@@ -35,6 +35,11 @@ public class UserRegistrationModelTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
+	/**
+	 * Before each test case is ran, create a fake user, ppulate the model with fake data
+	 * and ensure any previous login attempts are definitely deleted.
+	 * @throws Exception
+	 */
 	@Before
 	public void setUp() throws Exception {
 		this.model = new UserRegistrationModel();
@@ -42,7 +47,10 @@ public class UserRegistrationModelTest {
 		populateTheModel();
 		deleteTestUserRegistration();
 	}
-
+	/**
+	 * Delete a test user registration and clear the local data
+	 * @throws Exception
+	 */
 	@After
 	public void tearDown() throws Exception {
 		deleteTestUserRegistration();
@@ -93,7 +101,7 @@ public class UserRegistrationModelTest {
 	 * This test passes if the assert equals shows that the images size is 20 after the createDecoyImageSet method is called.
 	 */
 	@Test
-	public void testCreateDecoyImageSet() {
+	public void testCreateDecoyImageSetContains20Images() {
 		User user = createUserDetails();
 		model.setUser(user);
 		assertEquals("User images set initially contains 3 password files", 3, model.getUser().getImages().size());
@@ -102,6 +110,50 @@ public class UserRegistrationModelTest {
 		assertEquals("User image set now contains 20", 20, model.getUser().getImages().size());
 	}
 	
+	
+	/**
+	 * This test checks createDecoyImageSet() method within the model class
+	 * that all images in a user's image list are only seen images by checking that the image is in the seen list and it is not found in the unseen list
+	 * This test passes if the assert true holds showing images in the users image list have all been seen before
+	 */
+	@Test
+	public void testCreateDecoyImageSetLoginMethodOne() {
+		boolean allSeenImages = true;
+		User user = createUserDetails();
+		model.setUser(user);
+		this.model.createRegistrationSet();
+		this.model.createDecoyImageSet();
+		for (String s : model.getUser().getImages()) {
+			if (model.getImageFiles().getUnseenImages().contains(s) && (!(model.getImageFiles().getSeenImages().contains(s)))) {
+				allSeenImages = false;
+				break;
+			}
+		}
+		assertTrue("All decoy images are not found in the unseen list", allSeenImages);
+	}
+	
+	/**
+	 * This test checks createDecoyImageSet() method within the model class
+	 * that all images in a user's image list are only unseen images by checking that the image is in the seen list and it is not found in the unseen list
+	 * This test passes if the assert true holds showing images in the users image list have all not been seen before
+	 */
+	@Test
+	public void testCreateDecoyImageSetLoginMethodTwo() {
+		boolean allUnseenImages = true;
+		User user = createUserDetails();
+		user.setLoginMethod(2);
+		model.setUser(user);
+		model.setLoginMethod(2);
+		this.model.createRegistrationSet();
+		this.model.createDecoyImageSet();
+		for (String s : model.getUser().getImages()) {
+			if (!(model.getImageFiles().getUnseenImages().contains(s)) && (model.getImageFiles().getSeenImages().contains(s))) {
+				allUnseenImages = false;
+				break;
+			}
+		}
+		assertTrue("All decoy images are not found in the unseen list", allUnseenImages);
+	}
 	/**
 	 * This test will check that the addTimeTaken method in the model class adds a time to the list of times.
 	 * Initially the list of times should have 0 elements.. When the method is called, the size will increment by one
@@ -137,10 +189,6 @@ public class UserRegistrationModelTest {
 	 */
 	@Test
 	public void testClear() {
-		assertEquals("Password one set to 'a'", "a", model.getFirstSelectedImageFilePath());
-		assertEquals("Password two set to 'b'", "b", model.getSecondSelectedImageFilePath());
-		assertEquals("Password three set to 'c'", "c", model.getThirdSelectedImageFilePath());
-		assertEquals("Time list contains three elements", 3, model.getTimeTaken().size());
 		model.clear();
 		assertEquals("Password one set to null", null, model.getFirstSelectedImageFilePath());
 		assertEquals("Password two set to null", null, model.getSecondSelectedImageFilePath());
@@ -166,7 +214,7 @@ public class UserRegistrationModelTest {
 	 * @return a User
 	 */
 	public User createUserDetails() {
-		this.user = new User("999999", "a", "b", "c", 1, 1, 0.0);
+		this.user = new User("999999", "C:\\Users\\woohoo\\eclipse-workspace\\ProjectCode\\art\\image (1)", "C:\\Users\\woohoo\\eclipse-workspace\\ProjectCode\\art\\image (2)", "C:\\Users\\woohoo\\eclipse-workspace\\ProjectCode\\art\\image (3)", 1, 1, 0.0);
 		List<Double> time = new ArrayList<Double>();
 		time.add(0.0);
 		time.add(0.0);

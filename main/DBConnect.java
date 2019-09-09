@@ -14,9 +14,9 @@ import java.util.Set;
 public class DBConnect {
 	private Connection connection;
 	private Statement statement;
-	private final static String IP = "jdbc:postgresql://localhost:5432/";
-	private final static String USERNAME = "postgres";
-	private final static String PASSWORD = "freckles";
+	private final static String IP = "jdbc:postgresql://yacata.dcs.gla.ac.uk:5432/";
+	private final static String USERNAME = "m_18_0808148w";
+	private final static String PASSWORD = "0808148w";
 	
 
 	public DBConnect() {

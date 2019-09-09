@@ -16,7 +16,7 @@ import org.junit.Test;
 import main.ImageFiles;
 /**
  * Testing methods within the ImageFiles class to ensure correct files are read
- *
+ *author 0808148w
  */
 public class ImageFilesTest {
 	private ImageFiles imageFiles;
@@ -41,6 +41,10 @@ public class ImageFilesTest {
 	public void tearDown() throws Exception {
 	}
 	
+	/**
+	 * This test checks that each list has 20 images after the create registration set method has been called
+	 * The test passes if it asserts true that each list holds 20 elements
+	 */
 	@Test
 	public void testEachListHasTwentyImages() {
 		imageFiles.createRegistrationSet(1, listArt);
@@ -52,6 +56,10 @@ public class ImageFilesTest {
 		assertTrue(listThreeSize == 20);	
 	}
 	
+	/**
+	 * This test checks that lists initially contain 0 elements
+	 * This test passes if it asserts that each lists' size is 0 at the beginning.
+	 */
 	@Test
 	public void testListsAreInitiallyEmpty() {
 		assertEquals("List One should initially be empty", 0, imageFiles.getListOne().size());
@@ -194,7 +202,7 @@ public class ImageFilesTest {
 	/**
 	 * Return the element from the field variable as sets do not provide the get method.
 	 * @param list
-	 * @return
+	 * @return the next image in the list
 	 */
 	private String returnListElement(Set<String> list) {
 		Iterator<String> listIterator = list.iterator();
